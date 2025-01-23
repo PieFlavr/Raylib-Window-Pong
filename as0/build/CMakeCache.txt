@@ -52,11 +52,11 @@ CMAKE_CXX_COMPILER:FILEPATH=/usr/bin/c++
 
 //A wrapper around 'ar' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_CXX_COMPILER_AR:FILEPATH=/usr/bin/gcc-ar-11
+CMAKE_CXX_COMPILER_AR:FILEPATH=/usr/bin/gcc-ar-13
 
 //A wrapper around 'ranlib' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_CXX_COMPILER_RANLIB:FILEPATH=/usr/bin/gcc-ranlib-11
+CMAKE_CXX_COMPILER_RANLIB:FILEPATH=/usr/bin/gcc-ranlib-13
 
 //Flags used by the CXX compiler during all build types.
 CMAKE_CXX_FLAGS:STRING=
@@ -78,11 +78,11 @@ CMAKE_C_COMPILER:FILEPATH=/usr/bin/cc
 
 //A wrapper around 'ar' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_C_COMPILER_AR:FILEPATH=/usr/bin/gcc-ar-11
+CMAKE_C_COMPILER_AR:FILEPATH=/usr/bin/gcc-ar-13
 
 //A wrapper around 'ranlib' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_C_COMPILER_RANLIB:FILEPATH=/usr/bin/gcc-ranlib-11
+CMAKE_C_COMPILER_RANLIB:FILEPATH=/usr/bin/gcc-ranlib-13
 
 //Flags used by the C compiler during all build types.
 CMAKE_C_FLAGS:STRING=
@@ -119,6 +119,9 @@ CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
 //Enable/Disable output of compile commands during generation.
 CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=
+
+//Value Computed by CMake.
+CMAKE_FIND_PACKAGE_REDIRECTS_DIR:STATIC=/mnt/c/Users/lucas/Desktop/Repo Clones/CS381-AS0/as0/build/CMakeFiles/pkgRedirects
 
 //User executables (bin)
 CMAKE_INSTALL_BINDIR:PATH=bin
@@ -286,6 +289,9 @@ CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 //Path to a program.
 CMAKE_STRIP:FILEPATH=/usr/bin/strip
 
+//Path to a program.
+CMAKE_TAPI:FILEPATH=CMAKE_TAPI-NOTFOUND
+
 //If this value is on, makefiles will be generated without the
 // .SILENT directive, and all commands will be echoed to the console
 // during the make.  This is useful for debugging only. With Visual
@@ -345,7 +351,7 @@ GLFW_BUILD_EXAMPLES:BOOL=OFF
 GLFW_BUILD_TESTS:BOOL=OFF
 
 //Build support for Wayland
-GLFW_BUILD_WAYLAND:BOOL=OFF
+GLFW_BUILD_WAYLAND:BOOL=ON
 
 //Build support for X11
 GLFW_BUILD_X11:BOOL=ON
@@ -371,7 +377,13 @@ MACOS_FATLIB:BOOL=OFF
 MATH_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libm.so
 
 //Path to a file.
-OPENGL_EGL_INCLUDE_DIR:PATH=/usr/include
+OPENGL_EGL_INCLUDE_DIR:PATH=OPENGL_EGL_INCLUDE_DIR-NOTFOUND
+
+//Path to a file.
+OPENGL_GLES2_INCLUDE_DIR:PATH=OPENGL_GLES2_INCLUDE_DIR-NOTFOUND
+
+//Path to a file.
+OPENGL_GLES3_INCLUDE_DIR:PATH=OPENGL_GLES3_INCLUDE_DIR-NOTFOUND
 
 //Path to a file.
 OPENGL_GLX_INCLUDE_DIR:PATH=/usr/include
@@ -383,10 +395,16 @@ OPENGL_INCLUDE_DIR:PATH=/usr/include
 OPENGL_VERSION:STRING=OFF
 
 //Path to a library.
-OPENGL_egl_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libEGL.so
+OPENGL_egl_LIBRARY:FILEPATH=OPENGL_egl_LIBRARY-NOTFOUND
 
 //Path to a library.
-OPENGL_gl_LIBRARY:FILEPATH=OPENGL_gl_LIBRARY-NOTFOUND
+OPENGL_gl_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libGL.so
+
+//Path to a library.
+OPENGL_gles2_LIBRARY:FILEPATH=OPENGL_gles2_LIBRARY-NOTFOUND
+
+//Path to a library.
+OPENGL_gles3_LIBRARY:FILEPATH=OPENGL_gles3_LIBRARY-NOTFOUND
 
 //Path to a library.
 OPENGL_glu_LIBRARY:FILEPATH=OPENGL_glu_LIBRARY-NOTFOUND
@@ -395,10 +413,16 @@ OPENGL_glu_LIBRARY:FILEPATH=OPENGL_glu_LIBRARY-NOTFOUND
 OPENGL_glx_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libGLX.so
 
 //Path to a library.
-OPENGL_opengl_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libOpenGL.so
+OPENGL_opengl_LIBRARY:FILEPATH=OPENGL_opengl_LIBRARY-NOTFOUND
 
 //Path to a file.
 OPENGL_xmesa_INCLUDE_DIR:PATH=OPENGL_xmesa_INCLUDE_DIR-NOTFOUND
+
+//Arguments to supply to pkg-config
+PKG_CONFIG_ARGN:STRING=
+
+//pkg-config executable
+PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
 
 //Platform to build for.
 PLATFORM:STRING=Desktop
@@ -410,7 +434,7 @@ RT_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/librt.a
 USE_EXTERNAL_GLFW:STRING=OFF
 
 //Path to a program.
-WAYLAND_SCANNER_EXECUTABLE:FILEPATH=WAYLAND_SCANNER_EXECUTABLE-NOTFOUND
+WAYLAND_SCANNER_EXECUTABLE:FILEPATH=/usr/bin/wayland-scanner
 
 //Compile static library as position-independent code
 WITH_PIC:BOOL=OFF
@@ -608,10 +632,136 @@ X11_xcb_INCLUDE_PATH:PATH=/usr/include
 X11_xcb_LIB:FILEPATH=/usr/lib/x86_64-linux-gnu/libxcb.so
 
 //Path to a file.
+X11_xcb_composite_INCLUDE_PATH:PATH=X11_xcb_composite_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_composite_LIB:FILEPATH=X11_xcb_composite_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_cursor_INCLUDE_PATH:PATH=X11_xcb_cursor_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_cursor_LIB:FILEPATH=X11_xcb_cursor_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_damage_INCLUDE_PATH:PATH=X11_xcb_damage_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_damage_LIB:FILEPATH=X11_xcb_damage_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_dpms_INCLUDE_PATH:PATH=X11_xcb_dpms_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_dpms_LIB:FILEPATH=X11_xcb_dpms_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_dri2_INCLUDE_PATH:PATH=X11_xcb_dri2_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_dri2_LIB:FILEPATH=X11_xcb_dri2_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_dri3_INCLUDE_PATH:PATH=X11_xcb_dri3_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_dri3_LIB:FILEPATH=X11_xcb_dri3_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_errors_INCLUDE_PATH:PATH=X11_xcb_errors_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_errors_LIB:FILEPATH=X11_xcb_errors_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_ewmh_INCLUDE_PATH:PATH=X11_xcb_ewmh_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_ewmh_LIB:FILEPATH=X11_xcb_ewmh_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_glx_INCLUDE_PATH:PATH=X11_xcb_glx_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_glx_LIB:FILEPATH=X11_xcb_glx_LIB-NOTFOUND
+
+//Path to a file.
 X11_xcb_icccm_INCLUDE_PATH:PATH=X11_xcb_icccm_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
 X11_xcb_icccm_LIB:FILEPATH=X11_xcb_icccm_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_image_INCLUDE_PATH:PATH=X11_xcb_image_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_image_LIB:FILEPATH=X11_xcb_image_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_keysyms_INCLUDE_PATH:PATH=X11_xcb_keysyms_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_keysyms_LIB:FILEPATH=X11_xcb_keysyms_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_present_INCLUDE_PATH:PATH=X11_xcb_present_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_present_LIB:FILEPATH=X11_xcb_present_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_randr_INCLUDE_PATH:PATH=X11_xcb_randr_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_randr_LIB:FILEPATH=X11_xcb_randr_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_record_INCLUDE_PATH:PATH=X11_xcb_record_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_record_LIB:FILEPATH=X11_xcb_record_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_render_INCLUDE_PATH:PATH=X11_xcb_render_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_render_LIB:FILEPATH=X11_xcb_render_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_render_util_INCLUDE_PATH:PATH=X11_xcb_render_util_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_render_util_LIB:FILEPATH=X11_xcb_render_util_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_res_INCLUDE_PATH:PATH=X11_xcb_res_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_res_LIB:FILEPATH=X11_xcb_res_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_screensaver_INCLUDE_PATH:PATH=X11_xcb_screensaver_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_screensaver_LIB:FILEPATH=X11_xcb_screensaver_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_shape_INCLUDE_PATH:PATH=X11_xcb_shape_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_shape_LIB:FILEPATH=X11_xcb_shape_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_shm_INCLUDE_PATH:PATH=X11_xcb_shm_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_shm_LIB:FILEPATH=X11_xcb_shm_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_sync_INCLUDE_PATH:PATH=X11_xcb_sync_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_sync_LIB:FILEPATH=X11_xcb_sync_LIB-NOTFOUND
 
 //Path to a file.
 X11_xcb_util_INCLUDE_PATH:PATH=X11_xcb_util_INCLUDE_PATH-NOTFOUND
@@ -620,19 +770,64 @@ X11_xcb_util_INCLUDE_PATH:PATH=X11_xcb_util_INCLUDE_PATH-NOTFOUND
 X11_xcb_util_LIB:FILEPATH=X11_xcb_util_LIB-NOTFOUND
 
 //Path to a file.
+X11_xcb_xf86dri_INCLUDE_PATH:PATH=X11_xcb_xf86dri_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_xf86dri_LIB:FILEPATH=X11_xcb_xf86dri_LIB-NOTFOUND
+
+//Path to a file.
 X11_xcb_xfixes_INCLUDE_PATH:PATH=X11_xcb_xfixes_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
 X11_xcb_xfixes_LIB:FILEPATH=X11_xcb_xfixes_LIB-NOTFOUND
 
+//Path to a file.
+X11_xcb_xinerama_INCLUDE_PATH:PATH=X11_xcb_xinerama_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_xinerama_LIB:FILEPATH=X11_xcb_xinerama_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_xinput_INCLUDE_PATH:PATH=X11_xcb_xinput_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_xinput_LIB:FILEPATH=X11_xcb_xinput_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_xkb_INCLUDE_PATH:PATH=X11_xcb_xkb_INCLUDE_PATH-NOTFOUND
+
 //Path to a library.
 X11_xcb_xkb_LIB:FILEPATH=X11_xcb_xkb_LIB-NOTFOUND
 
 //Path to a file.
-X11_xkbcommon_INCLUDE_PATH:PATH=X11_xkbcommon_INCLUDE_PATH-NOTFOUND
+X11_xcb_xrm_INCLUDE_PATH:PATH=X11_xcb_xrm_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_xkbcommon_LIB:FILEPATH=X11_xkbcommon_LIB-NOTFOUND
+X11_xcb_xrm_LIB:FILEPATH=X11_xcb_xrm_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_xtest_INCLUDE_PATH:PATH=X11_xcb_xtest_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_xtest_LIB:FILEPATH=X11_xcb_xtest_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_xv_INCLUDE_PATH:PATH=X11_xcb_xv_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_xv_LIB:FILEPATH=X11_xcb_xv_LIB-NOTFOUND
+
+//Path to a file.
+X11_xcb_xvmc_INCLUDE_PATH:PATH=X11_xcb_xvmc_INCLUDE_PATH-NOTFOUND
+
+//Path to a library.
+X11_xcb_xvmc_LIB:FILEPATH=X11_xcb_xvmc_LIB-NOTFOUND
+
+//Path to a file.
+X11_xkbcommon_INCLUDE_PATH:PATH=/usr/include
+
+//Path to a library.
+X11_xkbcommon_LIB:FILEPATH=/usr/lib/x86_64-linux-gnu/libxkbcommon.so
 
 //Path to a file.
 X11_xkbcommon_X11_INCLUDE_PATH:PATH=X11_xkbcommon_X11_INCLUDE_PATH-NOTFOUND
@@ -656,6 +851,18 @@ as0_IS_TOP_LEVEL:STATIC=ON
 as0_SOURCE_DIR:STATIC=/mnt/c/Users/lucas/Desktop/Repo Clones/CS381-AS0/as0
 
 //Path to a library.
+pkgcfg_lib_Wayland_wayland-client:FILEPATH=/usr/lib/x86_64-linux-gnu/libwayland-client.so
+
+//Path to a library.
+pkgcfg_lib_Wayland_wayland-cursor:FILEPATH=/usr/lib/x86_64-linux-gnu/libwayland-cursor.so
+
+//Path to a library.
+pkgcfg_lib_Wayland_wayland-egl:FILEPATH=/usr/lib/x86_64-linux-gnu/libwayland-egl.so
+
+//Path to a library.
+pkgcfg_lib_Wayland_xkbcommon:FILEPATH=/usr/lib/x86_64-linux-gnu/libxkbcommon.so
+
+//Path to a library.
 pthread:FILEPATH=/usr/lib/x86_64-linux-gnu/libpthread.a
 
 //Value Computed by CMake
@@ -674,7 +881,7 @@ raylib_BINARY_DIR:STATIC=/mnt/c/Users/lucas/Desktop/Repo Clones/CS381-AS0/as0/bu
 raylib_IS_TOP_LEVEL:STATIC=OFF
 
 //Dependencies for the target
-raylib_LIB_DEPENDS:STATIC=general;m;pthread;/usr/lib/x86_64-linux-gnu/libOpenGL.so;/usr/lib/x86_64-linux-gnu/libGLX.so;glfw;
+raylib_LIB_DEPENDS:STATIC=general;m;pthread;/usr/lib/x86_64-linux-gnu/libGL.so;glfw;
 
 //Value Computed by CMake
 raylib_SOURCE_DIR:STATIC=/mnt/c/Users/lucas/Desktop/Repo Clones/CS381-AS0/as0/raylib-cpp/raylib/src
@@ -704,9 +911,9 @@ CMAKE_CACHEFILE_DIR:INTERNAL=/mnt/c/Users/lucas/Desktop/Repo Clones/CS381-AS0/as
 //Major version of cmake used to create the current loaded cache
 CMAKE_CACHE_MAJOR_VERSION:INTERNAL=3
 //Minor version of cmake used to create the current loaded cache
-CMAKE_CACHE_MINOR_VERSION:INTERNAL=22
+CMAKE_CACHE_MINOR_VERSION:INTERNAL=28
 //Patch version of cmake used to create the current loaded cache
-CMAKE_CACHE_PATCH_VERSION:INTERNAL=1
+CMAKE_CACHE_PATCH_VERSION:INTERNAL=3
 //ADVANCED property for variable: CMAKE_COLOR_MAKEFILE
 CMAKE_COLOR_MAKEFILE-ADVANCED:INTERNAL=1
 //Path to CMake executable.
@@ -779,8 +986,6 @@ CMAKE_HAVE_CONNECT:INTERNAL=1
 CMAKE_HAVE_GETHOSTBYNAME:INTERNAL=1
 //Test CMAKE_HAVE_LIBC_PTHREAD
 CMAKE_HAVE_LIBC_PTHREAD:INTERNAL=1
-//Have include pthread.h
-CMAKE_HAVE_PTHREAD_H:INTERNAL=1
 //Have function remove
 CMAKE_HAVE_REMOVE:INTERNAL=1
 //Have function shmat
@@ -851,7 +1056,7 @@ CMAKE_RANLIB-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_READELF
 CMAKE_READELF-ADVANCED:INTERNAL=1
 //Path to CMake installation.
-CMAKE_ROOT:INTERNAL=/usr/share/cmake-3.22
+CMAKE_ROOT:INTERNAL=/usr/share/cmake-3.28
 //ADVANCED property for variable: CMAKE_SHARED_LINKER_FLAGS
 CMAKE_SHARED_LINKER_FLAGS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_SHARED_LINKER_FLAGS_DEBUG
@@ -878,6 +1083,8 @@ CMAKE_STATIC_LINKER_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_STRIP
 CMAKE_STRIP-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CMAKE_TAPI
+CMAKE_TAPI-ADVANCED:INTERNAL=1
 //uname command
 CMAKE_UNAME:INTERNAL=/usr/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
@@ -896,6 +1103,8 @@ CPACK_SOURCE_TXZ-ADVANCED:INTERNAL=1
 CPACK_SOURCE_TZ-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CPACK_SOURCE_ZIP
 CPACK_SOURCE_ZIP-ADVANCED:INTERNAL=1
+//Details about finding PkgConfig
+FIND_PACKAGE_MESSAGE_DETAILS_PkgConfig:INTERNAL=[/usr/bin/pkg-config][v1.8.1()]
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //Details about finding X11
@@ -913,6 +1122,10 @@ MATH_LIBRARY-ADVANCED:INTERNAL=1
 OFF:INTERNAL=OFF
 //ADVANCED property for variable: OPENGL_EGL_INCLUDE_DIR
 OPENGL_EGL_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENGL_GLES2_INCLUDE_DIR
+OPENGL_GLES2_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENGL_GLES3_INCLUDE_DIR
+OPENGL_GLES3_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_GLX_INCLUDE_DIR
 OPENGL_GLX_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_INCLUDE_DIR
@@ -923,6 +1136,10 @@ OPENGL_VERSION-STRINGS:INTERNAL=OFF;4.3;3.3;2.1;1.1;ES 2.0;ES 3.0
 OPENGL_egl_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_gl_LIBRARY
 OPENGL_gl_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENGL_gles2_LIBRARY
+OPENGL_gles2_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENGL_gles3_LIBRARY
+OPENGL_gles3_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_glu_LIBRARY
 OPENGL_glu_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_glx_LIBRARY
@@ -931,17 +1148,72 @@ OPENGL_glx_LIBRARY-ADVANCED:INTERNAL=1
 OPENGL_opengl_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENGL_xmesa_INCLUDE_DIR
 OPENGL_xmesa_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PKG_CONFIG_ARGN
+PKG_CONFIG_ARGN-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PKG_CONFIG_EXECUTABLE
+PKG_CONFIG_EXECUTABLE-ADVANCED:INTERNAL=1
 //STRINGS property for variable: PLATFORM
 PLATFORM-STRINGS:INTERNAL=Desktop;Web;Android;Raspberry Pi;DRM;SDL
 //ADVANCED property for variable: RT_LIBRARY
 RT_LIBRARY-ADVANCED:INTERNAL=1
 //STRINGS property for variable: USE_EXTERNAL_GLFW
 USE_EXTERNAL_GLFW-STRINGS:INTERNAL=OFF;IF_POSSIBLE;ON
+Wayland_CFLAGS:INTERNAL=-I/usr/include
+Wayland_CFLAGS_I:INTERNAL=
+Wayland_CFLAGS_OTHER:INTERNAL=
+Wayland_FOUND:INTERNAL=1
+Wayland_INCLUDEDIR:INTERNAL=
+Wayland_INCLUDE_DIRS:INTERNAL=/usr/include
+Wayland_LDFLAGS:INTERNAL=-L/usr/lib/x86_64-linux-gnu;-lwayland-cursor;-lwayland-egl;-lwayland-client;-lxkbcommon
+Wayland_LDFLAGS_OTHER:INTERNAL=
+Wayland_LIBDIR:INTERNAL=
+Wayland_LIBRARIES:INTERNAL=wayland-cursor;wayland-egl;wayland-client;xkbcommon
+Wayland_LIBRARY_DIRS:INTERNAL=/usr/lib/x86_64-linux-gnu
+Wayland_LIBS:INTERNAL=
+Wayland_LIBS_L:INTERNAL=
+Wayland_LIBS_OTHER:INTERNAL=
+Wayland_LIBS_PATHS:INTERNAL=
+Wayland_MODULE_NAME:INTERNAL=
+Wayland_PREFIX:INTERNAL=
+Wayland_STATIC_CFLAGS:INTERNAL=-I/usr/include
+Wayland_STATIC_CFLAGS_I:INTERNAL=
+Wayland_STATIC_CFLAGS_OTHER:INTERNAL=
+Wayland_STATIC_INCLUDE_DIRS:INTERNAL=/usr/include
+Wayland_STATIC_LDFLAGS:INTERNAL=-L/usr/lib/x86_64-linux-gnu;-lwayland-client;-lm;-pthread;-lrt;-lffi;-lwayland-cursor;-L/usr/lib/x86_64-linux-gnu;-lm;-pthread;-lrt;-lffi;-lwayland-egl;-lwayland-client;-lm;-pthread;-lrt;-lffi;-lxkbcommon
+Wayland_STATIC_LDFLAGS_OTHER:INTERNAL=-pthread;-pthread;-pthread
+Wayland_STATIC_LIBDIR:INTERNAL=
+Wayland_STATIC_LIBRARIES:INTERNAL=wayland-client;m;rt;ffi;wayland-cursor;m;rt;ffi;wayland-egl;wayland-client;m;rt;ffi;xkbcommon
+Wayland_STATIC_LIBRARY_DIRS:INTERNAL=/usr/lib/x86_64-linux-gnu;/usr/lib/x86_64-linux-gnu
+Wayland_STATIC_LIBS:INTERNAL=
+Wayland_STATIC_LIBS_L:INTERNAL=
+Wayland_STATIC_LIBS_OTHER:INTERNAL=
+Wayland_STATIC_LIBS_PATHS:INTERNAL=
+Wayland_VERSION:INTERNAL=
+Wayland_wayland-client_INCLUDEDIR:INTERNAL=/usr/include
+Wayland_wayland-client_LIBDIR:INTERNAL=/usr/lib/x86_64-linux-gnu
+Wayland_wayland-client_MODULE_NAME:INTERNAL=wayland-client
+Wayland_wayland-client_PREFIX:INTERNAL=/usr
+Wayland_wayland-client_VERSION:INTERNAL=1.22.0
+Wayland_wayland-cursor_INCLUDEDIR:INTERNAL=/usr/include
+Wayland_wayland-cursor_LIBDIR:INTERNAL=/usr/lib/x86_64-linux-gnu
+Wayland_wayland-cursor_MODULE_NAME:INTERNAL=wayland-cursor
+Wayland_wayland-cursor_PREFIX:INTERNAL=/usr
+Wayland_wayland-cursor_VERSION:INTERNAL=1.22.0
+Wayland_wayland-egl_INCLUDEDIR:INTERNAL=/usr/include
+Wayland_wayland-egl_LIBDIR:INTERNAL=/usr/lib/x86_64-linux-gnu
+Wayland_wayland-egl_MODULE_NAME:INTERNAL=wayland-egl
+Wayland_wayland-egl_PREFIX:INTERNAL=/usr
+Wayland_wayland-egl_VERSION:INTERNAL=18.1.0
+Wayland_xkbcommon_INCLUDEDIR:INTERNAL=/usr/include
+Wayland_xkbcommon_LIBDIR:INTERNAL=/usr/lib/x86_64-linux-gnu
+Wayland_xkbcommon_MODULE_NAME:INTERNAL=xkbcommon
+Wayland_xkbcommon_PREFIX:INTERNAL=/usr
+Wayland_xkbcommon_VERSION:INTERNAL=1.6.0
 //ADVANCED property for variable: X11_ICE_INCLUDE_PATH
 X11_ICE_INCLUDE_PATH-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: X11_ICE_LIB
 X11_ICE_LIB-ADVANCED:INTERNAL=1
-//Have library /usr/lib/x86_64-linux-gnu/libX11.so
+//Have library /usr/lib/x86_64-linux-gnu/libX11.so;/usr/lib/x86_64-linux-gnu/libXext.so
 X11_LIB_X11_SOLO:INTERNAL=1
 //ADVANCED property for variable: X11_SM_INCLUDE_PATH
 X11_SM_INCLUDE_PATH-ADVANCED:INTERNAL=1
@@ -1067,20 +1339,132 @@ X11_dpms_INCLUDE_PATH-ADVANCED:INTERNAL=1
 X11_xcb_INCLUDE_PATH-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: X11_xcb_LIB
 X11_xcb_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_composite_INCLUDE_PATH
+X11_xcb_composite_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_composite_LIB
+X11_xcb_composite_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_cursor_INCLUDE_PATH
+X11_xcb_cursor_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_cursor_LIB
+X11_xcb_cursor_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_damage_INCLUDE_PATH
+X11_xcb_damage_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_damage_LIB
+X11_xcb_damage_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_dpms_INCLUDE_PATH
+X11_xcb_dpms_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_dpms_LIB
+X11_xcb_dpms_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_dri2_INCLUDE_PATH
+X11_xcb_dri2_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_dri2_LIB
+X11_xcb_dri2_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_dri3_INCLUDE_PATH
+X11_xcb_dri3_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_dri3_LIB
+X11_xcb_dri3_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_errors_INCLUDE_PATH
+X11_xcb_errors_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_errors_LIB
+X11_xcb_errors_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_ewmh_INCLUDE_PATH
+X11_xcb_ewmh_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_ewmh_LIB
+X11_xcb_ewmh_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_glx_INCLUDE_PATH
+X11_xcb_glx_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_glx_LIB
+X11_xcb_glx_LIB-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: X11_xcb_icccm_INCLUDE_PATH
 X11_xcb_icccm_INCLUDE_PATH-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: X11_xcb_icccm_LIB
 X11_xcb_icccm_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_image_INCLUDE_PATH
+X11_xcb_image_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_image_LIB
+X11_xcb_image_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_keysyms_INCLUDE_PATH
+X11_xcb_keysyms_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_keysyms_LIB
+X11_xcb_keysyms_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_present_INCLUDE_PATH
+X11_xcb_present_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_present_LIB
+X11_xcb_present_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_randr_INCLUDE_PATH
+X11_xcb_randr_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_randr_LIB
+X11_xcb_randr_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_record_INCLUDE_PATH
+X11_xcb_record_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_record_LIB
+X11_xcb_record_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_render_INCLUDE_PATH
+X11_xcb_render_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_render_LIB
+X11_xcb_render_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_render_util_INCLUDE_PATH
+X11_xcb_render_util_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_render_util_LIB
+X11_xcb_render_util_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_res_INCLUDE_PATH
+X11_xcb_res_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_res_LIB
+X11_xcb_res_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_screensaver_INCLUDE_PATH
+X11_xcb_screensaver_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_screensaver_LIB
+X11_xcb_screensaver_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_shape_INCLUDE_PATH
+X11_xcb_shape_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_shape_LIB
+X11_xcb_shape_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_shm_INCLUDE_PATH
+X11_xcb_shm_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_shm_LIB
+X11_xcb_shm_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_sync_INCLUDE_PATH
+X11_xcb_sync_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_sync_LIB
+X11_xcb_sync_LIB-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: X11_xcb_util_INCLUDE_PATH
 X11_xcb_util_INCLUDE_PATH-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: X11_xcb_util_LIB
 X11_xcb_util_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_xf86dri_INCLUDE_PATH
+X11_xcb_xf86dri_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_xf86dri_LIB
+X11_xcb_xf86dri_LIB-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: X11_xcb_xfixes_INCLUDE_PATH
 X11_xcb_xfixes_INCLUDE_PATH-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: X11_xcb_xfixes_LIB
 X11_xcb_xfixes_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_xinerama_INCLUDE_PATH
+X11_xcb_xinerama_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_xinerama_LIB
+X11_xcb_xinerama_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_xinput_INCLUDE_PATH
+X11_xcb_xinput_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_xinput_LIB
+X11_xcb_xinput_LIB-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: X11_xcb_xkb_LIB
 X11_xcb_xkb_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_xrm_INCLUDE_PATH
+X11_xcb_xrm_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_xrm_LIB
+X11_xcb_xrm_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_xtest_INCLUDE_PATH
+X11_xcb_xtest_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_xtest_LIB
+X11_xcb_xtest_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_xv_INCLUDE_PATH
+X11_xcb_xv_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_xv_LIB
+X11_xcb_xv_LIB-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_xvmc_INCLUDE_PATH
+X11_xcb_xvmc_INCLUDE_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: X11_xcb_xvmc_LIB
+X11_xcb_xvmc_LIB-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: X11_xkbcommon_INCLUDE_PATH
 X11_xkbcommon_INCLUDE_PATH-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: X11_xkbcommon_LIB
@@ -1093,6 +1477,19 @@ X11_xkbcommon_X11_LIB-ADVANCED:INTERNAL=1
 X11_xkbfile_INCLUDE_PATH-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: X11_xkbfile_LIB
 X11_xkbfile_LIB-ADVANCED:INTERNAL=1
+//linker supports push/pop state
+_CMAKE_LINKER_PUSHPOP_STATE_SUPPORTED:INTERNAL=TRUE
 //CMAKE_INSTALL_PREFIX during last run
 _GNUInstallDirs_LAST_CMAKE_INSTALL_PREFIX:INTERNAL=/usr/local
+__pkg_config_arguments_Wayland:INTERNAL=REQUIRED;wayland-client>=0.2.7;wayland-cursor>=0.2.7;wayland-egl>=0.2.7;xkbcommon>=0.5.0
+__pkg_config_checked_Wayland:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_Wayland_wayland-client
+pkgcfg_lib_Wayland_wayland-client-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_Wayland_wayland-cursor
+pkgcfg_lib_Wayland_wayland-cursor-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_Wayland_wayland-egl
+pkgcfg_lib_Wayland_wayland-egl-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_Wayland_xkbcommon
+pkgcfg_lib_Wayland_xkbcommon-ADVANCED:INTERNAL=1
+prefix_result:INTERNAL=/usr/lib/x86_64-linux-gnu
 

@@ -11,11 +11,12 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/mnt/c/Users/lucas/Desktop/Repo Clones/CS381-AS0/as0/raylib-cpp/BufferedRaylib/examples/test.cpp" "raylib-cpp/BufferedRaylib/CMakeFiles/tst.dir/examples/test.cpp.o" "gcc" "raylib-cpp/BufferedRaylib/CMakeFiles/tst.dir/examples/test.cpp.o.d"
   )
 
-# Targets to which this target links.
-set(CMAKE_TARGET_LINKED_INFO_FILES
-  "/mnt/c/Users/lucas/Desktop/Repo Clones/CS381-AS0/as0/build/raylib-cpp/BufferedRaylib/CMakeFiles/buffered-raylib.dir/DependInfo.cmake"
-  "/mnt/c/Users/lucas/Desktop/Repo Clones/CS381-AS0/as0/build/raylib-cpp/raylib/raylib/CMakeFiles/raylib.dir/DependInfo.cmake"
-  "/mnt/c/Users/lucas/Desktop/Repo Clones/CS381-AS0/as0/build/raylib-cpp/BufferedRaylib/FastSignals/libfastsignals/CMakeFiles/libfastsignals.dir/DependInfo.cmake"
+# Targets to which this target links which contain Fortran sources.
+set(CMAKE_Fortran_TARGET_LINKED_INFO_FILES
+  )
+
+# Targets to which this target links which contain Fortran sources.
+set(CMAKE_Fortran_TARGET_FORWARD_LINKED_INFO_FILES
   )
 
 # Fortran module output directory.
