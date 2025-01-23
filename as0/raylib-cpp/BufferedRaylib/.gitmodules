@@ -1,0 +1,3 @@
+[submodule "FastSignals"]
+	path = FastSignals
+	url = https://github.com/joshuadahlunr/FastSignals.git

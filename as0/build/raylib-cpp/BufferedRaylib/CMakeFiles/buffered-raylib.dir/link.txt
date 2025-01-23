@@ -1,0 +1,2 @@
+/usr/bin/ar qc libbuffered-raylib.a CMakeFiles/buffered-raylib.dir/src/BufferedRaylib.cpp.o
+/usr/bin/ranlib libbuffered-raylib.a

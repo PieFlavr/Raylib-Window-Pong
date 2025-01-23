@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/tst.dir/examples/test.cpp.o -o tst  libbuffered-raylib.a ../raylib/raylib/libraylib.a -lm -lpthread /usr/lib/x86_64-linux-gnu/libOpenGL.so /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/librt.a -lm -ldl FastSignals/libfastsignals/liblibfastsignals.a 

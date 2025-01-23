@@ -1,0 +1,15 @@
+[submodule "projects/Doxygen/doxygen-awesome-css"]
+	path = projects/Doxygen/doxygen-awesome-css
+	url = https://github.com/jothepro/doxygen-awesome-css.git
+    branch = main
+    ignore = dirty
+[submodule "raylib"]
+	path = raylib
+	url = https://github.com/raysan5/raylib.git
+	shallow = true
+[submodule "raygui"]
+	path = raygui
+	url = https://github.com/joshuadahlunr/raygui.git
+[submodule "BufferedRaylib"]
+	path = BufferedRaylib
+	url = https://github.com/joshuadahlunr/BufferedRaylib
