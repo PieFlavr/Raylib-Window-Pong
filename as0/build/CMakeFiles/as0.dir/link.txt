@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/as0.dir/src/helloworld.cpp.o -o as0  raylib-cpp/raylib/raylib/libraylib.a -lm -lpthread /usr/lib/x86_64-linux-gnu/libGL.so /usr/lib/x86_64-linux-gnu/librt.a -lm -ldl 
