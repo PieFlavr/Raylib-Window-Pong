@@ -61,7 +61,7 @@ Then, in order from the main repository directory, simply run the following comm
 ```bash
 cd as0/build   # Only run if not already in build directory
 cmake ..   # Generates makefile + fixes dependencies
-make   # Generates as0 executable
+make   # Generates as0 executable, must run everytime code is changed.
 ```
 If running into a wayland-related error during `cmake`, go into `CMakeCache.txt` and set this setting to OFF `GLFW_BUILD_WAYLAND:BOOL=OFF`. 
 This may or may not disable *window decorations*, but by default without the above modificiation they should be visible and enabled.
