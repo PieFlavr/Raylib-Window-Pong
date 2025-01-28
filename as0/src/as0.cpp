@@ -36,11 +36,11 @@ int main(){
     Vector3 textColorHSV (0,1.0,1.0); //Default Text Color
     float textVelocityAngle;
 
-    char* displayText = "Hello World!";
+    std::string displayText = "Hello World!";
     bool enableAnimation = false;
 
     raylib::Window window(INITIAL_WIDTH, INITIAL_HEIGHT, "CS381 - Assignment 0"); //Feature #1 - Window Title (5 pts)
-    raylib::Text text(GetFontDefault(),displayText, INITIAL_FONT_SIZE, INITIAL_FONT_SPACING,WHITE);
+    raylib::Text text(GetFontDefault(), displayText.c_str(), INITIAL_FONT_SIZE, INITIAL_FONT_SPACING,WHITE);
     SetTargetFPS(DEFAULT_FPS); //For preventing too much resource usage, artifacting, and resizing issues.
 
     window.SetState(FLAG_WINDOW_RESIZABLE); //Feature #2 - Resizable Window (5 pts)
