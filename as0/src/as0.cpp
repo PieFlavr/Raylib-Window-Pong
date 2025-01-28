@@ -63,26 +63,38 @@ int main(){
         if(enableAnimation){ //Basic logo bounce code, changes color on bounce and slight angle offset each bounce for fun.
             Vector2 textTargetPos = textPos;
 
-            textTargetPos.x += textVelocity.x; //Predict Next Text Location
-            textTargetPos.y += textVelocity.y;
+            textPos.x += textVelocity.x; //Predict Next Text Location
+            textPos.y += textVelocity.y;
 
             //Check if out of bounds, calculates text box boundaries
-            bool XhitboxCheck = ((textTargetPos.x+textSize.x) >= window.GetWidth() || (textTargetPos.x) <= 0);
-            bool YhitboxCheck = ((textTargetPos.y+textSize.y) >= window.GetHeight() || (textTargetPos.y) <= 0);
+            bool XhitboxCheckMax = (textPos.x+textSize.x) >= window.GetWidth();
+            bool XhitboxCheckMin = textPos.x <= 0;
+            bool YhitboxCheckMax = (textPos.y+textSize.y) >= window.GetHeight();
+            bool YhitboxCheckMin = textPos.y <= 0;
 
-            if(XhitboxCheck || YhitboxCheck){ //Simple Collision Check
-                if(XhitboxCheck){ //Reflect X Velocity + Hue Offset
+            if(XhitboxCheckMax || XhitboxCheckMin || YhitboxCheckMax || YhitboxCheckMin){ //Simple Collision Check
+                if(XhitboxCheckMax || XhitboxCheckMin){ //Reflect X Velocity + Hue Offset
+                    if(XhitboxCheckMax){
+                        textPos.x = window.GetWidth()-(1+textSize.x);
+                    } else if(XhitboxCheckMin){
+                        textPos.x = 1;
+                    }
                     textVelocity.x *= -1;
                     textColorHSV.x = ((int)(textColorHSV.x+BOUNCE_HUE_OFFSET))%MAX_HUE; 
                 }
-                if(YhitboxCheck){ //Reflect Y Velocity + Hue Offset
+                if(YhitboxCheckMax || YhitboxCheckMin){ //Reflect Y Velocity + Hue Offset
+                    if(YhitboxCheckMax){
+                        textPos.y = window.GetHeight()-(1+textSize.y);
+                    } else if(YhitboxCheckMin){
+                        textPos.y = 1;
+                    }
                     textVelocity.y *= -1;
                     textColorHSV.x = ((int)(textColorHSV.x+BOUNCE_HUE_OFFSET))%MAX_HUE;
                 }
             }
-
-            textPos.x += textVelocity.x; //Move Text
-            textPos.y += textVelocity.y;
+            std::cout << textPos.x << " " << textPos.y << std::endl;
+            //textPos.x += textVelocity.x; //Move Text
+            //textPos.y += textVelocity.y;
         } else {
             //Feature #4 - Text Centering (15 pts)
             textVelocityAngle = ((float)rand() / (RAND_MAX)) * 2.0 * PI;
