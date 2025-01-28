@@ -15,18 +15,19 @@
 #include <string>
 #include <cmath>
 
-// TEXT SETTINGs
+
+// TEXT BOX/FONT SETTINGs
 #define INITIAL_WIDTH 800
 #define INITIAL_HEIGHT 600
 
 #define INITIAL_FONT_SIZE 50
 #define INITIAL_FONT_SPACING 2
 
-#define MAX_HUE 360
+#define TEXT_VELOCITY 10
+
+#define MAX_HUE 360 // COLOR/RGB SETTINGs
 #define BOUNCE_HUE_OFFSET 100
 #define DEFAULT_HUE_OFFSET 3
-
-#define TEXT_VELOCITY 10
 
 #define DEFAULT_FPS 30
 
@@ -52,13 +53,14 @@ int main(){
         textSize.x = text.MeasureEx().x; //Updates text box sizes
         textSize.y = text.MeasureEx().y;
 
-        if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ // Toggles animations on click
+        if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Start/reset animation on click
             enableAnimation = !enableAnimation;
 
             textVelocityAngle = ((float)rand() / (RAND_MAX)) * 2.0 * PI; //Random direction per reset.
 
-            textVelocity.x = (std::cos(textVelocityAngle)) * TEXT_VELOCITY;
-            textVelocity.y = (std::sin(textVelocityAngle)) * TEXT_VELOCITY;
+            //Calculates equivalent cartesian velocities.
+            textVelocity.x = (std::cos(textVelocityAngle)) * TEXT_VELOCITY; //Could have done more general vector/matrix magic... 
+            textVelocity.y = (std::sin(textVelocityAngle)) * TEXT_VELOCITY; //...but too annoying and complicated for first assignment.
         }
 
         //E.C. Feature #1 - Animation (+10 pts)
@@ -76,7 +78,7 @@ int main(){
 
             if(XhitboxCheckMax || XhitboxCheckMin || YhitboxCheckMax || YhitboxCheckMin){ //Simple Collision Check
                 if(XhitboxCheckMax || XhitboxCheckMin){ //Reflect X Velocity + Hue Offset
-                    if(XhitboxCheckMax){
+                    if(XhitboxCheckMax){ //Bounds x-position properly inside the window
                         textPos.x = window.GetWidth()-(1+textSize.x);
                     } else if(XhitboxCheckMin){
                         textPos.x = 1;
@@ -85,7 +87,7 @@ int main(){
                     textColorHSV.x = ((int)(textColorHSV.x+BOUNCE_HUE_OFFSET))%MAX_HUE; 
                 }
                 if(YhitboxCheckMax || YhitboxCheckMin){ //Reflect Y Velocity + Hue Offset
-                    if(YhitboxCheckMax){
+                    if(YhitboxCheckMax){ //Bounds y-position properly inside the window
                         textPos.y = window.GetHeight()-(1+textSize.y);
                     } else if(YhitboxCheckMin){
                         textPos.y = 1;
