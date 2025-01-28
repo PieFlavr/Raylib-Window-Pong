@@ -9,6 +9,7 @@
  * 
  */
 #include <iostream>
+#include <string>
 
 #include "raylib-cpp.hpp"
 
@@ -17,6 +18,8 @@
 #define INITIAL_FONT_SIZE 20
 #define INITIAL_FONT_SPACING 2
 
+#define DEFAULT_FPS 30
+
 /**
  * @brief 
  * 
@@ -24,9 +27,10 @@
  */
 int main(){
     Vector2 windowSize, textPos; 
+    char* displayText = "Hellow World!";
 
     raylib::Window window(INITIAL_WIDTH, INITIAL_HEIGHT, "CS381 - Assignment 0"); //Feature #1 - Window Title (5 pts)
-    SetTargetFPS(60); //For preventing too much resource usage, artifacting, and resizing issues.
+    SetTargetFPS(DEFAULT_FPS); //For preventing too much resource usage, artifacting, and resizing issues.
 
     window.SetState(FLAG_WINDOW_RESIZABLE); //Feature #2 - Resizable Window (5 pts)
 
@@ -39,10 +43,10 @@ int main(){
         windowSize.y = window.GetHeight();
 
         //Feature #4 - Text Centering (15 pts)
-        textPos.x = (windowSize.x/2) - (MeasureTextEx(GetFontDefault(),"Hellow World!!!",INITIAL_FONT_SIZE,INITIAL_FONT_SPACING).x/2);
-        textPos.y = (windowSize.y/2) - (MeasureTextEx(GetFontDefault(),"Hellow World!!!",INITIAL_FONT_SIZE,INITIAL_FONT_SPACING).y/2);
+        textPos.x = (windowSize.x/2) - (MeasureTextEx(GetFontDefault(), displayText, INITIAL_FONT_SIZE,INITIAL_FONT_SPACING).x/2);
+        textPos.y = (windowSize.y/2) - (MeasureTextEx(GetFontDefault(), displayText, INITIAL_FONT_SIZE,INITIAL_FONT_SPACING).y/2);
         
-        DrawTextEx(GetFontDefault(),"Hellow World!!!",textPos,INITIAL_FONT_SIZE,INITIAL_FONT_SPACING,WHITE); //Feature #3 - Text Display (15 pts)
+        DrawTextEx(GetFontDefault(),displayText,textPos, INITIAL_FONT_SIZE,INITIAL_FONT_SPACING,WHITE); //Feature #3 - Text Display (15 pts)
         
         window.EndDrawing();
     }
