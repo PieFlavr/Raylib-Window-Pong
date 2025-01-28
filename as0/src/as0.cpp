@@ -55,6 +55,8 @@ int main(){
         if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ // Toggles animations on click
             enableAnimation = !enableAnimation;
 
+            textVelocityAngle = ((float)rand() / (RAND_MAX)) * 2.0 * PI; //Random direction per reset.
+
             textVelocity.x = (std::cos(textVelocityAngle)) * TEXT_VELOCITY;
             textVelocity.y = (std::sin(textVelocityAngle)) * TEXT_VELOCITY;
         }
@@ -97,8 +99,6 @@ int main(){
             //textPos.y += textVelocity.y;
         } else {
             //Feature #4 - Text Centering (15 pts)
-            textVelocityAngle = ((float)rand() / (RAND_MAX)) * 2.0 * PI;
-
             textPos.x = (window.GetWidth()/2) - (textSize.x/2);
             textPos.y = (window.GetHeight()/2) - (textSize.y/2);
         }
