@@ -26,10 +26,10 @@
 #define TEXT_VELOCITY 10
 
 #define MAX_HUE 360 // COLOR/RGB SETTINGs
-#define BOUNCE_HUE_OFFSET 100
-#define DEFAULT_HUE_OFFSET 3
+#define BOUNCE_HUE_OFFSET 180
+#define DEFAULT_HUE_OFFSET 1
 
-#define DEFAULT_FPS 30
+#define DEFAULT_FPS 60
 
 int main(){
     Vector2 textPos, textVelocity, textSize; //Text Properties
@@ -46,10 +46,9 @@ int main(){
     window.SetState(FLAG_WINDOW_RESIZABLE); //Feature #2 - Resizable Window (5 pts)
 
     while(!window.ShouldClose()){ //Keeps window open until closed by user. 
-        window.BeginDrawing();
-
-        ClearBackground(BLACK);
-
+        /** 
+         * PHYSICS & LOGIC
+         */
         textSize.x = text.MeasureEx().x; //Updates text box sizes
         textSize.y = text.MeasureEx().y;
 
@@ -104,6 +103,13 @@ int main(){
             textPos.x = (window.GetWidth()/2) - (textSize.x/2);
             textPos.y = (window.GetHeight()/2) - (textSize.y/2);
         }
+
+        /**
+         * RENDERING & DRAWING
+         */
+
+        window.BeginDrawing();
+        ClearBackground(BLACK);
 
         textColorHSV.x = ((int)(textColorHSV.x+DEFAULT_HUE_OFFSET))%MAX_HUE; //E.C. Feature #1 - Multiple Colors (+10 pts)
         // ^^^ performs rainbow lighting on the main text
