@@ -25,9 +25,10 @@
 
 #define TEXT_VELOCITY 10
 
-#define MAX_HUE 360 // COLOR/RGB SETTINGs
-#define BOUNCE_HUE_OFFSET 180
-#define DEFAULT_HUE_OFFSET 1
+// COLOR/RGB SETTINGs
+#define MAX_HUE 360 // Max hue value for the HSV colors
+#define BOUNCE_HUE_OFFSET 180 // Hue offset performed per bounce
+#define DEFAULT_HUE_OFFSET 1 // Hue offset performed per fram
 
 #define DEFAULT_FPS 60
 
@@ -36,7 +37,7 @@ int main(){
     Vector3 textColorHSV (0,1.0,1.0); //Default Text Color
     float textVelocityAngle;
 
-    std::string displayText = "Hello World!";
+    std::string displayText = "Hello World!";//Primary text displayed in the window.
     bool enableAnimation = false;
 
     raylib::Window window(INITIAL_WIDTH, INITIAL_HEIGHT, "CS381 - Assignment 0"); //Feature #1 - Window Title (5 pts)
@@ -49,21 +50,21 @@ int main(){
         /** 
          * PHYSICS & LOGIC
          */
-        textSize.x = text.MeasureEx().x; //Updates text box sizes
+        textSize.x = text.MeasureEx().x; //Updates internal text box sizes
         textSize.y = text.MeasureEx().y;
 
         if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Start/reset animation on click
-            enableAnimation = !enableAnimation;
+            enableAnimation = !enableAnimation; //Toggles animation state
 
             textVelocityAngle = ((float)rand() / (RAND_MAX)) * 2.0 * PI; //Random direction per reset.
 
             //Calculates equivalent cartesian velocities.
             textVelocity.x = (std::cos(textVelocityAngle)) * TEXT_VELOCITY; //Could have done more general vector/matrix magic... 
-            textVelocity.y = (std::sin(textVelocityAngle)) * TEXT_VELOCITY; //...but too annoying and complicated for first assignment.
+            textVelocity.y = (std::sin(textVelocityAngle)) * TEXT_VELOCITY; //...but too annoying and complicated for first assignment :p
         }
 
         //E.C. Feature #1 - Animation (+10 pts)
-        if(enableAnimation){ //Basic logo bounce code, changes color on bounce and slight angle offset each bounce for fun.
+        if(enableAnimation){ //Basic logo bounce code, changes color on bounce.
             Vector2 textTargetPos = textPos;
 
             textPos.x += textVelocity.x; //Predict Next Text Location
@@ -95,7 +96,7 @@ int main(){
                     textColorHSV.x = ((int)(textColorHSV.x+BOUNCE_HUE_OFFSET))%MAX_HUE;
                 }
             }
-            std::cout << textPos.x << " " << textPos.y << std::endl;
+            //std::cout << textPos.x << " " << textPos.y << std::endl;
             //textPos.x += textVelocity.x; //Move Text
             //textPos.y += textVelocity.y;
         } else {
@@ -115,7 +116,7 @@ int main(){
         // ^^^ performs rainbow lighting on the main text
         text.SetColor(ColorFromHSV(textColorHSV.x,textColorHSV.y,textColorHSV.z));
 
-        //Instructions draw 
+        //Displays instructions for the user
         DrawTextEx(GetFontDefault(), "[Left Click] to Start/Reset Animation", Vector2(10,10), INITIAL_FONT_SIZE/2, INITIAL_FONT_SPACING, WHITE);
         text.Draw(textPos); //Feature #3 - Main Text Display (15 pts)
         
