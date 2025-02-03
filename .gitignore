@@ -12,4 +12,5 @@ CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
 as0/build/*
+!as0/build/.gitkeep
 .vscode
