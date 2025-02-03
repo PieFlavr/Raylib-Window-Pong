@@ -37,26 +37,44 @@ In essence, the size of the text is measured each frame and stored in the Vector
 
 **(2) Describe how to fetch your git submodules (5 points) with commands that can be copy and pasted into a Linux terminal (5 points).**
 
+First, make sure you have the repository cloned in your directory/folder of choice. To do so, run this in your directory of choice.
+This should automatically deal with the submodules required...
+
+```bash
+git clone --recurse-submodules https://github.com/PieFlavr/CS381
+```
+
+Then enter into the newly cloned directory...
+
+```bash
+cd CS381
+```
+
 Ensure you have the following dependencies listed as follows, or simply run the following command...
 
 ```bash
 sudo apt install cmake g++ libgl-dev libwayland-dev wayland-protocols libxrandr-dev pkg-config libxkbcommon-dev libxinerama-dev libxcursor-dev libxi-dev mesa-utils build-essential cmake xorg-dev
 ```
 
-Sometimes it may run normally without the need to manually fetch the submodules.
-Otherwise, to fetch them manually, run the following...
+`[OPTIONAL]` If there are issues with the submodules, raylib-cpp is empty, or other issues, they must be fetched manually.
+To fetch them manually, from the cloned directory run the following...
 
 ```bash
+cd as0
 git clone --recurse-submodules https://github.com/joshuadahlunr/raylib-cpp.git
 ```
 
-If there are still issues with above, then instead run the following in order...
+`[OPTIONAL]` If there are still issues with above, from the same directory then instead run the following in order...
 
 ```bash
 git submodule add https://github.com/joshuadahlunr/raylib-cpp.git
 git submodule init
 git submodule update --init --recursive
 ```
+
+Now, your folder structure shoould look similar to this...
+
+![alt text](images/folder-example.png)
 
 **(3) Describe how to compile your code (10 points) with copy and pasteable commands (10 points).**
 
@@ -66,7 +84,7 @@ Ensure you have the following dependencies listed as follows, or simply run the 
 sudo apt install cmake g++ libgl-dev libwayland-dev wayland-protocols libxrandr-dev pkg-config libxkbcommon-dev libxinerama-dev libxcursor-dev libxi-dev mesa-utils build-essential cmake xorg-dev
 ```
 
-Then, in order from the main repository directory, simply run the following commands in the terminal in order.
+Then, in order from the main repository directory (../CS381/), simply run the following commands in the terminal in order.
 
 ```bash
 cd as0/build   # Only run if not already in build directory
