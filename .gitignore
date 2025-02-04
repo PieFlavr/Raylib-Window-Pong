@@ -11,6 +11,14 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
+# Super Trashy but for some reason doing build/ folder solo is a no-go 
+# Way too many Git things could go wrong if I tried being fancy, so this is the compromise
+
+#as0 ignore
 as0/build/*
 !as0/build/.gitkeep
+
+#as1 ignores
+as1/build/*
+!as1/build/.gitkeep
 .vscode
