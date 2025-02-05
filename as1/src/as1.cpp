@@ -10,6 +10,7 @@
  * 
  */
 #include "raylib-cpp.hpp"
+#include "tobject.hpp"
 
 #include <iostream>
 #include <string>
