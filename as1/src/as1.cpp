@@ -15,7 +15,6 @@
 #include <string>
 #include <cmath>
 
-
 // TEXT BOX/FONT SETTINGs
 #define INITIAL_WIDTH 800
 #define INITIAL_HEIGHT 600
