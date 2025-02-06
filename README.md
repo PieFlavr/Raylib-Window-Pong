@@ -11,3 +11,11 @@ git submodule add <"submodule-link"> .../<"target-directory">/<"submodule-folder
 git submodule init # From Main Directory
 git submodule update --init --recursive
 ```
+
+## WSL
+
+### Audio Issues
+
+```bash
+sudo apt install pulseaudio
+```
