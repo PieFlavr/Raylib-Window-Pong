@@ -74,7 +74,7 @@ git submodule update --init --recursive
 
 Now, your folder structure shoould look similar to this...
 
-![alt text](images/folder-example.png)
+![alt text](../assets/images/folder-example.png)
 
 **(3) Describe how to compile your code (10 points) with copy and pasteable commands (10 points).**
 
