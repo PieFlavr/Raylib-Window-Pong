@@ -5,6 +5,7 @@
 #include <string>
 #include <cmath>
 
+#define LOGIC_FPS 120
 #define DRAW_FPS 60
 
 raylib::Sound ping; //Using raylib::Sound since shorter sound bites (loaded into memory apparently)
@@ -18,6 +19,7 @@ int main(){
 
     double lastDrawTime = 0;
     double drawDelta = 1.0 / DRAW_FPS; 
+    double logicDelta = 1.0 / LOGIC_FPS;
 
     raylib::Window window(300,350,"CS381 - Assignment 1"); //Feature #1 - Window Title (1 pts)
     window.SetState(FLAG_WINDOW_RESIZABLE);
@@ -43,9 +45,9 @@ int main(){
     dialogue.SetLooping(true); //Feature #5 - Continuous Dialoge/Music (15 pts)
     music.SetLooping(true); 
 
-    dialogue.SetVolume(0.5); //Set each to default volumes
-    music.SetVolume(0.5);
-    ping.SetVolume(0.5);
+    dialogue.SetVolume(0); //Set each to default volumes
+    music.SetVolume(0);
+    ping.SetVolume(0);
 
     dialogue.Play();
     music.Play();
@@ -54,10 +56,18 @@ int main(){
 
     while(!window.ShouldClose()){
 
+        // Update Block
         double currentTime = GetTime();
         
         dialogue.Update();
         music.Update();
+
+        // Logic Block
+        if(currentTime - lastDrawTime >= logicDelta){ 
+            dialogue.SetVolume(guiState.DialogueSliderValue/100.0); //Feature #6 - Connect Sliders to Audio
+            music.SetVolume(guiState.MusicSliderValue/100.0);
+            ping.SetVolume(guiState.SFXSliderValue/100.0);
+        }
 
         // Rendering Block
         if(currentTime - lastDrawTime >= drawDelta){
