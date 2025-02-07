@@ -40,8 +40,8 @@ int main(){
         and raylib-cpp stuff accessible via raylib:: namespace.
      */
 
-    dialogue.SetLooping(false);
-    music.SetLooping(false);
+    dialogue.SetLooping(true); //Feature #5 - Continuous Dialoge/Music (15 pts)
+    music.SetLooping(true); 
 
     dialogue.SetVolume(0.5); //Set each to default volumes
     music.SetVolume(0.5);
