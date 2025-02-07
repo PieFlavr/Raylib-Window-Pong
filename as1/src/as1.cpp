@@ -1,10 +1,24 @@
+/**
+ * @file as1.cpp
+ * @author Lucas Pinto
+ * @brief Volume control demonstration using raylib-cpp and raylib that includes three
+ *        sliders, one each for a Music, Dialouge, and Sound audio. There is a Ping button
+ *        that plays a sound effect, and diagetic crowd audio along with music provided
+ *        for the assignment that plays constantly. 
+ * 
+ *        All audio values are defaulted at 0 to prevent your ears getting blown off :)
+ *        Can be changed if need be via DEFAULT_VOLUME macro (mostly a vestigial from testing)
+ * @version 0.1
+ * @date 2025-02-06
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #include "raylib-cpp.hpp"
 #include "VolumeControl.h" 
 
-#include <iostream>
-#include <string>
-#include <cmath>
 
+#define DEFAULT_VOLUME 0
 #define LOGIC_FPS 120
 #define DRAW_FPS 60
 
@@ -45,14 +59,18 @@ int main(){
     dialogue.SetLooping(true); //Feature #5 - Continuous Dialoge/Music (15 pts)
     music.SetLooping(true); 
 
-    dialogue.SetVolume(0); //Set each to default volumes
-    music.SetVolume(0);
-    ping.SetVolume(0);
+    dialogue.SetVolume(DEFAULT_VOLUME); //Ensures audio is set to default volumes
+    music.SetVolume(DEFAULT_VOLUME);
+    ping.SetVolume(DEFAULT_VOLUME);
 
     dialogue.Play();
     music.Play();
 
-    auto guiState = InitGuiVolumeControl();
+    auto volumeControlGUI = InitGuiVolumeControl();
+
+    volumeControlGUI.DialogueSliderValue = DEFAULT_VOLUME*100;
+    volumeControlGUI.MusicSliderValue = DEFAULT_VOLUME*100;
+    volumeControlGUI.SFXSliderValue = DEFAULT_VOLUME*100;
 
     while(!window.ShouldClose()){
 
@@ -64,9 +82,9 @@ int main(){
 
         // Logic Block
         if(currentTime - lastDrawTime >= logicDelta){ 
-            dialogue.SetVolume(guiState.DialogueSliderValue/100.0); //Feature #6 - Connect Sliders to Audio
-            music.SetVolume(guiState.MusicSliderValue/100.0);
-            ping.SetVolume(guiState.SFXSliderValue/100.0);
+            dialogue.SetVolume(volumeControlGUI.DialogueSliderValue/100.0); //Feature #6 - Connect Sliders to Audio
+            music.SetVolume(volumeControlGUI.MusicSliderValue/100.0);
+            ping.SetVolume(volumeControlGUI.SFXSliderValue/100.0);
         }
 
         // Rendering Block
@@ -74,7 +92,7 @@ int main(){
             window.BeginDrawing();
 
             ClearBackground(BLACK);
-            GuiVolumeControl(&guiState); //Feature #2 - Load the Volume Control GUI
+            GuiVolumeControl(&volumeControlGUI); //Feature #2 - Load the Volume Control GUI
             
             window.EndDrawing(); 
         }
