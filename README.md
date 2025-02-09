@@ -28,10 +28,8 @@ Now, your folder structure shoould look similar to this...
 
 ### [OPTIONAL] FETCHING SUBMODULEs
 
-If you clone the repository normally without `--recurse-submodules` or there are issues with the submodules they must be fetched manually.
-To fetch them manually, from the cloned directory run the following...
-
-`[OPTIONAL]` If there are still issues with above, from the same directory then instead run the following in order...
+If you cloned the repository normally without `--recurse-submodules` or there are issues with the submodules, they must be fetched manually.
+To fetch them manually, from the main directory run the following...
 
 ```bash
 git submodule add https://github.com/joshuadahlunr/raylib-cpp.git
@@ -55,7 +53,7 @@ This may or may not disable *window decorations*, but by default without the abo
 
 ### RUNNING CODE
 
-To run the code after compilation, simply run the `as1` executable from the `../as1/build/` directory via
+To run the code after compilation, simply run the `asX` executable from the `../asX/build/` directory via
 *(replace 'asX' with the assignment folder name in question)*
 
 ```bash
@@ -65,7 +63,7 @@ cd <'asX'>/build    # Only run if not already in build directory
 
 ### [OPTIONAL] BUILD/RUNNING ERRORs
 
-If unable to compile, run, or getting errors with regards to directories/pathing, it is recommended you delete the contents of the `build` folder and re-compile the code.
+If unable to compile, run, or getting errors with regards to directories/pathing, it is recommended you delete the contents of the `build` folder and re-compile the code. Make sure to run this from the main directory!!!
 *(replace 'asX' with the assignment folder name in question)*
 
 ```bash
