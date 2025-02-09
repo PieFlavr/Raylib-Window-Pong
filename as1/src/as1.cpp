@@ -46,7 +46,8 @@ int main(){
     double logicDelta = 1.0 / LOGIC_FPS;
 
     raylib::Window window(300,400,"CS381 - Assignment 1"); //Feature #1 - Window Title (1 pts)
-    window.ClearState(FLAG_WINDOW_RESIZABLE); //Ensure the window can't be resizable.
+    window.ClearState(FLAG_WINDOW_RESIZABLE); //Theoretically ensures the window can't be resizable... 
+    // ^^^ can't tell if the above works, nothing happens on WSL for some reason? Needs further testing for anything definitive.
 
     raylib::AudioDevice defaultDevice; 
 
