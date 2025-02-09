@@ -7,7 +7,9 @@
 To run this project on most systems, including WSL, ensure you have the following dependencies listed in the following command (or just run it :p)...
 
 ```bash
+sudo apt get-update # updates sudo
 sudo apt install cmake g++ libgl-dev libwayland-dev wayland-protocols libxrandr-dev pkg-config libxkbcommon-dev libxinerama-dev libxcursor-dev libxi-dev mesa-utils build-essential cmake xorg-dev pulseaudio
+sudo apt --fix-broken install # should fill any missing dependencies
 ```
 
 ### CLONING THE REPOSITORY
@@ -25,9 +27,9 @@ Now, your folder structure shoould look similar to this...
 ### [OPTIONAL] FETCHING SUBMODULEs
 
 If you clone the repository normally without `--recurse-submodules` or there are issues with the submodules they must be fetched manually.
-To fetch them manually, from the cloned directory run the following...
+To fetch them manually, from the main directory run the following...
 
-`[OPTIONAL]` If there are still issues with above, from the same directory then instead run the following in order...
+`[OPTIONAL]` If there are still issues with above, from the main directory then instead run the following in order...
 
 ```bash
 git submodule add https://github.com/joshuadahlunr/raylib-cpp.git
@@ -50,7 +52,7 @@ This may or may not disable *window decorations*, but by default without the abo
 
 ### RUNNING THE CODE
 
-To run the code after compilation, simply run the `as1` executable from the `../as1/build/` directory via
+To run the code after compilation, simply run the `as1` executable from the `../as1/build/` directory via...
 
 ```bash
 cd as1/build    # Only run if not already in build directory
@@ -59,7 +61,7 @@ cd as1/build    # Only run if not already in build directory
 
 ### [OPTIONAL] BUILD/RUNNING ERRORs
 
-If unable to compile, run, or getting errors with regards to directories/pathing, it is recommended you delete the contents of the `build` folder and re-compile the code.
+If unable to compile, run, or getting errors with regards to directories/pathing, it is recommended you delete the contents of the `build` folder and re-compile the code. Make sure to run this from the main directory!!!
 
 ```bash
 cd as1/build    # Only run if not already in build directory
