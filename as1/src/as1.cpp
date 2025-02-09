@@ -17,17 +17,24 @@
 #include "raylib-cpp.hpp"
 #include "VolumeControl.h" 
 
-
 #define DEFAULT_VOLUME 0
-#define LOGIC_FPS 120
+#define LOGIC_FPS 60
 #define DRAW_FPS 60
+
+#define HIGHLIGHT_BRIM -8
+#define VOLUME_KEYS_INCREMENT 0.1
+
+Color backgroundColor = WHITE;
+bool themeToggleState = 0; //For handling menu theme logic. (0 = "light"; 1 = "dark")
+int focusedElement = -1; //Only focuses once [TAB] is pressed.
 
 raylib::Sound ping; //Using raylib::Sound since shorter sound bites (loaded into memory apparently)
 raylib::Music dialogue, music; //Using raylib::Music since plays for longer (disk streaming apparently)
                                 //Judgement says to put dialogue as music since it loops forever anyway.
-void PingButton(){
-    ping.Play(); //Feature #4 -Sound Effect on Button Press (10 points)
-}
+                            
+void PingButton();
+void ModeToggleButton();
+void GuiVolumeControlPlus(GuiVolumeControlState *state);
 
 int main(){
 
@@ -35,10 +42,10 @@ int main(){
     double drawDelta = 1.0 / DRAW_FPS; 
     double logicDelta = 1.0 / LOGIC_FPS;
 
-    raylib::Window window(300,350,"CS381 - Assignment 1"); //Feature #1 - Window Title (1 pts)
-    window.SetState(FLAG_WINDOW_RESIZABLE);
+    raylib::Window window(300,400,"CS381 - Assignment 1"); //Feature #1 - Window Title (1 pts)
+    window.ClearState(FLAG_WINDOW_ALWAYS_RUN); //Ensure the window can't be resizable.
 
-    raylib::AudioDevice defaultDevice;
+    raylib::AudioDevice defaultDevice; 
 
     //Feature #3 - Load 3 Audio Files (30 pts)
     music.Load("../../assets/audio/price-of-freedom.mp3");  //Sound Effect (10 pts)
@@ -85,14 +92,54 @@ int main(){
             dialogue.SetVolume(volumeControlGUI.DialogueSliderValue/100.0); //Feature #6 - Connect Sliders to Audio
             music.SetVolume(volumeControlGUI.MusicSliderValue/100.0);
             ping.SetVolume(volumeControlGUI.SFXSliderValue/100.0);
+
+            // Controls Block
+            if(IsKeyPressed(KEY_TAB)){ // EC Feature #4a - Slider Tab Switch (5 points)
+                focusedElement = (focusedElement+1)%3;
+            }
+
+            if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                focusedElement = -1; //Deselects keyboard focus
+            }
+
+            if(IsKeyDown(KEY_LEFT)){    // EC Feature #4b - Arrow key Controls (5 points)
+                                        // Had to actually drop LOGIC_FPS to 60 for this :p
+                switch(focusedElement){ //Uses fmax() + fmin() to bound so no volume bound issues.
+                    case 0:
+                        volumeControlGUI.SFXSliderValue = fmax(volumeControlGUI.SFXSliderValue - VOLUME_KEYS_INCREMENT,0);
+                        break;
+                    case 1: 
+                        volumeControlGUI.MusicSliderValue = fmax(volumeControlGUI.MusicSliderValue - VOLUME_KEYS_INCREMENT,0);
+                        break;
+                    case 2:
+                        volumeControlGUI.DialogueSliderValue = fmax(volumeControlGUI.DialogueSliderValue - VOLUME_KEYS_INCREMENT,0);
+                        break;
+                    default:
+                        break;
+                }
+            } else if(IsKeyDown(KEY_RIGHT)){
+                switch(focusedElement){
+                    case 0:
+                        volumeControlGUI.SFXSliderValue = fmin(volumeControlGUI.SFXSliderValue + VOLUME_KEYS_INCREMENT,100);
+                        break;
+                    case 1: 
+                        volumeControlGUI.MusicSliderValue = fmin(volumeControlGUI.MusicSliderValue + VOLUME_KEYS_INCREMENT,100);
+                        break;
+                    case 2:
+                        volumeControlGUI.DialogueSliderValue = fmin(volumeControlGUI.DialogueSliderValue + VOLUME_KEYS_INCREMENT,100);
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
 
         // Rendering Block
         if(currentTime - lastDrawTime >= drawDelta){
             window.BeginDrawing();
 
-            ClearBackground(BLACK);
-            GuiVolumeControl(&volumeControlGUI); //Feature #2 - Load the Volume Control GUI
+            ClearBackground(backgroundColor);
+            GuiVolumeControlPlus(&volumeControlGUI); //Feature #2 - Load the Volume Control GUI
             
             window.EndDrawing(); 
         }
@@ -100,3 +147,81 @@ int main(){
 
     }
 }
+
+
+/**
+ * @brief Run when the "ping button" is pressed on the GUI. Plays the "ping" sound.
+ * 
+ */
+void PingButton(){ //Feature #4 - Sound Effect on Button Press (10 points)
+    ping.Play(); 
+ }
+ 
+ /**
+  * @brief Effectively toggles between a "light" and "dark" theme.
+  * 
+  */
+ void ModeToggleButton(){ 
+     if(themeToggleState){
+        backgroundColor = WHITE;
+     } else {
+        backgroundColor = BLACK; // EC Feature #1 - Dark Mode Option (5 points)
+        // EC Feature #5 - Dark Theme Option (5 points) [UNF]
+     }
+     themeToggleState = !themeToggleState;
+ }
+ 
+ /**
+  * @brief Custom re-implementation of the GuiVolumeControl() function to include "dark-mode" button.
+  *        mostly identical with exception to a few size differences, additions, and color customization.
+  *          
+  *        NOTE: I would normally just edit "VolumeControl.h" directly but I wasn't sure if we were allowed that.
+  *              I would also have implemented this in "implementations.cpp", but from what I can glean that is more
+  *              of a pseuo-interface to enforce implementations of functions used in functions. However, I am unsure
+  *              how much of either I can edit, so I'm just going to do this. This is really bad practice, but that's that
+  *              and this is this so whatever.
+  * @param state The "state" struct from "VolumeControl.h" tracking all of the slider variables.
+  */
+ void GuiVolumeControlPlus(GuiVolumeControlState *state) {
+     // Const text
+     const char *VolumeGroupText = "Volume Controls";    // GROUPBOX: VolumeGroup
+     const char *SFXGroupText = "SFXVolume";    // GROUPBOX: SFXGroup
+     const char *SFXSliderText = "";    // SLIDER: SFXSlider
+     const char *MusicGroupText = "MusicVolume";    // GROUPBOX: MusicGroup
+     const char *MusicSliderText = "";    // SLIDER: MusicSlider
+     const char *DialogueGroupText = "DialogueVolume";    // GROUPBOX: DialogueGroup
+     const char *DialogueSliderText = "";    // SLIDER: DialogueSlider
+     const char *PingButtonText = "Ping";    // BUTTON: PingButton
+ 
+     const char *ThemeButtonText = "Theme Toggle";    // BUTTON: Theme Toggle
+     
+     // Draw controls
+     GuiGroupBox((Rectangle){ state->anchor01.x + 0, state->anchor01.y + 0, 256, 264 }, VolumeGroupText);
+ 
+     //Sounds Group
+     GuiGroupBox((Rectangle){ state->anchor01.x + 24, state->anchor01.y + 24, 208, 56 }, SFXGroupText);
+     GuiLabel((Rectangle){ 64, 64, 120, 24 }, TextFormat("%.0f%%", state->SFXSliderValue));
+     if(focusedElement == 0){ //Focus Highlight
+         GuiGroupBox((Rectangle){ state->anchor01.x + 24 - HIGHLIGHT_BRIM, state->anchor01.y + 24 - HIGHLIGHT_BRIM, 208+(HIGHLIGHT_BRIM*2), 56+(HIGHLIGHT_BRIM*2)}, NULL);
+     }
+     state->SFXSliderValue = GuiSlider((Rectangle){ state->anchor01.x + 72, state->anchor01.y + 40, 144, 24 }, SFXSliderText, NULL, state->SFXSliderValue, 0, 100);
+ 
+     //Music Group
+     GuiGroupBox((Rectangle){ state->anchor01.x + 24, state->anchor01.y + 104, 208, 56 }, MusicGroupText);
+     GuiLabel((Rectangle){ 64, 144, 120, 24 }, TextFormat("%.0f%%", state->MusicSliderValue));
+     if(focusedElement == 1){ //Focus Highlight
+         GuiGroupBox((Rectangle){ state->anchor01.x + 24 - HIGHLIGHT_BRIM, state->anchor01.y + 104 - HIGHLIGHT_BRIM, 208+(HIGHLIGHT_BRIM*2), 56+(HIGHLIGHT_BRIM*2)}, NULL);
+     }
+     state->MusicSliderValue = GuiSlider((Rectangle){ state->anchor01.x + 72, state->anchor01.y + 120, 144, 24 }, MusicSliderText, NULL, state->MusicSliderValue, 0, 100);
+ 
+     //Dialouge Group
+     GuiGroupBox((Rectangle){ state->anchor01.x + 24, state->anchor01.y + 184, 208, 56 }, DialogueGroupText);
+     GuiLabel((Rectangle){ 64, 224, 120, 24 }, TextFormat("%.0f%%", state->DialogueSliderValue));
+     if(focusedElement == 2){ //Focus Highlight
+         GuiGroupBox((Rectangle){ state->anchor01.x + 24 - HIGHLIGHT_BRIM, state->anchor01.y + 184 - HIGHLIGHT_BRIM, 208+(HIGHLIGHT_BRIM*2), 56+(HIGHLIGHT_BRIM*2)}, NULL);
+     }
+     state->DialogueSliderValue = GuiSlider((Rectangle){ state->anchor01.x + 72, state->anchor01.y + 200, 144, 24 }, DialogueSliderText, NULL, state->DialogueSliderValue, 0, 100);
+     
+     if (GuiButton((Rectangle){ 24, 304, 256, 24 }, PingButtonText)) PingButton();
+     if (GuiButton((Rectangle){ 24, 304+24+10, 256, 24 }, ThemeButtonText)) ModeToggleButton();
+ }
