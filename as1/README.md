@@ -27,11 +27,6 @@ Now, your folder structure shoould look similar to this...
 If you clone the repository normally without `--recurse-submodules` or there are issues with the submodules they must be fetched manually.
 To fetch them manually, from the cloned directory run the following...
 
-```bash
-cd as0
-git clone --recurse-submodules https://github.com/joshuadahlunr/raylib-cpp.git
-```
-
 `[OPTIONAL]` If there are still issues with above, from the same directory then instead run the following in order...
 
 ```bash
