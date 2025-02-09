@@ -43,7 +43,7 @@ int main(){
     double logicDelta = 1.0 / LOGIC_FPS;
 
     raylib::Window window(300,400,"CS381 - Assignment 1"); //Feature #1 - Window Title (1 pts)
-    window.ClearState(FLAG_WINDOW_ALWAYS_RUN); //Ensure the window can't be resizable.
+    window.ClearState(FLAG_WINDOW_RESIZABLE); //Ensure the window can't be resizable.
 
     raylib::AudioDevice defaultDevice; 
 
@@ -78,6 +78,7 @@ int main(){
     volumeControlGUI.DialogueSliderValue = DEFAULT_VOLUME*100;
     volumeControlGUI.MusicSliderValue = DEFAULT_VOLUME*100;
     volumeControlGUI.SFXSliderValue = DEFAULT_VOLUME*100;
+
 
     while(!window.ShouldClose()){
 
@@ -164,9 +165,14 @@ void PingButton(){ //Feature #4 - Sound Effect on Button Press (10 points)
  void ModeToggleButton(){ 
      if(themeToggleState){
         backgroundColor = WHITE;
+        GuiLoadStyleDefault();
      } else {
         backgroundColor = BLACK; // EC Feature #1 - Dark Mode Option (5 points)
-        // EC Feature #5 - Dark Theme Option (5 points) [UNF]
+        // EC Feature #5 - Dark Theme Option (5 points) 
+        // Is this cheating? I'm not sure if we're supposed to "make" a dark theme...
+        // ...or if we're supposed to MAKE a dark theme, slap it in assets, and use it that way?
+        // welp, either way it works so ¯\_(ツ)_/¯
+        GuiLoadStyle("../../raylib-cpp/raygui/styles/dark/dark.rgs");
      }
      themeToggleState = !themeToggleState;
  }
@@ -177,9 +183,10 @@ void PingButton(){ //Feature #4 - Sound Effect on Button Press (10 points)
   *          
   *        NOTE: I would normally just edit "VolumeControl.h" directly but I wasn't sure if we were allowed that.
   *              I would also have implemented this in "implementations.cpp", but from what I can glean that is more
-  *              of a pseuo-interface to enforce implementations of functions used in functions. However, I am unsure
-  *              how much of either I can edit, so I'm just going to do this. This is really bad practice, but that's that
-  *              and this is this so whatever.
+  *              of a pseudo-interface to enforce implementations of functions used in functions. However, I am unsure
+  *              how much of either I can edit, so I'm just going to do this. 
+  * 
+  *             This is really bad practice, but that's that and this is this so whatever.
   * @param state The "state" struct from "VolumeControl.h" tracking all of the slider variables.
   */
  void GuiVolumeControlPlus(GuiVolumeControlState *state) {
@@ -201,8 +208,12 @@ void PingButton(){ //Feature #4 - Sound Effect on Button Press (10 points)
      //Sounds Group
      GuiGroupBox((Rectangle){ state->anchor01.x + 24, state->anchor01.y + 24, 208, 56 }, SFXGroupText);
      GuiLabel((Rectangle){ 64, 64, 120, 24 }, TextFormat("%.0f%%", state->SFXSliderValue));
-     if(focusedElement == 0){ //Focus Highlight
-         GuiGroupBox((Rectangle){ state->anchor01.x + 24 - HIGHLIGHT_BRIM, state->anchor01.y + 24 - HIGHLIGHT_BRIM, 208+(HIGHLIGHT_BRIM*2), 56+(HIGHLIGHT_BRIM*2)}, NULL);
+     if(focusedElement == 0){ //Focus Highlight 
+         GuiGroupBox((Rectangle){ state->anchor01.x + 24 - HIGHLIGHT_BRIM, 
+                                            state->anchor01.y + 24 - HIGHLIGHT_BRIM, 
+                                            208+(HIGHLIGHT_BRIM*2), 
+                                            56+(HIGHLIGHT_BRIM*2)}, 
+                                            NULL);
      }
      state->SFXSliderValue = GuiSlider((Rectangle){ state->anchor01.x + 72, state->anchor01.y + 40, 144, 24 }, SFXSliderText, NULL, state->SFXSliderValue, 0, 100);
  
@@ -210,7 +221,10 @@ void PingButton(){ //Feature #4 - Sound Effect on Button Press (10 points)
      GuiGroupBox((Rectangle){ state->anchor01.x + 24, state->anchor01.y + 104, 208, 56 }, MusicGroupText);
      GuiLabel((Rectangle){ 64, 144, 120, 24 }, TextFormat("%.0f%%", state->MusicSliderValue));
      if(focusedElement == 1){ //Focus Highlight
-         GuiGroupBox((Rectangle){ state->anchor01.x + 24 - HIGHLIGHT_BRIM, state->anchor01.y + 104 - HIGHLIGHT_BRIM, 208+(HIGHLIGHT_BRIM*2), 56+(HIGHLIGHT_BRIM*2)}, NULL);
+         GuiGroupBox((Rectangle){ state->anchor01.x + 24 - HIGHLIGHT_BRIM, 
+                                            state->anchor01.y + 104 - HIGHLIGHT_BRIM, 
+                                            208+(HIGHLIGHT_BRIM*2), 56+(HIGHLIGHT_BRIM*2)}, 
+                                            NULL);
      }
      state->MusicSliderValue = GuiSlider((Rectangle){ state->anchor01.x + 72, state->anchor01.y + 120, 144, 24 }, MusicSliderText, NULL, state->MusicSliderValue, 0, 100);
  
@@ -218,7 +232,11 @@ void PingButton(){ //Feature #4 - Sound Effect on Button Press (10 points)
      GuiGroupBox((Rectangle){ state->anchor01.x + 24, state->anchor01.y + 184, 208, 56 }, DialogueGroupText);
      GuiLabel((Rectangle){ 64, 224, 120, 24 }, TextFormat("%.0f%%", state->DialogueSliderValue));
      if(focusedElement == 2){ //Focus Highlight
-         GuiGroupBox((Rectangle){ state->anchor01.x + 24 - HIGHLIGHT_BRIM, state->anchor01.y + 184 - HIGHLIGHT_BRIM, 208+(HIGHLIGHT_BRIM*2), 56+(HIGHLIGHT_BRIM*2)}, NULL);
+         GuiGroupBox((Rectangle){ state->anchor01.x + 24 - HIGHLIGHT_BRIM, 
+                                            state->anchor01.y + 184 - HIGHLIGHT_BRIM, 
+                                            208+(HIGHLIGHT_BRIM*2), 
+                                            56+(HIGHLIGHT_BRIM*2)}, 
+                                            NULL);
      }
      state->DialogueSliderValue = GuiSlider((Rectangle){ state->anchor01.x + 72, state->anchor01.y + 200, 144, 24 }, DialogueSliderText, NULL, state->DialogueSliderValue, 0, 100);
      
