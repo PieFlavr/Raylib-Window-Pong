@@ -51,10 +51,10 @@ int main(){
 
     raylib::AudioDevice defaultDevice; 
 
-    //Feature #3 - Load 3 Audio Files (30 pts)
-    music.Load("../../assets/audio/price-of-freedom.mp3");  //Sound Effect (10 pts)
-    dialogue.Load("../../assets/audio/crowd.wav"); //Dialogue (10 pts)
-    ping.Load("../../assets/audio/ping.wav");  //Music (10pts)
+    //Feature #3 - Load 3 Audio Files (30 pts) + EC Feature #2 - Custom Audio Off the Internet
+    music.Load("../../assets/audio/musicEC.mp3");  //Sound Effect (10 pts)
+    dialogue.Load("../../assets/audio/dialogueEC.mp3"); //Dialogue (10 pts)
+    ping.Load("../../assets/audio/pingEC.mp3");  //Music (10pts)
     /*
         AGHHHH THIS HURT MY BRAIN
         Was looking at the raylib documentation, forgetting we're using the raylib-cpp wrapper.
