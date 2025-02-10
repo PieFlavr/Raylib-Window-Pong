@@ -4,7 +4,7 @@
 
 ### [OPTIONAL] COMPLETE BARE-BONES "EVERYTHING" COMMAND
 
-This command will do everything from cloning the project to the directory it is run in, fetching submodules, compiling it, and then running it. If you don't know exactly if this does, or if you don't trust this, there are step-by-step instructions with details, solutions for potential issues, and etc. on the other sections afterwards. Otherwise, this will do EVERYTHING automatically. 
+This command will do everything from cloning the project to the directory it is run in, fetching submodules, compiling it, and then running it. If you don't know exactly what this does, or if you don't trust this, there are step-by-step instructions with details, solutions for potential issues, and etc. on the other sections afterwards. Otherwise, this will do EVERYTHING automatically. 
 
 ***!!!WARNING - Only run this from COMPLETE SCRATCH (no clones, etc. etc.)!!!*** 
 ***!!!WARNING - DO NOT RUN IF YOU HAVE ALREADY CLONED THE REPOSITORY!!!*** 
