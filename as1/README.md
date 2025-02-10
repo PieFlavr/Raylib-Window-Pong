@@ -38,9 +38,9 @@ git submodule update --init --recursive
 ### COMPILING THE CODE
 
 In order, from the main or assignment repository directory (../CS381/as1), simply run ALL following commands in the terminal...
-(copy&paste everything)
+*(copy&paste everything)*
 ```bash
-cd build || cd as1/build # Only run if not already in build directory, IGNORE ERRORS FROM THIS (accounts for being in either main/assignment directory)
+cd as1 ; cd build # Should work from main, assignment, or build directory... IGNORE ERRORS FROM THIS (accounts for being in either main/assignment/build directory)
 cmake ..   # Generates makefile + fixes dependencies
 make   # Generates as1 executable, must run every time code is changed.
 ```
@@ -51,18 +51,18 @@ This may or may not disable *window decorations*, but by default without the abo
 ### RUNNING THE CODE
 
 To run the code after compilation, simply run the `as1` executable from the main or assignment `../build/` directory via running ALL the following commands...
-
+*(copy&paste everything)*
 ```bash
-cd build || cd as1/build   # Only run if not already in build directory, IGNORE ERRORS FROM THIS (accounts for being in either main/assignment directory)
+cd as1 ; cd build # Should work from main, assignment, or build directory... IGNORE ERRORS FROM THIS (accounts for being in either main/assignment/build directory)
 ./as1   # Runs program executable
 ```
 
 ### [OPTIONAL] BUILD/RUNNING ERRORs
 
 If unable to compile, run, or getting errors with regards to directories/pathing, it is recommended you delete the contents of the `build` folder and re-compile the code. Make sure to run ALL OF THE FOLLOWING from the main or assignment (`../as1/`) directory!!!
-
+*(copy&paste everything)*
 ```bash
-cd build || cd as1/build   # Only run if not already in build directory, IGNORE ERRORS FROM THIS (accounts for being in either main/assignment directory)
+cd as1 ; cd build # Should work from main, assignment, or build directory... IGNORE ERRORS FROM THIS (accounts for being in either main/assignment/build directory)
 rm -rf ./*   # Runs program executable
 ```
 
