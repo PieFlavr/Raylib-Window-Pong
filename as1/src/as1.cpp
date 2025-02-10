@@ -11,6 +11,8 @@
  * 
  *       (2/9) UDPATE: All Extra Credit (EC) features have effectively been implemented, 
  *                     you can easily search for each via [CTRL+F] and looking for "EC Feature"
+ * 
+ *       (2/10) UPDATE: Clarified README to accomodate for abitrary directory assumptions.
  * @version 0.1
  * @date 2025-02-09
  * 
