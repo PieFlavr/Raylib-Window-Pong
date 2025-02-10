@@ -38,7 +38,7 @@ git submodule update --init --recursive
 ### COMPILING THE CODE
 
 In order, from the main or assignment repository directory (../CS381/as1), simply run ALL following commands in the terminal...
-*(copy&paste everything)*
+*(copy&paste EVERYTHING)*
 ```bash
 cd as1 ; cd build # Should work from main, assignment, or build directory... IGNORE ERRORS FROM THIS (accounts for being in either main/assignment/build directory)
 cmake ..   # Generates makefile + fixes dependencies
@@ -51,7 +51,7 @@ This may or may not disable *window decorations*, but by default without the abo
 ### RUNNING THE CODE
 
 To run the code after compilation, simply run the `as1` executable from the `../build/` directory via running ALL the following commands...
-*(copy&paste everything)*
+*(copy&paste EVERYTHING)*
 ```bash
 ./as1   # Runs program executable
 ```
