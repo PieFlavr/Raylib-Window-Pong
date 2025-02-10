@@ -40,11 +40,7 @@ git submodule update --init --recursive
 In order, from the assignment repository directory (../CS381/as1), simply run the following commands in the terminal...
 
 ```bash
-<<<<<<< HEAD
 cd build || cd as1/build # Only run if not already in build directory
-=======
-cd build   # Only run if not already in build directory
->>>>>>> 67cc58871627ab55a578150ccb84f75716379ae4
 cmake ..   # Generates makefile + fixes dependencies
 make   # Generates as0 executable, must run everytime code is changed.
 ```
@@ -57,11 +53,7 @@ This may or may not disable *window decorations*, but by default without the abo
 To run the code after compilation, simply run the `as1` executable from the assignment `../build/` directory via...
 
 ```bash
-<<<<<<< HEAD
 cd build || cd as1/build   # Only run if not already in build directory
-=======
-cd build    # Only run if not already in build directory
->>>>>>> 67cc58871627ab55a578150ccb84f75716379ae4
 ./as1   # Runs program executable
 ```
 
@@ -70,11 +62,7 @@ cd build    # Only run if not already in build directory
 If unable to compile, run, or getting errors with regards to directories/pathing, it is recommended you delete the contents of the `build` folder and re-compile the code. Make sure to run this from the assignment (`../as1/`) directory!!!
 
 ```bash
-<<<<<<< HEAD
 cd build || cd as1/build   # Only run if not already in build directory
-=======
-cd build    # Only run if not already in build directory
->>>>>>> 67cc58871627ab55a578150ccb84f75716379ae4
 rm -rf ./*   # Runs program executable
 ```
 
