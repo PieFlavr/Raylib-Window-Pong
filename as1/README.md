@@ -27,7 +27,7 @@ Now, your folder structure shoould look similar to this...
 ### [OPTIONAL] FETCHING SUBMODULEs
 
 If you cloned the repository normally without `--recurse-submodules` or there are issues with the submodules, they must be fetched manually.
-To fetch them manually, from the main directory run the following...
+To fetch them manually, from the main directory (../CS381), run ALL the following...
 
 ```bash
 git submodule add https://github.com/joshuadahlunr/raylib-cpp.git
@@ -37,12 +37,12 @@ git submodule update --init --recursive
 
 ### COMPILING THE CODE
 
-In order, from the main or assignment repository directory (../CS381/as1), simply run the following commands in the terminal...
-
+In order, from the main or assignment repository directory (../CS381/as1), simply run ALL following commands in the terminal...
+(copy&paste everything)
 ```bash
 cd build || cd as1/build # Only run if not already in build directory, IGNORE ERRORS FROM THIS (accounts for being in either main/assignment directory)
 cmake ..   # Generates makefile + fixes dependencies
-make   # Generates as0 executable, must run everytime code is changed.
+make   # Generates as1 executable, must run every time code is changed.
 ```
 
 `[OPTIONAL]` If running into a wayland-related error during `cmake`, go into `CMakeCache.txt` and set this setting to OFF `GLFW_BUILD_WAYLAND:BOOL=OFF`.
@@ -50,7 +50,7 @@ This may or may not disable *window decorations*, but by default without the abo
 
 ### RUNNING THE CODE
 
-To run the code after compilation, simply run the `as1` executable from the main or assignment `../build/` directory via...
+To run the code after compilation, simply run the `as1` executable from the main or assignment `../build/` directory via running ALL the following commands...
 
 ```bash
 cd build || cd as1/build   # Only run if not already in build directory, IGNORE ERRORS FROM THIS (accounts for being in either main/assignment directory)
@@ -59,7 +59,7 @@ cd build || cd as1/build   # Only run if not already in build directory, IGNORE 
 
 ### [OPTIONAL] BUILD/RUNNING ERRORs
 
-If unable to compile, run, or getting errors with regards to directories/pathing, it is recommended you delete the contents of the `build` folder and re-compile the code. Make sure to run this from the main or assignment (`../as1/`) directory!!!
+If unable to compile, run, or getting errors with regards to directories/pathing, it is recommended you delete the contents of the `build` folder and re-compile the code. Make sure to run ALL OF THE FOLLOWING from the main or assignment (`../as1/`) directory!!!
 
 ```bash
 cd build || cd as1/build   # Only run if not already in build directory, IGNORE ERRORS FROM THIS (accounts for being in either main/assignment directory)
