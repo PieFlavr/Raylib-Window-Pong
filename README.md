@@ -2,6 +2,8 @@
 
 This is a repository containing all assignments for CS381. Each folder following the format 'asX' such as (as0, as1, and so on) each contain on its own an assignment completed for the course. Each folder has their own seperate more specific readme, and it is recommended to follow those. However, the following generally applies to the contents of each folder. 
 
+***IF GRADING FOR ANY ASSIGNMENT DO NOT FOLLOW THE FOLLOWING INSTRUCTIONS AS THESE ARE SOLELY FOR PERSONAL USE***
+
 ## INSTRUCTIONs
 
 ### DEPENDENCIES
