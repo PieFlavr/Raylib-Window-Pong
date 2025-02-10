@@ -37,7 +37,7 @@ git submodule update --init --recursive
 
 ### COMPILING THE CODE
 
-In order, from the assignment repository directory (../CS381/as1), simply run the following commands in the terminal...
+In order, from the main or assignment repository directory (../CS381/as1), simply run the following commands in the terminal...
 
 ```bash
 cd build || cd as1/build # Only run if not already in build directory
@@ -50,7 +50,7 @@ This may or may not disable *window decorations*, but by default without the abo
 
 ### RUNNING THE CODE
 
-To run the code after compilation, simply run the `as1` executable from the assignment `../build/` directory via...
+To run the code after compilation, simply run the `as1` executable from the main or assignment `../build/` directory via...
 
 ```bash
 cd build || cd as1/build   # Only run if not already in build directory
@@ -59,7 +59,7 @@ cd build || cd as1/build   # Only run if not already in build directory
 
 ### [OPTIONAL] BUILD/RUNNING ERRORs
 
-If unable to compile, run, or getting errors with regards to directories/pathing, it is recommended you delete the contents of the `build` folder and re-compile the code. Make sure to run this from the assignment (`../as1/`) directory!!!
+If unable to compile, run, or getting errors with regards to directories/pathing, it is recommended you delete the contents of the `build` folder and re-compile the code. Make sure to run this from the main or assignment (`../as1/`) directory!!!
 
 ```bash
 cd build || cd as1/build   # Only run if not already in build directory
