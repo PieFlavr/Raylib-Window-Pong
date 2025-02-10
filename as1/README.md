@@ -2,11 +2,11 @@
 
 ## INSTRUCTIONs [FEATURE \#7 (9 pts)]
 
-### [OPTIONAL] COMPLETE BARE-BONES LITERALLY ONLY COMMANDS
+### [OPTIONAL] COMPLETE BARE-BONES "EVERYTHING" COMMAND
 
 This command will do everything from cloning the project to the directory it is run in, fetching submodules, compiling it, and then running it. If you don't know exactly if this does, or if you don't trust this, there are step-by-step instructions with details, solutions for potential issues, and etc. on the other sections afterwards. Otherwise, this will do EVERYTHING automatically. 
 
-***!!!WARNING - Only run this from complete scratch (no clones, etc. etc.)!!!*** 
+***!!!WARNING - Only run this from COMPLETE SCRATCH (no clones, etc. etc.)!!!*** 
 ***!!!WARNING - DO NOT RUN IF YOU HAVE ALREADY CLONED THE REPOSITORY!!!*** 
 ***!!!WARNING - Only run if you know exactly 100% of what's going on!!!*** 
 
