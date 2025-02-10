@@ -21,11 +21,11 @@
 #include "VolumeControl.h" 
 
 #define DEFAULT_VOLUME 0
-#define LOGIC_FPS 60
+#define LOGIC_FPS 144
 #define DRAW_FPS 60
 
 #define HIGHLIGHT_BRIM -8
-#define VOLUME_KEYS_INCREMENT 0.1
+#define VOLUME_KEYS_INCREMENT 0.05
 
 Color backgroundColor = WHITE;
 bool themeToggleState = 0; //For handling menu theme logic. (0 = "light"; 1 = "dark")
