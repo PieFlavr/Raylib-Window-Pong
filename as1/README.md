@@ -50,16 +50,15 @@ This may or may not disable *window decorations*, but by default without the abo
 
 ### RUNNING THE CODE
 
-To run the code after compilation, simply run the `as1` executable from the main or assignment `../build/` directory via running ALL the following commands...
+To run the code after compilation, simply run the `as1` executable from the `../build/` directory via running ALL the following commands...
 *(copy&paste everything)*
 ```bash
-cd as1 ; cd build # Should work from main, assignment, or build directory... IGNORE ERRORS FROM THIS (accounts for being in either main/assignment/build directory)
 ./as1   # Runs program executable
 ```
 
 ### [OPTIONAL] BUILD/RUNNING ERRORs
 
-If unable to compile, run, or getting errors with regards to directories/pathing, it is recommended you delete the contents of the `build` folder and re-compile the code. Make sure to run ALL OF THE FOLLOWING from the main or assignment (`../as1/`) directory!!!
+If unable to compile, run, or getting errors with regards to directories/pathing, it is recommended you delete the contents of the `build` folder and re-compile the code. Make sure you are in the BUILD directory of the assignment (command accounts for that but still be careful)!!!
 *(copy&paste everything)*
 ```bash
 cd as1 ; cd build # Should work from main, assignment, or build directory... IGNORE ERRORS FROM THIS (accounts for being in either main/assignment/build directory)
