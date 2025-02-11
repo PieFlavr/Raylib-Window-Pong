@@ -2,7 +2,7 @@
 
 ## PREFACE
 
-This project is likely structured slightly differently then similar projects. The following are key important details:
+This project is likely structured slightly differently than similar projects. The following are key important details:
 * There is a deliberate pre-existing empty (with exception of .gitkeep) `build` folder in each assignment folder.
 * All assets folders and submodules such as `raylib-cpp` exist in the main directory (there are no copies per assignment directory).
 * The ENTIRE repository must be cloned to work. 
@@ -33,7 +33,7 @@ You can normally clone the repository, but doing so will incur some extra work t
 git clone --recurse-submodules https://github.com/PieFlavr/CS381
 ```
 
-Now, your folder structure shoould look similar to this...
+Now, your folder structure should look similar to this...
 
 ![alt text](../assets/images/folder-example-as1.png)
 
