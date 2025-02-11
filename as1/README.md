@@ -2,29 +2,15 @@
 
 ## INSTRUCTIONs [FEATURE \#7 (9 pts)]
 
-### [OPTIONAL] COMPLETE BARE-BONES "EVERYTHING" COMMAND
+### PREFACE
 
-This command will do everything from cloning the project to the directory it is run in, fetching submodules, compiling it, and then running it. If you don't know exactly what this does, or if you don't trust this, there are step-by-step instructions with details, solutions for potential issues, and etc. on the other sections afterwards. Otherwise, this will do EVERYTHING automatically. 
+This project is likely structured slightly differently then similar projects. The following are key important details:
+* There is a deliberate pre-existing empty (with exception of .gitkeep) `build` folder in each assignment folder.
+* All assets folders and submodules such as `raylib-cpp` exist in the main directory (there are no copies per assignment directory).
+* The ENTIRE repository must be cloned to work. 
+* While there are redundancies for if the bash commands are run from the `MAIN` repository, you should generally run them in the 'AS1' folder.
 
-***!!!WARNING - Only run this from COMPLETE SCRATCH (no clones, etc. etc.)!!!*** 
-***!!!WARNING - DO NOT RUN IF YOU HAVE ALREADY CLONED THE REPOSITORY!!!*** 
-***!!!WARNING - Only run if you know exactly 100% of what's going on!!!*** 
-
-```bash
-sudo apt get-update # updates sudo
-sudo apt install cmake g++ libgl-dev libwayland-dev wayland-protocols libxrandr-dev pkg-config libxkbcommon-dev libxinerama-dev libxcursor-dev libxi-dev mesa-utils build-essential cmake xorg-dev pulseaudio
-sudo apt --fix-broken install # should fill any missing dependencies
-git clone --recurse-submodules git@github.com:PieFlavr/CS381
-git submodule add https://github.com/joshuadahlunr/raylib-cpp.git
-git submodule init
-git submodule update --init --recursive
-cd CS381 ; cd as1 ; cd build # Works ONLY for this command block!
-cmake ..   # Generates makefile + fixes dependencies
-make   # Generates as1 executable, must run every time code is changed.
-./as1   # Runs program executable
-```
-
-### DEPENDENCIES
+### [OPTIONAL] DEPENDENCIES
 
 To run this project on most systems, including WSL, ensure you have the following dependencies listed in the following command (or just run it :p)...
 
@@ -34,7 +20,7 @@ sudo apt install cmake g++ libgl-dev libwayland-dev wayland-protocols libxrandr-
 sudo apt --fix-broken install # should fill any missing dependencies
 ```
 
-### CLONING THE REPOSITORY
+### [OPTIONAL] RECURSIVELY CLONING THE REPOSITORY
 
 You can normally clone the repository, but doing so will incur some extra work to be done for fetching submodules. If you don't want to do that, use the following commands in your target directory...
 
@@ -46,23 +32,22 @@ Now, your folder structure shoould look similar to this...
 
 ![alt text](../assets/images/folder-example-as1.png)
 
-### [OPTIONAL] FETCHING SUBMODULEs
+### FETCHING SUBMODULEs
 
 If you cloned the repository normally without `--recurse-submodules` or there are issues with the submodules, they must be fetched manually.
-To fetch them manually, from the main directory (../CS381), run ALL the following...
+To fetch them manually, from the assignment directory (`../as1`), run ALL the following...
 
 ```bash
-git submodule add https://github.com/joshuadahlunr/raylib-cpp.git
-git submodule init
-git submodule update --init --recursive
+git submodule init 
+git submodule update --init --recursive 
 ```
 
 ### COMPILING THE CODE
 
-In order, from the main or assignment repository directory (../CS381/as1), simply run ALL following commands in the terminal...
-*(copy&paste EVERYTHING)*
+In order, either from the main (`../build`) or assignment (`../as1`) repository directory, simply run ALL following commands in the terminal...
+
 ```bash
-cd as1 ; cd build # Should work from main, assignment, or build directory... IGNORE ERRORS FROM THIS (accounts for being in either main/assignment/build directory)
+cd as1 ; cd build # Works from main/assignmnent/build folds. IGNORE ERRORS FROM THIS!!!
 cmake ..   # Generates makefile + fixes dependencies
 make   # Generates as1 executable, must run every time code is changed.
 ```
@@ -73,7 +58,7 @@ This may or may not disable *window decorations*, but by default without the abo
 ### RUNNING THE CODE
 
 To run the code after compilation, simply run the `as1` executable from the `../build/` directory via running ALL the following commands...
-*(copy&paste EVERYTHING)*
+
 ```bash
 ./as1   # Runs program executable
 ```
@@ -81,10 +66,10 @@ To run the code after compilation, simply run the `as1` executable from the `../
 ### [OPTIONAL] BUILD/RUNNING ERRORs
 
 If unable to compile, run, or getting errors with regards to directories/pathing, it is recommended you delete the contents of the `build` folder and re-compile the code. Make sure you are in the BUILD directory of the assignment (command accounts for that but still be careful)!!!
-*(copy&paste everything)*
+
 ```bash
 cd as1 ; cd build # Should work from main, assignment, or build directory... IGNORE ERRORS FROM THIS (accounts for being in either main/assignment/build directory)
-rm -rf ./*   # Runs program executable
+rm -rf ./*   # Deletes the contents of the build folder
 ```
 
 ## APPLICATION CONTROLs
@@ -111,3 +96,15 @@ At a high level, the speaker produces audio by converting electrical signals to 
 When playing a piece of audio such as an .mp3 or .wav, samples or even chunks of samples are sent to the speaker. For smaller more immediate sound bites (SFX), these can be loaded into RAM for speed, but longer files (Music) they can be streamed from the disk to the RAM instead in chunks. Either way, they are sent to the speaker. 
 
 From looking at the terminal messages, the `raylib::AudioDevice` is necessary in the code because this essentially sets up the audio engine and resource management needed to actually play the audio. Without it, we would essentially be attempting to play audio without an interface to actually manipulate the speaker. 
+
+## EXTRA CREDIT FEATURE IMPLEMENTATIONs
+
+The following have been implemented in the program...
+
+1) Dark Background Option (5 points)
+2) Custom Audio Off the Internet (5 points)
+3) Arrow key Controls (5 points)
+4) Slider Tab Switch (5 points)
+5) Dark Theme GUI (5 points)
+
+In the source code `as1.cpp` you can [CTRL+F] and type "EC Feature" to see all primary implementations of the above.

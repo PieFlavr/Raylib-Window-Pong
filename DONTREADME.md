@@ -6,6 +6,24 @@ This is a repository containing all assignments for CS381. Each folder following
 
 ## INSTRUCTIONs
 
+### [OPTIONAL] SUPER "EVERYTHING" COMMAND
+
+If you know what you're doing, and you know what this does -- this does basically everything.
+
+```bash
+sudo apt get-update # updates sudo
+sudo apt install cmake g++ libgl-dev libwayland-dev wayland-protocols libxrandr-dev pkg-config libxkbcommon-dev libxinerama-dev libxcursor-dev libxi-dev mesa-utils build-essential cmake xorg-dev pulseaudio
+sudo apt --fix-broken install # should fill any missing dependencies
+git clone --recurse-submodules git@github.com:PieFlavr/CS381
+git submodule add https://github.com/joshuadahlunr/raylib-cpp.git
+git submodule init
+git submodule update --init --recursive
+cd CS381 ; cd as1 ; cd build # Works ONLY for this command block!
+cmake ..   # Generates makefile + fixes dependencies
+make   # Generates as1 executable, must run every time code is changed.
+./as1   # Runs program executable
+```
+
 ### DEPENDENCIES
 
 To run this project on most systems, including WSL, ensure you have the following dependencies listed in the following command (or just run it :p)...

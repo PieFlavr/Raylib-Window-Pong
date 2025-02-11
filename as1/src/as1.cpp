@@ -53,7 +53,7 @@ int main(){
 
     raylib::AudioDevice defaultDevice; 
 
-    //Feature #3 - Load 3 Audio Files (30 pts) + EC Feature #2 - Custom Audio Off the Internet
+    //Feature #3 - Load 3 Audio Files (30 pts) + EC Feature #2 - Custom Audio Off the Internet (5 pts)
     music.Load("../../assets/audio/musicEC.mp3");  //Sound Effect (10 pts)
     dialogue.Load("../../assets/audio/dialogueEC.mp3"); //Dialogue (10 pts)
     ping.Load("../../assets/audio/pingEC.mp3");  //Music (10pts)
@@ -173,7 +173,7 @@ void PingButton(){ //Feature #4 - Sound Effect on Button Press (10 points)
         backgroundColor = WHITE;
         GuiLoadStyleDefault();
      } else {
-        backgroundColor = BLACK; // EC Feature #1 - Dark Mode Option (5 points)
+        backgroundColor = BLACK; // EC Feature #1 - Dark Background Option (5 [points])
         // EC Feature #5 - Dark Theme Option (5 points) 
         // Is this cheating? I'm not sure if we're supposed to "make" a dark theme...
         // ...or if we're supposed to MAKE a dark theme, slap it in assets, and use it that way?
