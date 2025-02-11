@@ -1,14 +1,19 @@
 # AS1 README
 
-## INSTRUCTIONs [FEATURE \#7 (9 pts)]
-
-### PREFACE
+## PREFACE
 
 This project is likely structured slightly differently then similar projects. The following are key important details:
 * There is a deliberate pre-existing empty (with exception of .gitkeep) `build` folder in each assignment folder.
 * All assets folders and submodules such as `raylib-cpp` exist in the main directory (there are no copies per assignment directory).
 * The ENTIRE repository must be cloned to work. 
 * While there are redundancies for if the bash commands are run from the `MAIN` repository, you should generally run them in the 'AS1' folder.
+
+Additionally, all instructions are made with the following assumptions:
+* The user starts in the assignment (`../as1` or otherwise) directory.
+* The user already has most dependencies installed.
+* The user has (by default) cloned the repository normally. 
+
+## INSTRUCTIONs [FEATURE \#7 (9 pts)]
 
 ### [OPTIONAL] DEPENDENCIES
 
