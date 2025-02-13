@@ -2,8 +2,9 @@ cmake_minimum_required(VERSION 3.18)
 project(as2 C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
-
+# Modified so I don't have to execute my precious drive space
 add_subdirectory(../raylib-cpp ${CMAKE_BINARY_DIR}/raylib-cpp-build) 
+
 include(../assets/includeable.cmake)
 
 add_executable(as2 src/as2.cpp src/skybox.cpp)
