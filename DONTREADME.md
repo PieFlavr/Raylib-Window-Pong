@@ -4,6 +4,10 @@ This is a repository containing all assignments for CS381. Each folder following
 
 ***IF GRADING FOR ANY ASSIGNMENT DO NOT FOLLOW THE FOLLOWING INSTRUCTIONS AS THESE ARE SOLELY FOR PERSONAL USE***
 
+## GPU ACCESS FOR SEGFAULT 
+https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-linux/2023-0/configure-wsl-2-for-gpu-workflows.html 
+https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps#prerequisites
+
 ## INSTRUCTIONs
 
 ### [OPTIONAL] SUPER "EVERYTHING" COMMAND
