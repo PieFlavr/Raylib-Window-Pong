@@ -15,5 +15,7 @@ make_includeable(../assets/shaders/cubemap.vs generated/cubemap.vs)
 make_includeable(../assets/shaders/skybox.fs generated/skybox.fs)
 make_includeable(../assets/shaders/skybox.vs generated/skybox.vs)
 
-configure_file(../assets/textures/skybox.png textures/skybox.png COPYONLY)
+configure_file("../assets/textures/skybox.png" textures/skybox.png COPYONLY)
 configure_file("../assets/Kenny Space Kit/rocketA.glb" meshes/rocketA.glb COPYONLY)
+# For the sake of my own convenience, I am just gonna use the assets folder 
+# instead of baking texture/models/etc. into the executable 
