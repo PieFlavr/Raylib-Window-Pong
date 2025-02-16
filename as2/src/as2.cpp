@@ -1,6 +1,6 @@
 /**
  * @file as2.cpp
- * @author your name (you@domain.com)
+ * @author Lucas Pinto
  * @brief 
  * @version 0.1
  * @date 2025-02-12
@@ -10,10 +10,22 @@
  */
 
 #include <iostream>
+
 #include "raylib-cpp.hpp"
 #include "skybox.hpp"
 
-void DrawBoundedModel(raylib::Model& model, auto transformer)
+template<typename T> //Cool type validation!
+concept Transformer = requires(T t, raylib::Matrix m) {
+    { t(m) } -> std::convertible_to<raylib::Matrix>;
+};
+
+/**
+ * @brief 
+ * 
+ * @param model 
+ * @param transformer 
+ */
+void DrawBoundedModel(raylib::Model& model, Transformer auto transformer)
 {
     raylib::Matrix backup = model.transform;
     model.transform = transformer(backup);
@@ -21,6 +33,11 @@ void DrawBoundedModel(raylib::Model& model, auto transformer)
     model.transform = backup;
 }
 
+/**
+ * @brief 
+ * 
+ * @return int 
+ */
 int main()
 {
     int screenWidth = 800;
@@ -31,6 +48,7 @@ int main()
     
     raylib::Model cube = raylib::Mesh::Cube(30, 30, 30).LoadModelFrom();
     auto camera = raylib::Camera({0, 120, -500}, {0, 0, 0}, {0, 1, 0}, 45);
+    
     raylib::Model rocket = raylib::Model("meshes/rocketA.glb");
     rocket.transform = raylib::Matrix::Identity().Scale(30);
     cs381::SkyBox sky("textures/skybox.png");
