@@ -33,16 +33,29 @@ concept Transformer = requires(T t, raylib::Matrix m) {
  */
 void DrawBoundedModel(raylib::Model& model, Transformer auto transformer)
 {   //Feature #3 - Function that Translates Models via Lambda (10 points)
-    raylib::Matrix backup = model.transform;
-    model.transform = transformer(backup);
-    model.Draw({});
+    //Featre #13 - Thoroughly Comment the DrawBoundedModel() function (5 points)
+    raylib::Matrix backup = model.transform;    // LINE EXPLANATION:: Creates a backup of the model's original transform matrix. 
+                                                // We don't want to permanent changes to the model's transform, so we make a copy of the original matrix.
+                                                // Presumably, this is because we'd otherwise have to track the transforms ourselves, which is a pain.
+                                                // Additionally, this way we force transforms to aggregate externally.
+                                                // If we do want to keep track, this doesn't obfuscate tracing transforms.
+    model.transform = transformer(backup);  // LINE EXPLANATION:: Applies the transformation function to the model's transform matrix. 
+                                            // Whether translation, scaling, or rotation, so long as "transformer" is valid, it should work!
+                                            // Initially thought this was ridiculous, since why not just slap a matrix argument?
+                                            // But this lets us do some really fancy stuff with chaining transformations.
+                                            // Especially if the transformations don't all work with the same operations or "orders".
+    model.Draw({}); // LINE EXPLANATION:: Draws the model with the now-transformed matrix. 
+                    // Has a "{}" to explicitly state no additional transformations are applied.
     model.GetTransformedBoundingBox().Draw(); //Feature #4 - Draw Bounding Box (10 points)
-    //Thank the Discord. I was scratching my head over this one until I looked at the function
-    //implementation and decided to check the Discord. ヾ(≧▽≦*)o
-    //I mean, I get *WHY* this exists, but why not just return the transformed matrix by default
-    //since that's what appears, and let the "original" matrix be the explicit call instead? 
-    // ¯\_(ツ)_/¯
-    model.transform = backup;
+    // LINE EXPLANATION:: This essentially draws the trasnformed bounding box of the model after it has been transformed.
+    // The bounding box itself is a raylib::BoundingBox object, which has a Draw() method that draws the box.
+    // It's a very convenient way to visualize the bounds of the model after transformation especially for collisions. 
+    // NOTE:: Thank the Discord. I was scratching my head over this one until I looked at the function
+    // implementation and decided to check the Discord. ヾ(≧▽≦*)o
+    model.transform = backup;   // LINE EXPLANATION:: Resets the model's transform matrix to its original state. 
+                                // Also just realized, a lot of properties of objects we tend to write with respect to a "global" frame of reference.
+                                // Resetting the matrix lends to that global paradigm rather than sequential local transforms. 
+                                // That and its how most people think ¯\_(ツ)_/¯
 }
 // ===========================================================
 // Transformation Lambdas
