@@ -14,5 +14,6 @@ CMakeUserPresets.json
 
 #Ignores the contents of any build file two folder layers in.
 */build/*
+*/generated/*
 
 .vscode
