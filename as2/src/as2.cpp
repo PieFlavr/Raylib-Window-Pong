@@ -14,8 +14,11 @@
 #include "raylib-cpp.hpp"
 #include "skybox.hpp"
 
-#define WIRE_FRAME_COLOR WHITE
+//#define WIRE_FRAME_COLOR WHITE //was for an old defunct implementation
 #define DEFAULT_SCALE 30
+
+#define LOGIC_SPEED 1
+#define DRAW_FPS 60
 
 template<typename T> //Cool type validation!
 concept Transformer = requires(T t, raylib::Matrix m) {
@@ -41,7 +44,9 @@ void DrawBoundedModel(raylib::Model& model, Transformer auto transformer)
     // ¯\_(ツ)_/¯
     model.transform = backup;
 }
-
+// ===========================================================
+// Transformation Lambdas
+// ===========================================================
 /**
  * @brief Arbitrary translation function that translates on each axis accordingly using a vector.
  * 
@@ -52,7 +57,6 @@ auto translate = [](raylib::Vector3 translation) {
         return transform.Translate(translation);
     };
 };
-
 /**
  * @brief Arbitrary scaling function that scales each axis accordingly using a vector.
  * 
@@ -63,7 +67,6 @@ auto scale = [](raylib::Vector3 scaling) {
         return MatrixMultiply(transform, MatrixScale(scaling.x, scaling.y, scaling.z));
     };
 };
-
 /**
  * @brief Arbitrary rotation function that rotates (assumedly right hand rule) around the given axis vector.
  * 
@@ -74,7 +77,6 @@ auto rotate = [](raylib::Vector3 axis, float angle) {
         return MatrixMultiply(transform, MatrixRotate(axis, angle)); 
     };
 };
-
 /**
  * @brief Combines arbitrary number of transformation lambdas into one.
  */
@@ -88,15 +90,21 @@ auto combine = [](auto... transformers) {
     };
 };
 
+// ===========================================================
+// Main Function
+// ===========================================================
 int main()
-{
-    int screenWidth = 800;
-    int screenHeight = 600;
+{   
+    double lastDrawTime = 0; //Deltas for controlling draw+logic rates
+    double lastLogicTime = 0;
+    double drawDelta = 1.0 / DRAW_FPS; 
 
-    raylib::Window window(screenWidth, screenHeight, "CS381 - Assignment 2"); //Feature #1 - Create Titled Window (1 point)
+    raylib::Window window(800, 600, "CS381 - Assignment 2"); //Feature #1 - Create Titled Window (1 point)
     window.SetState(FLAG_WINDOW_RESIZABLE);
     
-    // Model loading + default transforms
+    // ===========================================================
+    // Model Loading + Default Transforms
+    // ===========================================================
     raylib::Model cube = raylib::Mesh::Cube(30, 30, 30).LoadModelFrom();
     auto camera = raylib::Camera({0, 120, 500}, {0, 0, 0}, {0, 1, 0}, 45); //Feature #5 - Draw Camera at (0,120,500) (5 points)
     
@@ -119,9 +127,26 @@ int main()
 
     while (!window.ShouldClose())
     {
+        double currentTime = GetTime();
+        
+        // ===========================================================
+        // Logic Block
+        // ===========================================================
+        double logicDelta = lastLogicTime - currentTime;
+
+        lastLogicTime = currentTime;
+
+
+        // ===========================================================
+        // Draw Block
+        // ===========================================================
+        
         window.BeginDrawing();
+
+        if(currentTime - lastDrawTime >= drawDelta)
+        {
+            window.ClearBackground(BLACK);
             camera.BeginMode();
-                window.ClearBackground(BLACK);
                 sky.Draw();
 
                 auto rocket_F7_transform = combine( //Feature #7 - Rocket Located at (-100, 100, 0), scaled (1,-1,1), and yawed 180 degrees (10 points)
@@ -134,13 +159,13 @@ int main()
                     rotate({0, 1, 0}, 90*DEG2RAD),
                     translate({200, 0, 0})
                 );
-    
+
                 auto car_F10_transform = combine( //Feature #10 - Car Located at (100,100,0), scaled by (1,2,1), and yawed 90 degrees (10 points)
                     rotate({0, 1, 0}, 90*DEG2RAD),
                     scale({1, 2, 1}),
                     translate({100, 100, 0})
                 );
-    
+
 
                 DrawBoundedModel(rocket_F6, translate({0,0,0})); //Feature #6 - Rocket Located at (0,0,0) (10 points)
                 DrawBoundedModel(rocket_F7, rocket_F7_transform);
@@ -149,7 +174,13 @@ int main()
                 DrawBoundedModel(car_F10, car_F10_transform);
                 
             camera.EndMode();
-        window.EndDrawing();    
+
+            lastDrawTime = currentTime;
+        }
+
+        window.EndDrawing(); 
+         
+        
     }
 
     return 0;
