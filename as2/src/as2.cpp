@@ -1,9 +1,12 @@
 /**
  * @file as2.cpp
  * @author Lucas Pinto
- * @brief 
+ * @brief Demonstration of loading and manipulating 3D models using raylib-cpp an the raylib library.
+ *        Assignment includes a car and rocket model, both of which can be manipulated using
+ *        matrix transfromations. These transformations include translation, scaling, and rotation.
+ *        As well as a combination of all three. 
  * @version 0.1
- * @date 2025-02-12
+ * @date 2025-02-16
  * 
  * @copyright Copyright (c) 2025
  * 
