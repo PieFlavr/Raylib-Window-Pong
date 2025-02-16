@@ -106,7 +106,12 @@ int main()
     // Model Loading + Default Transforms
     // ===========================================================
     raylib::Model cube = raylib::Mesh::Cube(30, 30, 30).LoadModelFrom();
-    auto camera = raylib::Camera({0, 120, 500}, {0, 0, 0}, {0, 1, 0}, 45); //Feature #5 - Draw Camera at (0,120,500) (5 points)
+    raylib::Camera camera = raylib::Camera(
+        {0, 120, 500}, 
+        {0, 0, 0}, 
+        {0, 1, 0}, 
+        45
+    ); //Feature #5 - Draw Camera at (0,120,500) (5 points)
     
     raylib::Model rocket_F6 = raylib::Model("meshes/rocketA.glb");
     rocket_F6.transform = raylib::Matrix::Identity().Scale(DEFAULT_SCALE);
