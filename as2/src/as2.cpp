@@ -173,11 +173,10 @@ int main()
                 );
 
                 auto car_F10_transform = combine( //Feature #10 - Car Located at (100,100,0), scaled by (1,2,1), and yawed 90 degrees (10 points)
-                    rotate({0, 1, 0}, 90*DEG2RAD),
+                    rotate({0, 1, 0}, 270*DEG2RAD),
                     scale({1, 2, 1}),
                     translate({100, 100, 0})
                 );
-
 
                 DrawBoundedModel(rocket, translate({0,0,0})); //Feature #6 - Rocket Located at (0,0,0) (10 points)
                 DrawBoundedModel(rocket, rocket_F7_transform);
