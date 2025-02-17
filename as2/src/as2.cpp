@@ -120,9 +120,7 @@ auto combine = [](auto... transformers) {
 // ===========================================================
 int main()
 {   
-    double lastDrawTime = 0; //Deltas for controlling draw+logic rates
-    double lastLogicTime = 0;
-    double drawDelta = 1.0 / DRAW_FPS; 
+    double lastLogicTime = 0; //Deltas for controlling logic rates
 
     double spinAngle = 0; //Extra Credit Animation
     double spin_scale = 2.0;
@@ -131,6 +129,9 @@ int main()
 
     raylib::Window window(800, 600, "CS381 - Assignment 2"); //Feature #1 - Create Titled Window (1 point)
     window.SetState(FLAG_WINDOW_RESIZABLE);
+
+    SetTargetFPS(DRAW_FPS); //Turns out -- trying to do your own FPS limiter is a bad idea -_-
+    //Driver timeouts are crazy things (╯°□°）╯︵ ┻━┻
     
     // ===========================================================
     // Model Loading + Default Transforms
@@ -241,44 +242,40 @@ int main()
         
         window.BeginDrawing();
 
-        if(currentTime - lastDrawTime >= drawDelta)
-        {
-            window.ClearBackground(BLACK);
-            camera.BeginMode();
-                sky.Draw();
+        window.ClearBackground(BLACK);
+        camera.BeginMode();
+            sky.Draw();
 
-                if(enabledExtraCredit){
-                    DrawBoundedModel(cow, cow_transform); 
-                    
-                    // EC Feature #3 - Four Wheels that Move Along (5 points)
-                    // Car_F8 wheels
-                    DrawBoundedModel(wheel, combine( translate({15, 0, 20}), car_F8_transform));
-                    DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, 20}), car_F8_transform));
-                    DrawBoundedModel(wheel, combine( translate({15, 0, -20}), car_F8_transform));
-                    DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, -20}),  car_F8_transform));
-                    // Car_F9 wheels
-                    DrawBoundedModel(wheel, combine( translate({15, 0, 20}), car_F9_transform));
-                    DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, 20}), car_F9_transform));
-                    DrawBoundedModel(wheel, combine( translate({15, 0, -20}), car_F9_transform));
-                    DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, -20}),  car_F9_transform));
-                    // Car_F10 wheels
-                    DrawBoundedModel(wheel, combine( translate({15, 0, 20}), car_F10_transform));
-                    DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, 20}), car_F10_transform));
-                    DrawBoundedModel(wheel, combine( translate({15, 0, -20}), car_F10_transform));
-                    DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, -20}),  car_F10_transform));
-                } else {
-                    
-                }
-                DrawBoundedModel(rocket, rocket_F6_transform); 
-                DrawBoundedModel(rocket, rocket_F7_transform);
-                DrawBoundedModel(car, car_F8_transform); 
-                DrawBoundedModel(car, car_F9_transform);
-                DrawBoundedModel(car, car_F10_transform);
+            if(enabledExtraCredit){
+                DrawBoundedModel(cow, cow_transform); 
+                
+                // EC Feature #3 - Four Wheels that Move Along (5 points)
+                // Car_F8 wheels
+                DrawBoundedModel(wheel, combine( translate({15, 0, 20}), car_F8_transform));
+                DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, 20}), car_F8_transform));
+                DrawBoundedModel(wheel, combine( translate({15, 0, -20}), car_F8_transform));
+                DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, -20}),  car_F8_transform));
+                // Car_F9 wheels
+                DrawBoundedModel(wheel, combine( translate({15, 0, 20}), car_F9_transform));
+                DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, 20}), car_F9_transform));
+                DrawBoundedModel(wheel, combine( translate({15, 0, -20}), car_F9_transform));
+                DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, -20}),  car_F9_transform));
+                // Car_F10 wheels
+                DrawBoundedModel(wheel, combine( translate({15, 0, 20}), car_F10_transform));
+                DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, 20}), car_F10_transform));
+                DrawBoundedModel(wheel, combine( translate({15, 0, -20}), car_F10_transform));
+                DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, -20}),  car_F10_transform));
+            } else {
+                
+            }
+            DrawBoundedModel(rocket, rocket_F6_transform); 
+            DrawBoundedModel(rocket, rocket_F7_transform);
+            DrawBoundedModel(car, car_F8_transform); 
+            DrawBoundedModel(car, car_F9_transform);
+            DrawBoundedModel(car, car_F10_transform);
                 
             camera.EndMode();
-            
-            lastDrawTime = currentTime;
-        }
+        
 
         DrawTextEx(GetFontDefault(), "[Left Click] to Toggle Extra Credit Features", Vector2(10,10), INITIAL_FONT_SIZE/2, INITIAL_FONT_SPACING, WHITE);
 
