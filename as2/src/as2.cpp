@@ -25,7 +25,7 @@
 //#define WIRE_FRAME_COLOR WHITE //was for an old defunct implementation
 #define DEFAULT_SCALE 30
 
-#define LOGIC_SPEED 1
+//#define LOGIC_SPEED 1
 #define DRAW_FPS 60
 #define DEFAULT_VOLUME 0.5
 
@@ -180,6 +180,7 @@ int main()
         // ===========================================================
         // Logic Block
         // ===========================================================
+
             double logicDelta = lastLogicTime - currentTime;
             
             if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
@@ -195,7 +196,7 @@ int main()
             }
 
             if(enabledExtraCredit){
-                spinAngle = fmod(spinAngle + (logicDelta*(log(currentTime)/log(spin_scale))), 360); //EC Feature #2  - Animate Models (5 points)
+                spinAngle = fmod(spinAngle + (logicDelta*(spin_scale*currentTime)), 360); //EC Feature #2  - Animate Models (5 points)
                 // "MURRRRPHHHHHHHHHH!!!!!!!"
                 music.Update();
                 ambience.Update();
