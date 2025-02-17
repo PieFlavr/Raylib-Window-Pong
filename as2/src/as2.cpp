@@ -56,9 +56,9 @@ void DrawBoundedModel(raylib::Model& model, Transformer auto transformer)
     // NOTE:: Thank the Discord. I was scratching my head over this one until I looked at the function
     // implementation and decided to check the Discord. ヾ(≧▽≦*)o
     model.transform = backup;   // LINE EXPLANATION:: Resets the model's transform matrix to its original state. 
-                                // Also just realized, a lot of properties of objects we tend to write with respect to a "global" frame of reference.
-                                // Resetting the matrix lends to that global paradigm rather than sequential local transforms. 
-                                // That and its how most people think ¯\_(ツ)_/¯
+                                // Also just realized, a lot of properties of objects we tend to write with respect to a frame of reference.
+                                // Resetting the matrix lends to that reference paradigm rather than sequential local transforms relative to itself. 
+                                // That, and its how most people think ¯\_(ツ)_/¯
 }
 // ===========================================================
 // Transformation Lambdas
@@ -129,20 +129,11 @@ int main()
         45
     ); //Feature #5 - Draw Camera at (0,120,500) (5 points)
     
-    raylib::Model rocket_F6 = raylib::Model("meshes/rocketA.glb");
-    rocket_F6.transform = raylib::Matrix::Identity().Scale(DEFAULT_SCALE);
+    raylib::Model rocket = raylib::Model("meshes/rocketA.glb"); //Feature #2 - Load Rocket Model Once (10 points)
+    rocket.transform = raylib::Matrix::Identity().Scale(DEFAULT_SCALE);
 
-    raylib::Model rocket_F7 = raylib::Model("meshes/rocketA.glb");
-    rocket_F7.transform = raylib::Matrix::Identity().Scale(DEFAULT_SCALE);
-
-    raylib::Model car_F8 = raylib::Model("../../assets/Kenny Car Kit/sedan.glb"); //Feature #2 - Load Car Model (10 points)
-    car_F8.transform = raylib::Matrix::Identity().Scale(DEFAULT_SCALE);
-
-    raylib::Model car_F9 = raylib::Model("../../assets/Kenny Car Kit/sedan.glb"); 
-    car_F9.transform = raylib::Matrix::Identity().Scale(DEFAULT_SCALE);
-
-    raylib::Model car_F10 = raylib::Model("../../assets/Kenny Car Kit/sedan.glb");
-    car_F10.transform = raylib::Matrix::Identity().Scale(DEFAULT_SCALE);
+    raylib::Model car = raylib::Model("../../assets/Kenny Car Kit/sedan.glb"); //Feature #2 - Load Car Model Once (10 points)
+    car.transform = raylib::Matrix::Identity().Scale(DEFAULT_SCALE);
 
     cs381::SkyBox sky("textures/skybox.png");
 
@@ -188,11 +179,11 @@ int main()
                 );
 
 
-                DrawBoundedModel(rocket_F6, translate({0,0,0})); //Feature #6 - Rocket Located at (0,0,0) (10 points)
-                DrawBoundedModel(rocket_F7, rocket_F7_transform);
-                DrawBoundedModel(car_F8, translate({-200,0,0})); //Feature #8 - Car Located at (-200,0,0) (10 points)
-                DrawBoundedModel(car_F9, car_F9_transform);
-                DrawBoundedModel(car_F10, car_F10_transform);
+                DrawBoundedModel(rocket, translate({0,0,0})); //Feature #6 - Rocket Located at (0,0,0) (10 points)
+                DrawBoundedModel(rocket, rocket_F7_transform);
+                DrawBoundedModel(car, translate({-200,0,0})); //Feature #8 - Car Located at (-200,0,0) (10 points)
+                DrawBoundedModel(car, car_F9_transform);
+                DrawBoundedModel(car, car_F10_transform);
                 
             camera.EndMode();
 
