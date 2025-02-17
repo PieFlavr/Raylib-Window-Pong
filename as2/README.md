@@ -86,9 +86,23 @@ N/A
 
 The following are the answer to the quiz questions required for the assignment.
 
-**(1) What is the point of the DrawBoundedModel function? Could this function be used in the future to set transformations when a model is loaded? Could it be used to transform a model relative to some "parent"? (5 points).**
+**(1) QUESTION #1**
 
-asdasdasd
+*(1A) What is the point of the DrawBoundedModel function?*
+
+The DrawBoundedModel() function draws the model with the associated matrix transformations provided via arguments.
+The matrix transformations are not permanent, and the model's initial transform matrix is saved and then set back after drawing.
+Additionally, it draws the wireframe BoundingBox of the model, which is essentially the smallest box encompassing it. 
+The BoundingBox is useful considering not all models are so perfectly visible, as well as for showing collision and other similar logics. Although given that this is only the apparent "draw" of the model as opposed to the the actual permanenet transform, such logic is likely to be implemented seperately while this function is utilized for visual aid of said logic. 
+Given this is also only the apparent "draw" of the model, you can perform this multiple times with the same model, effectively being able to see multiple of the same model without taking on the additional overhead of loading identical models for different draws. 
+
+*(1B) Could this function be used in the future to set transformations when a model is loaded?*
+
+Since the function does not make permanent changes to the model's transform matrix, you can not set permanent transform modifications on model load. You would need to explicitly modify the model's transform via a function or otherwise to obtain permanent changes. You can use this function to make temporary changes while drawing the model. 
+
+*(1C) Could it be used to transform a model relative to some "parent"?*
+
+Because of how matrix transformations work and the fact lambdas are passed to transform, you could absolutely use this function to transform a model relative to a "parent". While certain transformations are non-commutative and order matters heavily, all you would realistically need to do is to "chain" matrix transformations while accounting for the hierarchy. Applying the "parent" model transforms, and then the "child" model's transformations relative to the "parent" (by modifying references axes or otherwise) can accomplish this behavior. 
 
 ## EXTRA CREDIT FEATURE IMPLEMENTATIONs
 
