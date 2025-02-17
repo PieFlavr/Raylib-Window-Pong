@@ -78,9 +78,11 @@ cd as2 ; cd build # Should work from main, assignment, or build directory... IGN
 rm -rf ./*   # Deletes the contents of the build folder
 ```
 
+Additionally, if receivng a `DRIVER TIMOUT` or some sort of `DRIVER CRASH`, it is recommended to simply restart your computer to fix it along with the above.
+
 ## APPLICATION CONTROLs
 
-N/A
+Simply `[LEFT_CLICK]` to toggle all extra credit features (including wheels, spinning, animations, etc.)
 
 ## QUIZ QUESTIONs and ANSWERs [FEATURE \#12 (5 pts)]
 
@@ -104,6 +106,15 @@ Since the function does not make permanent changes to the model's transform matr
 
 Because of how matrix transformations work and the fact lambdas are passed to transform, you could absolutely use this function to transform a model relative to a "parent". While certain transformations are non-commutative and order matters heavily, all you would realistically need to do is to "chain" matrix transformations while accounting for the hierarchy. Applying the "parent" model transforms, and then the "child" model's transformations relative to the "parent" (by modifying references axes or otherwise) can accomplish this behavior. 
 
+With the way I implemented it though, the logical order appears "backwards" (applying child transforms and then parents), though this is more a consequence of not how coordinate transforms working "backwards" in Linear Algebra (right-to-left application).
+
 ## EXTRA CREDIT FEATURE IMPLEMENTATIONs
 
-N/A
+The following have been implemented in the program...
+
+1) Custom Internet Meshes (5 points)
+2) Animate Models (5 points)
+3) Four Wheels that Move Along (5 points)
+4) Appropriately Ambient Audio (5 points)
+
+In the source code `as2.cpp` you can [CTRL+F] and type "EC Feature" to see all primary implementations of the above.

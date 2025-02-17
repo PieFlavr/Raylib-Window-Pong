@@ -5,6 +5,8 @@
  *        Assignment includes a car and rocket model, both of which can be manipulated using
  *        matrix transfromations. These transformations include translation, scaling, and rotation.
  *        As well as a combination of all three. 
+ * 
+ *  
  * @version 0.1
  * @date 2025-02-16
  * 
@@ -22,6 +24,10 @@
 
 #define LOGIC_SPEED 1
 #define DRAW_FPS 60
+#define DEFAULT_VOLUME 0.5
+
+#define INITIAL_FONT_SIZE 50
+#define INITIAL_FONT_SPACING 2
 
 template<typename T> //Cool type validation!
 concept Transformer = requires(T t, raylib::Matrix m) {
@@ -115,6 +121,11 @@ int main()
     double lastLogicTime = 0;
     double drawDelta = 1.0 / DRAW_FPS; 
 
+    double spinAngle = 0; //Extra Credit Animation
+    double spin_scale = 2.0;
+
+    bool enabledExtraCredit = false; 
+
     raylib::Window window(800, 600, "CS381 - Assignment 2"); //Feature #1 - Create Titled Window (1 point)
     window.SetState(FLAG_WINDOW_RESIZABLE);
     
@@ -135,7 +146,28 @@ int main()
     raylib::Model car = raylib::Model("../../assets/Kenny Car Kit/sedan.glb"); //Feature #2 - Load Car Model Once (10 points)
     car.transform = raylib::Matrix::Identity().Scale(DEFAULT_SCALE);
 
+    raylib::Model cow = raylib::Model("../../custom_assets/as2/Cow.glb");   // EC Feature #1 - Custom Internet Meshes (5 points)
+    cow.transform = raylib::Matrix::Identity().Scale(DEFAULT_SCALE);    // From... https://www.fab.com/listings/fbd8c8b0-fc59-460e-adb8-c7ab8f19a6f9
+
+    raylib::Model wheel = raylib::Model("../../assets/Kenny Car Kit/wheel-default.glb");
+    wheel.transform = raylib::Matrix::Identity().Scale(DEFAULT_SCALE);
+
     cs381::SkyBox sky("textures/skybox.png");
+
+    // EC Feature #4 - Appropriately Ambient Audio (5 points)
+    raylib::AudioDevice defaultDevice; 
+
+    raylib::Music ambience, music;
+    music.Load("../../custom_assets/as2/Audio/Interstellar - Coward  Imperfect Lock  No Time for Caution.mp3");  
+    // From... https://www.youtube.com/watch?v=7hkI43oPIxk&pp=ygUQZ29qbyBob25vcmVkIG9uZQ%3D%3D
+    ambience.Load("../../custom_assets/as2/Audio/Brown Noise  Relax For 5 Minutes.mp3");  
+    // And also... https://www.youtube.com/watch?v=4MiNGLBMaVI 
+    
+    music.SetVolume(DEFAULT_VOLUME);
+    ambience.SetVolume(DEFAULT_VOLUME);
+
+    music.Pause();
+    ambience.Pause();
 
     while (!window.ShouldClose())
     {
@@ -144,7 +176,58 @@ int main()
         // ===========================================================
         // Logic Block
         // ===========================================================
-        double logicDelta = lastLogicTime - currentTime;
+            double logicDelta = lastLogicTime - currentTime;
+            
+            if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                enabledExtraCredit = !enabledExtraCredit;
+                if(!enabledExtraCredit){
+                    spinAngle = 0; //reset spin
+                    music.Pause();
+                    ambience.Pause();
+                } else {
+                    music.Play();
+                    ambience.Play();  
+                }
+            }
+
+            if(enabledExtraCredit){
+                spinAngle = fmod(spinAngle + (logicDelta*(log(currentTime)/log(spin_scale))), 360); //EC Feature #2  - Animate Models (5 points)
+                // "MURRRRPHHHHHHHHHH!!!!!!!"
+                music.Update();
+                ambience.Update();
+            } 
+
+            auto rocket_F6_transform = combine(
+                rotate({0, 1, 0}, (spinAngle)*DEG2RAD),
+                translate({0, 0, 0})
+            ); //Feature #6 - Rocket Located at (0,0,0) (10 points)
+
+            auto rocket_F7_transform = combine( //Feature #7 - Rocket Located at (-100, 100, 0), scaled (1,-1,1), and yawed 180 degrees (10 points)
+                rotate({0, 1, 0}, (180+spinAngle)*DEG2RAD), // i guess yaw is y-axis here??? 
+                scale({1, -1, 1}),
+                translate({-100, 100, 0})
+            );
+
+            auto car_F8_transform = combine(
+                rotate({0, 1, 0}, (spinAngle)*DEG2RAD),
+                translate({-200, 0, 0})
+            ); //Feature #8 - Car Located at (-200,0,0) (10 points)
+
+            auto car_F9_transform = combine( //Feature #9 - Car Located at (200,0,0), and yawed 90 degrees (10 points)
+                rotate({0, 1, 0}, (90+spinAngle)*DEG2RAD),
+                translate({200, 0, 0})
+            );
+
+            auto car_F10_transform = combine( //Feature #10 - Car Located at (100,100,0), scaled by (1,2,1), and yawed 90 degrees (10 points)
+                rotate({0, 1, 0}, (270+spinAngle)*DEG2RAD),
+                scale({1, 2, 1}),
+                translate({100, 100, 0})
+            );
+
+            auto cow_transform = combine( 
+                rotate({0, 1, 0}, (-spinAngle)*DEG2RAD),
+                translate({0, -100, -100})
+            );
 
         lastLogicTime = currentTime;
 
@@ -161,33 +244,40 @@ int main()
             camera.BeginMode();
                 sky.Draw();
 
-                auto rocket_F7_transform = combine( //Feature #7 - Rocket Located at (-100, 100, 0), scaled (1,-1,1), and yawed 180 degrees (10 points)
-                    rotate({0, 1, 0}, 180*DEG2RAD), // i guess yaw is y-axis here??? 
-                    scale({1, -1, 1}),
-                    translate({-100, 100, 0})
-                );
+                if(enabledExtraCredit){
+                    DrawBoundedModel(cow, cow_transform); 
+                    
+                    // EC Feature #3 - Four Wheels that Move Along (5 points)
+                    DrawBoundedModel(wheel, combine( translate({15, 0, 20}), car_F8_transform));
+                    DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, 20}), car_F8_transform));
+                    DrawBoundedModel(wheel, combine( translate({15, 0, -20}), car_F8_transform));
+                    DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, -20}),  car_F8_transform));
 
-                auto car_F9_transform = combine( //Feature #9 - Car Located at (200,0,0), and yawed 90 degrees (10 points)
-                    rotate({0, 1, 0}, 90*DEG2RAD),
-                    translate({200, 0, 0})
-                );
+                    DrawBoundedModel(wheel, combine( translate({15, 0, 20}), car_F9_transform));
+                    DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, 20}), car_F9_transform));
+                    DrawBoundedModel(wheel, combine( translate({15, 0, -20}), car_F9_transform));
+                    DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, -20}),  car_F9_transform));
+                    
+                    DrawBoundedModel(wheel, combine( translate({15, 0, 20}), car_F10_transform));
+                    DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, 20}), car_F10_transform));
+                    DrawBoundedModel(wheel, combine( translate({15, 0, -20}), car_F10_transform));
+                    DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, -20}),  car_F10_transform));
+                } else {
+                    
+                }
 
-                auto car_F10_transform = combine( //Feature #10 - Car Located at (100,100,0), scaled by (1,2,1), and yawed 90 degrees (10 points)
-                    rotate({0, 1, 0}, 270*DEG2RAD),
-                    scale({1, 2, 1}),
-                    translate({100, 100, 0})
-                );
-
-                DrawBoundedModel(rocket, translate({0,0,0})); //Feature #6 - Rocket Located at (0,0,0) (10 points)
+                DrawBoundedModel(rocket, rocket_F6_transform); 
                 DrawBoundedModel(rocket, rocket_F7_transform);
-                DrawBoundedModel(car, translate({-200,0,0})); //Feature #8 - Car Located at (-200,0,0) (10 points)
+                DrawBoundedModel(car, car_F8_transform); 
                 DrawBoundedModel(car, car_F9_transform);
                 DrawBoundedModel(car, car_F10_transform);
                 
             camera.EndMode();
-
+            
             lastDrawTime = currentTime;
         }
+
+        DrawTextEx(GetFontDefault(), "[Left Click] to Toggle Extra Credit Features", Vector2(10,10), INITIAL_FONT_SIZE/2, INITIAL_FONT_SPACING, WHITE);
 
         window.EndDrawing(); 
          
