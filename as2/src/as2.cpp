@@ -6,7 +6,10 @@
  *        matrix transfromations. These transformations include translation, scaling, and rotation.
  *        As well as a combination of all three. 
  * 
- *  
+ *         (2/16) UPDATE: All Extra Credit (EC) features have effectively been implemented, 
+ *                     you can easily search for each via [CTRL+F] and looking for "EC Feature"
+ *                     Also for some reason experiencing driver timeouts occasionally? Not sure as of the cause.
+ *                     Likely because I'm using WSL2 as opposed to full Linux distro, prolly gonna get a virtual machine next time :p.
  * @version 0.1
  * @date 2025-02-16
  * 
