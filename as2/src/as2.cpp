@@ -200,10 +200,10 @@ int main()
                 ambience.Update();
             } 
 
-            auto rocket_F6_transform = combine(
+            auto rocket_F6_transform = combine( //Feature #6 - Rocket Located at (0,0,0) (10 points)
                 rotate({0, 1, 0}, (spinAngle)*DEG2RAD),
                 translate({0, 0, 0})
-            ); //Feature #6 - Rocket Located at (0,0,0) (10 points)
+            ); 
 
             auto rocket_F7_transform = combine( //Feature #7 - Rocket Located at (-100, 100, 0), scaled (1,-1,1), and yawed 180 degrees (10 points)
                 rotate({0, 1, 0}, (180+spinAngle)*DEG2RAD), // i guess yaw is y-axis here??? 
@@ -211,10 +211,10 @@ int main()
                 translate({-100, 100, 0})
             );
 
-            auto car_F8_transform = combine(
+            auto car_F8_transform = combine( //Feature #8 - Car Located at (-200,0,0) (10 points)
                 rotate({0, 1, 0}, (spinAngle)*DEG2RAD),
                 translate({-200, 0, 0})
-            ); //Feature #8 - Car Located at (-200,0,0) (10 points)
+            ); 
 
             auto car_F9_transform = combine( //Feature #9 - Car Located at (200,0,0), and yawed 90 degrees (10 points)
                 rotate({0, 1, 0}, (90+spinAngle)*DEG2RAD),
@@ -251,16 +251,17 @@ int main()
                     DrawBoundedModel(cow, cow_transform); 
                     
                     // EC Feature #3 - Four Wheels that Move Along (5 points)
+                    // Car_F8 wheels
                     DrawBoundedModel(wheel, combine( translate({15, 0, 20}), car_F8_transform));
                     DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, 20}), car_F8_transform));
                     DrawBoundedModel(wheel, combine( translate({15, 0, -20}), car_F8_transform));
                     DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, -20}),  car_F8_transform));
-
+                    // Car_F9 wheels
                     DrawBoundedModel(wheel, combine( translate({15, 0, 20}), car_F9_transform));
                     DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, 20}), car_F9_transform));
                     DrawBoundedModel(wheel, combine( translate({15, 0, -20}), car_F9_transform));
                     DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, -20}),  car_F9_transform));
-                    
+                    // Car_F10 wheels
                     DrawBoundedModel(wheel, combine( translate({15, 0, 20}), car_F10_transform));
                     DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, 20}), car_F10_transform));
                     DrawBoundedModel(wheel, combine( translate({15, 0, -20}), car_F10_transform));
@@ -268,7 +269,6 @@ int main()
                 } else {
                     
                 }
-
                 DrawBoundedModel(rocket, rocket_F6_transform); 
                 DrawBoundedModel(rocket, rocket_F7_transform);
                 DrawBoundedModel(car, car_F8_transform); 
