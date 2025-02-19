@@ -152,7 +152,7 @@ int main()
     };
 
     raylib::Model grass = raylib::Mesh::Plane(100, 100, 10, 10).LoadModelFrom();
-    raylib::Texture grassTexture = raylib::Texture("assets/textures/grass.jpg");
+    raylib::Texture grassTexture = raylib::Texture("../../assets/textures/grass.jpg");
     grass.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = grassTexture;
 
     raylib::Model car = raylib::Model("../../assets/Kenny Car Kit/sedan.glb");
