@@ -23,6 +23,15 @@
  
  #define INITIAL_FONT_SIZE 50
  #define INITIAL_FONT_SPACING 2
+
+ #define MAX_SPEED 100
+ #define Y_HEADING_LERP (0.1)
+ #define Y_HEADING_ANGLE_INCREMENT (5.0)
+
+ #define X_HEADING_LERP (0.02)
+ #define X_HEAD_LIMIT (45.0*DEG2RAD)
+ #define DELTA_COMPENSATOR 100.0
+ 
  
  template<typename T> //Cool type validation!
  concept Transformer = requires(T t, raylib::Matrix m) {
@@ -112,8 +121,9 @@
 
 typedef struct{
     Vector3 pos;
-    Vector3 vel;
-    Vector3 accel;
+    Vector2 rot;
+    double vel;
+    double accel;
 } KinematicsData;
 
 // ===========================================================
@@ -121,12 +131,17 @@ typedef struct{
 // ===========================================================
 int main()
 {   
-    double lastLogicTime = 0; //Deltas for controlling logic rates
-
-    double spinAngle = 0; //Extra Credit Animation
-    double spin_scale = 6.0;
-
+    float timer = 0;
     bool enabledExtraCredit = false; 
+
+    bool keyLeftPressed = false;
+    bool keyRightPressed = false;
+    bool keyUpPressed = false;
+    bool keyDownPressed = false;
+    bool keyWPressed = false;
+    bool keySPressed = false;
+
+    Vector3 cameraCarOffset = {0, 120, 500};
 
     raylib::Window window(800, 600, "CS381 - Assignment 3");
     window.SetState(FLAG_WINDOW_RESIZABLE);
@@ -139,7 +154,7 @@ int main()
     // ===========================================================
     raylib::Model cube = raylib::Mesh::Cube(30, 30, 30).LoadModelFrom();
     raylib::Camera camera = raylib::Camera(
-        {0, 120, 500}, 
+        cameraCarOffset, 
         {0, 0, 0}, 
         {0, 1, 0}, 
         45
@@ -147,11 +162,12 @@ int main()
 
     KinematicsData car_kinematics = {
         {0, 0, 0},
-        {0, 0, 0},
-        {0, 0, 0}
+        {0, 0},
+        0,
+        0
     };
 
-    raylib::Model grass = raylib::Mesh::Plane(100, 100, 10, 10).LoadModelFrom();
+    raylib::Model grass = raylib::Mesh::Plane(1000, 1000, 10, 10).LoadModelFrom();
     raylib::Texture grassTexture = raylib::Texture("../../assets/textures/grass.jpg");
     grass.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = grassTexture;
 
@@ -165,35 +181,97 @@ int main()
 
     while (!window.ShouldClose())
     {
-        double currentTime = GetTime();
         
         // ===========================================================
         // Logic Block
         // ===========================================================
 
-            double logicDelta = lastLogicTime - currentTime;
+            double logicDelta = GetFrameTime();
             
             if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
                 enabledExtraCredit = !enabledExtraCredit;
                 if(!enabledExtraCredit){
-                    spinAngle = 0; //reset spin
-                } else {
+
+                    } else {
                 }
             }
 
-            if(enabledExtraCredit){
+            keyLeftPressed = keyLeftPressed ? keyLeftPressed : raylib::Keyboard::IsKeyDown(KEY_LEFT);
+            keyRightPressed = keyRightPressed ? keyRightPressed : raylib::Keyboard::IsKeyDown(KEY_RIGHT);
+            keyUpPressed = keyUpPressed ? keyUpPressed : raylib::Keyboard::IsKeyDown(KEY_UP);
+            keyDownPressed = keyDownPressed ? keyDownPressed : raylib::Keyboard::IsKeyDown(KEY_DOWN);
+            keyWPressed = keyWPressed ? keyWPressed : raylib::Keyboard::IsKeyDown(KEY_W);
+            keySPressed = keySPressed ? keySPressed : raylib::Keyboard::IsKeyDown(KEY_S);
 
-            } 
+            if(timer <= 0){
+                double Y_heading_lerp_ratio = std::min(Y_HEADING_LERP * DELTA_COMPENSATOR * logicDelta, 1.0);
+                
+                if(keyLeftPressed){ 
+                    car_kinematics.rot.y -= Y_HEADING_ANGLE_INCREMENT*DEG2RAD;
+                    car_kinematics.rot.y = fmod(car_kinematics.rot.y, 360*DEG2RAD);
+                    keyLeftPressed = false;
+                } else if(keyRightPressed){
+                    car_kinematics.rot.y += Y_HEADING_ANGLE_INCREMENT*DEG2RAD;
+                    car_kinematics.rot.y = fmod(car_kinematics.rot.y, 360*DEG2RAD);
+                    keyRightPressed = false;
+                } 
+    
+                if(keyUpPressed){
+                    car_kinematics.vel = lerp(car_kinematics.vel, MAX_SPEED, 0.1);
+                    keyUpPressed = false;
+                } else if(keyDownPressed){
+                    car_kinematics.vel = lerp(car_kinematics.vel, -MAX_SPEED, 0.1);
+                    keyDownPressed= false;
+                } else {
+                    car_kinematics.vel = lerp(car_kinematics.vel, 0, 0.1);
+                }
+
+                double X_heading_lerp_ratio = std::min(X_HEADING_LERP * DELTA_COMPENSATOR * logicDelta, 1.0);
+                
+                if(keyWPressed){
+                    car_kinematics.rot.x = lerp(car_kinematics.rot.x, X_HEAD_LIMIT, X_heading_lerp_ratio);
+                    car_kinematics.rot.x = fmod(car_kinematics.rot.x, 360*DEG2RAD);
+                    keyWPressed = false;
+                } else if(keySPressed){
+                    car_kinematics.rot.x = lerp(car_kinematics.rot.x, -X_HEAD_LIMIT, X_heading_lerp_ratio);
+                    car_kinematics.rot.x = fmod(car_kinematics.rot.x, 360*DEG2RAD);
+                    keySPressed = false;
+                } else {
+                    car_kinematics.rot.x = lerp(car_kinematics.rot.x, 0, X_heading_lerp_ratio);
+                }
+
+                //std::cout << car_kinematics.pos.x << " " << car_kinematics.pos.z << std::endl;
+                std::cout << car_kinematics.rot.x << " " << car_kinematics.rot.y << std::endl;
+                timer = 2.5;
+            }
+
+            
+            //Update Kinematics
+            //to be honest I'm not if I'm doing it right, but it seems to be working so :p
+            //too lazy to work out the algebra so I just swapped sin/cos from standard spherical coordinates to whatever the heck raylib lieks
+            car_kinematics.pos.x += car_kinematics.vel * sin(car_kinematics.rot.y) * cos(car_kinematics.rot.x) * logicDelta;
+            car_kinematics.pos.y += (-1.0) * car_kinematics.vel * sin(car_kinematics.rot.x) * logicDelta;
+            car_kinematics.pos.z += car_kinematics.vel * cos(car_kinematics.rot.y) * cos(car_kinematics.rot.x) * logicDelta;
+
+            //Update Camera
+            camera.position.x = lerp(camera.position.x, car_kinematics.pos.x + cameraCarOffset.x, 0.1);
+            camera.position.y = lerp(camera.position.y, car_kinematics.pos.y + cameraCarOffset.y, 0.1);
+            camera.position.z = lerp(camera.position.z, car_kinematics.pos.z + cameraCarOffset.z, 0.1);
+
+            camera.target.x = lerp(camera.target.x, car_kinematics.pos.x, 0.1);
+            camera.target.y = lerp(camera.target.y, car_kinematics.pos.y, 0.1);
+            camera.target.z = lerp(camera.target.z, car_kinematics.pos.z, 0.1);
+
 
             auto car_transform = combine( 
-                rotate({0, 1, 0}, (spinAngle)*DEG2RAD),
+                rotate({1, 0, 0}, car_kinematics.rot.x),
+                rotate({0, 1, 0}, car_kinematics.rot.y),
+                //rotate({0, 0, 1}, car_kinematics.rot.z), //Spherical coordinate system so no need for z ╰(￣ω￣ｏ)
                 translate(car_kinematics.pos),
                 scale({1, 1, 1})
             ); 
 
-
-        lastLogicTime = currentTime;
-
+            timer -= window.GetFrameTime()*1000;
 
         // ===========================================================
         // Draw Block
@@ -204,7 +282,9 @@ int main()
         window.ClearBackground(BLACK);
         camera.BeginMode();
             sky.Draw();
-
+            grass.Draw({});
+            
+        
             if(enabledExtraCredit){
                 DrawBoundedModel(wheel, combine( translate({15, 0, 20}), car_transform));
                 DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, 20}), car_transform));
