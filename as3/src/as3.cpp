@@ -24,7 +24,7 @@
  #define INITIAL_FONT_SIZE 50
  #define INITIAL_FONT_SPACING 2
 
- #define MAX_SPEED 100
+ #define MAX_SPEED 300
  #define Y_HEADING_LERP (0.1)
  #define Y_HEADING_ANGLE_INCREMENT (5.0)
 
@@ -132,7 +132,7 @@ typedef struct{
 int main()
 {   
     float timer = 0;
-    bool enabledExtraCredit = false; 
+    //bool enabledExtraCredit = false; 
 
     bool keyLeftPressed = false;
     bool keyRightPressed = false;
@@ -187,14 +187,6 @@ int main()
         // ===========================================================
 
             double logicDelta = GetFrameTime();
-            
-            if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-                enabledExtraCredit = !enabledExtraCredit;
-                if(!enabledExtraCredit){
-
-                    } else {
-                }
-            }
 
             keyLeftPressed = keyLeftPressed ? keyLeftPressed : raylib::Keyboard::IsKeyDown(KEY_LEFT);
             keyRightPressed = keyRightPressed ? keyRightPressed : raylib::Keyboard::IsKeyDown(KEY_RIGHT);
@@ -284,21 +276,17 @@ int main()
             sky.Draw();
             grass.Draw({});
             
-        
-            if(enabledExtraCredit){
-                DrawBoundedModel(wheel, combine( translate({15, 0, 20}), car_transform));
-                DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, 20}), car_transform));
-                DrawBoundedModel(wheel, combine( translate({15, 0, -20}), car_transform));
-                DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, -20}),  car_transform));
-            } else {
-                
-            }
+            DrawBoundedModel(wheel, combine(translate({15, 0, 20}), car_transform));
+            DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, 20}), car_transform));
+            DrawBoundedModel(wheel, combine(translate({15, 0, -20}), car_transform));
+            DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, -20}),  car_transform));
+
             DrawBoundedModel(car, car_transform); 
                 
             camera.EndMode();
         
 
-        DrawTextEx(GetFontDefault(), "[Left Click] to Toggle Extra Credit Features", Vector2(10,10), INITIAL_FONT_SIZE/2, INITIAL_FONT_SPACING, WHITE);
+        //DrawTextEx(GetFontDefault(), "[Left Click] to Toggle Extra Credit Features", Vector2(10,10), INITIAL_FONT_SIZE/2, INITIAL_FONT_SPACING, WHITE);
 
         window.EndDrawing(); 
         
