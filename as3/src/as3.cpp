@@ -25,6 +25,9 @@
  #define INITIAL_FONT_SPACING 2
 
  #define MAX_SPEED 300
+ #define CAMERA_LERP (0.02)
+
+ #define MAX_SPEED 300
  #define Y_HEADING_LERP (0.1)
  #define Y_HEADING_ANGLE_INCREMENT (5.0)
 
@@ -168,7 +171,7 @@ int main()
     };
 
     raylib::Model grass = raylib::Mesh::Plane(1000, 1000, 10, 10).LoadModelFrom();
-    raylib::Texture grassTexture = raylib::Texture("../../assets/textures/grass.jpg");
+    raylib::Texture grassTexture = raylib::Texture("../../assets/textures/grass.png");
     grass.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = grassTexture;
 
     raylib::Model car = raylib::Model("../../assets/Kenny Car Kit/sedan.glb");
@@ -246,13 +249,15 @@ int main()
             car_kinematics.pos.z += car_kinematics.vel * cos(car_kinematics.rot.y) * cos(car_kinematics.rot.x) * logicDelta;
 
             //Update Camera
-            camera.position.x = lerp(camera.position.x, car_kinematics.pos.x + cameraCarOffset.x, 0.1);
-            camera.position.y = lerp(camera.position.y, car_kinematics.pos.y + cameraCarOffset.y, 0.1);
-            camera.position.z = lerp(camera.position.z, car_kinematics.pos.z + cameraCarOffset.z, 0.1);
+            double camera_lerp_ratio = std::min(CAMERA_LERP * DELTA_COMPENSATOR * logicDelta, 1.0);
 
-            camera.target.x = lerp(camera.target.x, car_kinematics.pos.x, 0.1);
-            camera.target.y = lerp(camera.target.y, car_kinematics.pos.y, 0.1);
-            camera.target.z = lerp(camera.target.z, car_kinematics.pos.z, 0.1);
+            camera.position.x = lerp(camera.position.x, car_kinematics.pos.x + cameraCarOffset.x, camera_lerp_ratio);
+            camera.position.y = lerp(camera.position.y, car_kinematics.pos.y + cameraCarOffset.y, camera_lerp_ratio);
+            camera.position.z = lerp(camera.position.z, car_kinematics.pos.z + cameraCarOffset.z, camera_lerp_ratio);
+
+            camera.target.x = lerp(camera.target.x, car_kinematics.pos.x, camera_lerp_ratio);
+            camera.target.y = lerp(camera.target.y, car_kinematics.pos.y, camera_lerp_ratio);
+            camera.target.z = lerp(camera.target.z, car_kinematics.pos.z, camera_lerp_ratio);
 
 
             auto car_transform = combine( 
