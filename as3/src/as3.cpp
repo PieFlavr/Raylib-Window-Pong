@@ -125,7 +125,6 @@ typedef struct{
     Vector3 pos;
     Vector2 rot;
     double vel;
-    double accel;
 } KinematicsData;
 
 // ===========================================================
@@ -145,7 +144,7 @@ int main()
 
     Vector3 cameraCarOffset = {0, 120, 500};
 
-    raylib::Window window(800, 600, "CS381 - Assignment 3");
+    raylib::Window window(800, 600, "CS381 - Assignment 3"); //Feature #1: Window Title (??? pts)
     window.SetState(FLAG_WINDOW_RESIZABLE);
 
     SetTargetFPS(DRAW_FPS); //Turns out -- trying to do your own FPS limiter is a bad idea -_-
@@ -164,8 +163,7 @@ int main()
 
     KinematicsData car_kinematics = {
         {0, 0, 0},
-        {0, 0},
-        0,
+        {0, 90*DEG2RAD},
         0
     };
 
