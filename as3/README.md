@@ -34,10 +34,6 @@ You can normally clone the repository, but doing so will incur some extra work t
 git clone --recurse-submodules https://github.com/PieFlavr/CS381
 ```
 
-Now, your folder structure should look similar to this...
-
-![alt text](../assets/images/folder-example-as3.png)
-
 ### FETCHING SUBMODULEs
 
 If you cloned the repository normally without `--recurse-submodules` or there are issues with the submodules, they must be fetched manually.
@@ -82,39 +78,36 @@ Additionally, if receivng a `DRIVER TIMOUT` or some sort of `DRIVER CRASH`, it i
 
 ## APPLICATION CONTROLs
 
-Simply `[LEFT_CLICK]` to toggle all extra credit features (including wheels, spinning, animations, etc.)
+`[A]` and `[D]` turns the car's horizontal heading left/right respectively.
+`[W]` and `[S]` moves/accelerates the car forward/backward respectively.
+`[SPACE]` instantly stops the car.
+`[Q]` and `[E]` turns the car's vertical heading down/up respectively.
 
-## QUIZ QUESTIONs and ANSWERs [FEATURE \#12 (5 pts)]
+## QUIZ QUESTIONs and ANSWERs [FEATURE \#12 (15 pts)]
 
 The following are the answer to the quiz questions required for the assignment.
 
 **(1) QUESTION #1**
 
-*(1A) What is the point of the DrawBoundedModel function?*
+*(1A) Explain what DT stands for.*
 
-The DrawBoundedModel() function draws the model with the associated matrix transformations provided via arguments.
-The matrix transformations are not permanent, and the model's initial transform matrix is saved and then set back after drawing.
-Additionally, it draws the wireframe BoundingBox of the model, which is essentially the smallest box encompassing it. 
-The BoundingBox is useful considering not all models are so perfectly visible, as well as for showing collision and other similar logics. Although given that this is only the apparent "draw" of the model as opposed to the the actual permanenet transform, such logic is likely to be implemented seperately while this function is utilized for visual aid of said logic. 
-Given this is also only the apparent "draw" of the model, you can perform this multiple times with the same model, effectively being able to see multiple of the same model without taking on the additional overhead of loading identical models for different draws. 
+DT stands for "Delta Time", which when translated from math-speak, essentially just means the "change-in-time". 
 
-*(1B) Could this function be used in the future to set transformations when a model is loaded?*
+*(1B) Why is it important?*
 
-Since the function does not make permanent changes to the model's transform matrix, you can not set permanent transform modifications on model load. You would need to explicitly modify the model's transform via a function or otherwise to obtain permanent changes. You can use this function to make temporary changes while drawing the model. 
+It is important because DT allows for movements, animations, physics, or otherwise to be consistent regardless of visual FPS.
 
-*(1C) Could it be used to transform a model relative to some "parent"?*
+*(1C) How to calculate it?*
 
-Because of how matrix transformations work and the fact lambdas are passed to transform, you could absolutely use this function to transform a model relative to a "parent". While certain transformations are non-commutative and order matters heavily, all you would realistically need to do is to "chain" matrix transformations while accounting for the hierarchy. Applying the "parent" model transforms, and then the "child" model's transformations relative to the "parent" (by modifying references axes or otherwise) can accomplish this behavior. 
-
-With the way I implemented it though, the logical order appears "backwards" (applying child transforms and then parents), though this is more a consequence of not how coordinate transforms working "backwards" in Linear Algebra (right-to-left application).
+DT can typically be obtained as the "frame time" from the underlying engine, and specific implementation can generally differ. However, more often than not it is calculated as the difference in time between the start of the current frame and the start of the last frame (DT = T_current_start - T_previous_start).
 
 ## EXTRA CREDIT FEATURE IMPLEMENTATIONs
 
 The following have been implemented in the program...
 
-1) Custom Internet Meshes (5 points)
-2) Animate Models (5 points)
-3) Four Wheels that Move Along (5 points)
-4) Appropriately Ambient Audio (5 points)
+1) Don’t use IsKeyPressed to implement incrementing behavior instead implement it yourself using a bool or a timer (+2 points)
+2) Add four wheels that follow the car as it moves (+5 points)
+3) Implement Camera Movement (+10 points)
+4) Your car can only move along a flat plane, implement the ability to fly (maybe for an added rocket) (+10 points)
 
 In the source code `as3.cpp` you can [CTRL+F] and type "EC Feature" to see all primary implementations of the above.
