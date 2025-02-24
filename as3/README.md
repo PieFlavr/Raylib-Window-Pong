@@ -79,8 +79,11 @@ Additionally, if receivng a `DRIVER TIMOUT` or some sort of `DRIVER CRASH`, it i
 ## APPLICATION CONTROLs
 
 `[A]` and `[D]` turns the car's horizontal heading left/right respectively.
+
 `[W]` and `[S]` moves/accelerates the car forward/backward respectively.
+
 `[SPACE]` instantly stops the car.
+
 `[Q]` and `[E]` turns the car's vertical heading down/up respectively.
 
 ## QUIZ QUESTIONs and ANSWERs [FEATURE \#12 (15 pts)]
