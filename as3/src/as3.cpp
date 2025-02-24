@@ -31,6 +31,10 @@
  #define Y_HEADING_LERP (0.1)
  #define Y_HEADING_ANGLE_INCREMENT (5.0)
 
+ #define CAMERA_MINIMUM_FOV 45.0
+ #define CAMERA_MAXIMUM_FOV 60.0
+ #define CAMERA_FOV_LERP (0.005)
+
  #define X_HEADING_LERP (0.02)
  #define X_HEAD_LIMIT (45.0*DEG2RAD)
  #define DELTA_COMPENSATOR 100.0
@@ -138,14 +142,16 @@ int main()
 
     bool keyLeftPressed = false;
     bool keyRightPressed = false;
-    bool keyUpPressed = false;
-    bool keyDownPressed = false;
+    bool keyQPressed = false;
+    bool keyEPressed = false;
     bool keyWPressed = false;
     bool keySPressed = false;
+    bool keyAPressed = false;
+    bool keyDPressed = false;
 
     Vector3 cameraCarOffset = {0, 120, 500};
 
-    raylib::Window window(800, 600, "CS381 - Assignment 3"); //Feature #1: Window Title (??? pts)
+    raylib::Window window(800, 600, "CS381 - Assignment 3"); //Feature #1 - Window Title (??? pts)
     window.SetState(FLAG_WINDOW_RESIZABLE);
 
     SetTargetFPS(DRAW_FPS); //Turns out -- trying to do your own FPS limiter is a bad idea -_-
@@ -191,44 +197,48 @@ int main()
 
             keyLeftPressed = keyLeftPressed ? keyLeftPressed : raylib::Keyboard::IsKeyDown(KEY_LEFT);
             keyRightPressed = keyRightPressed ? keyRightPressed : raylib::Keyboard::IsKeyDown(KEY_RIGHT);
-            keyUpPressed = keyUpPressed ? keyUpPressed : raylib::Keyboard::IsKeyDown(KEY_UP);
-            keyDownPressed = keyDownPressed ? keyDownPressed : raylib::Keyboard::IsKeyDown(KEY_DOWN);
+            keyQPressed = keyQPressed ? keyQPressed : raylib::Keyboard::IsKeyDown(KEY_Q);
+            keyEPressed = keyEPressed ? keyEPressed : raylib::Keyboard::IsKeyDown(KEY_E);
             keyWPressed = keyWPressed ? keyWPressed : raylib::Keyboard::IsKeyDown(KEY_W);
             keySPressed = keySPressed ? keySPressed : raylib::Keyboard::IsKeyDown(KEY_S);
+            keyAPressed = keyAPressed ? keyAPressed : raylib::Keyboard::IsKeyDown(KEY_A);
+            keyDPressed = keyDPressed ? keyDPressed : raylib::Keyboard::IsKeyDown(KEY_D);
 
             if(timer <= 0){
-                double Y_heading_lerp_ratio = std::min(Y_HEADING_LERP * DELTA_COMPENSATOR * logicDelta, 1.0);
+                double camera_lerp_ratio = std::min( CAMERA_FOV_LERP * DELTA_COMPENSATOR * logicDelta, 1.0);
                 
-                if(keyLeftPressed){ 
+                if(keyDPressed){ 
                     car_kinematics.rot.y -= Y_HEADING_ANGLE_INCREMENT*DEG2RAD;
                     car_kinematics.rot.y = fmod(car_kinematics.rot.y, 360*DEG2RAD);
-                    keyLeftPressed = false;
-                } else if(keyRightPressed){
+                    keyDPressed = false;
+                } else if(keyAPressed){
                     car_kinematics.rot.y += Y_HEADING_ANGLE_INCREMENT*DEG2RAD;
                     car_kinematics.rot.y = fmod(car_kinematics.rot.y, 360*DEG2RAD);
-                    keyRightPressed = false;
+                    keyAPressed = false;
                 } 
     
-                if(keyUpPressed){
+                if(keyWPressed){
                     car_kinematics.vel = lerp(car_kinematics.vel, MAX_SPEED, 0.1);
-                    keyUpPressed = false;
-                } else if(keyDownPressed){
+                    camera.SetFovy(std::max(lerp(camera.GetFovy(), CAMERA_MAXIMUM_FOV, camera_lerp_ratio),CAMERA_MINIMUM_FOV));
+                    keyWPressed = false;
+                } else if(keySPressed){
                     car_kinematics.vel = lerp(car_kinematics.vel, -MAX_SPEED, 0.1);
-                    keyDownPressed= false;
+                    keySPressed= false;
                 } else {
                     car_kinematics.vel = lerp(car_kinematics.vel, 0, 0.1);
+                    camera.SetFovy(lerp(camera.GetFovy(), CAMERA_MINIMUM_FOV, camera_lerp_ratio));
                 }
 
                 double X_heading_lerp_ratio = std::min(X_HEADING_LERP * DELTA_COMPENSATOR * logicDelta, 1.0);
                 
-                if(keyWPressed){
+                if(keyQPressed){
                     car_kinematics.rot.x = lerp(car_kinematics.rot.x, X_HEAD_LIMIT, X_heading_lerp_ratio);
                     car_kinematics.rot.x = fmod(car_kinematics.rot.x, 360*DEG2RAD);
-                    keyWPressed = false;
-                } else if(keySPressed){
+                    keyQPressed = false;
+                } else if(keyEPressed){
                     car_kinematics.rot.x = lerp(car_kinematics.rot.x, -X_HEAD_LIMIT, X_heading_lerp_ratio);
                     car_kinematics.rot.x = fmod(car_kinematics.rot.x, 360*DEG2RAD);
-                    keySPressed = false;
+                    keyEPressed = false;
                 } else {
                     car_kinematics.rot.x = lerp(car_kinematics.rot.x, 0, X_heading_lerp_ratio);
                 }
@@ -276,7 +286,7 @@ int main()
 
         window.ClearBackground(BLACK);
         camera.BeginMode();
-            sky.Draw();
+            sky.Draw();       //Feature #2 - Create Scene w/ a Car, Skybox, and Ground Plane (5 points)
             grass.Draw({});
             
             DrawBoundedModel(wheel, combine(translate({15, 0, 20}), car_transform));
