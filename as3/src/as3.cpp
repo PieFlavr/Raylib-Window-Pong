@@ -300,7 +300,7 @@ int main()
             ); 
 
             timer -= window.GetFrameTime()*1000;
-
+            
             if(car_kinematics.vel > (MAX_SPEED/2) && (car_kinematics.rot.x < -10*DEG2RAD || car_kinematics.rot.x > 10*DEG2RAD)){
                 freebird_volume = lerp(freebird_volume, DEFAULT_VOLUME, 0.0001*DELTA_COMPENSATOR*logicDelta);
                 freebird.SetVolume(freebird_volume);
@@ -310,11 +310,11 @@ int main()
                 freebird.SetVolume(freebird_volume);
             }
 
-            if(freebird_volume < 0.01 && freebird_playing){
+            if(freebird_volume < 0.001 && freebird_playing){
                 freebird.Pause();
                 freebird_playing = false;
                 std::cout << "Freebird is paused" << std::endl;
-            } else if (freebird_volume >= 0.01 && !freebird_playing){
+            } else if (freebird_volume >= 0.001 && !freebird_playing){
                 freebird.Play();
                 freebird_playing = true;
                 std::cout << "Freebird is playing" << std::endl;
@@ -342,7 +342,25 @@ int main()
             DrawBoundedModel(car, car_transform); 
                 
             camera.EndMode();
-    
+            
+            
+            DrawTextEx(GetFontDefault(), 
+            "[A/D] to rotate car\n[W/S] to move car\n[Q/E] to rotate car vertically\n[Space] to stop car", 
+            Vector2(10,10), 
+            INITIAL_FONT_SIZE/2, 
+            INITIAL_FONT_SPACING, 
+            Color{0,0,0,(int)(255*std::max(1-(freebird_volume*10.0/DEFAULT_VOLUME),0.0))});
+
+            if(freebird_playing){
+                std::string freebird_text = TextFormat("freebird is playing... [%.2f%]", (freebird_volume/DEFAULT_VOLUME)*100.0);
+                const char* freebird_text_cstr = freebird_text.c_str();
+                DrawTextEx(GetFontDefault(), 
+                freebird_text_cstr, 
+                Vector2(10,window.GetHeight()-INITIAL_FONT_SIZE), 
+                INITIAL_FONT_SIZE/2, 
+                INITIAL_FONT_SPACING, 
+                Color{0,0,0,(int)(255*std::min((freebird_volume*10.0/DEFAULT_VOLUME),1.0))});
+            } 
 
         window.EndDrawing(); 
         
