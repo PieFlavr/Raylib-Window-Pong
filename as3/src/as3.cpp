@@ -1,7 +1,10 @@
 /**
  * @file as3.cpp
  * @author Lucas Pinto
- * @brief 
+ * @brief Program that creates a 3D scene with a car, skybox, and ground plane. The car can be controlled to move and rotate in the scene.
+ *         Most movements are smoothed, and even camera movement and FOV changes in response to car speed is smoothed. 
+ *         Extra Credit and Ordinary Features were implemented in tandem since it was just more convenient that way :p
+ *         Also freebird plays if you fly the car for long enough
  * @version 0.1
  * @date 2025-02-19
  * 
@@ -138,6 +141,7 @@ typedef struct{
 int main()
 {   
     float timer = 0;
+    double freebird_volume = 0;
     //bool enabledExtraCredit = false; 
 
     bool keyLeftPressed = false;
@@ -149,6 +153,8 @@ int main()
     bool keyAPressed = false;
     bool keyDPressed = false;
     bool keySpacePressed = false;
+
+    bool freebird_playing = false;
 
     Vector3 cameraCarOffset = {0, 120, 500};
 
@@ -184,6 +190,11 @@ int main()
 
     raylib::Model wheel = raylib::Model("../../assets/Kenny Car Kit/wheel-default.glb");
     wheel.transform = raylib::Matrix::Identity().Scale(DEFAULT_SCALE);
+
+    raylib::AudioDevice defaultDevice;
+    raylib::Music freebird;
+    freebird.Load("../../custom_assets/as3/Lynyrd Skynyrd - Free Bird (Official Audio).mp3");
+    freebird.Pause();
 
     cs381::SkyBox sky("textures/skybox.png");
 
@@ -256,7 +267,7 @@ int main()
 
 
                 //std::cout << car_kinematics.pos.x << " " << car_kinematics.pos.z << std::endl;
-                std::cout << car_kinematics.rot.x << " " << car_kinematics.rot.y << std::endl;
+                //std::cout << car_kinematics.rot.x << " " << car_kinematics.rot.y << std::endl;
                 timer = 2.5; //Arbitrary timer value to prevent infinite procession :p
             }
 
@@ -289,6 +300,27 @@ int main()
             ); 
 
             timer -= window.GetFrameTime()*1000;
+
+            if(car_kinematics.vel > (MAX_SPEED/2) && (car_kinematics.rot.x < -10*DEG2RAD || car_kinematics.rot.x > 10*DEG2RAD)){
+                freebird_volume = lerp(freebird_volume, DEFAULT_VOLUME, 0.0001*DELTA_COMPENSATOR*logicDelta);
+                freebird.SetVolume(freebird_volume);
+            } else {
+                float velocity_factor = MAX_SPEED/std::max(car_kinematics.vel,(double)(MAX_SPEED*0.90));
+                freebird_volume = lerp(freebird_volume, 0, velocity_factor*0.005*DELTA_COMPENSATOR*logicDelta);
+                freebird.SetVolume(freebird_volume);
+            }
+
+            if(freebird_volume < 0.01 && freebird_playing){
+                freebird.Pause();
+                freebird_playing = false;
+                std::cout << "Freebird is paused" << std::endl;
+            } else if (freebird_volume >= 0.01 && !freebird_playing){
+                freebird.Play();
+                freebird_playing = true;
+                std::cout << "Freebird is playing" << std::endl;
+            }
+
+            freebird.Update();
 
         // ===========================================================
         // Draw Block
