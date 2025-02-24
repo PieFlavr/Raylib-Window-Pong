@@ -236,11 +236,11 @@ int main()
                 double camera_lerp_ratio = std::min( pow(freebird_factor,2) * CAMERA_FOV_LERP * DELTA_COMPENSATOR * logicDelta, 1.0);
                 double car_vel_lerp_ratio = std::min(CAR_LERP*DELTA_COMPENSATOR * logicDelta, 1.0);
                 if(keyDPressed){ //Feature #5F - Pressing D Increases Car's Heading (2 points)
-                    car_kinematics.rot.y -= Y_HEADING_ANGLE_INCREMENT*DEG2RAD;
+                    car_kinematics.rot.y -= Y_HEADING_ANGLE_INCREMENT*DEG2RAD*logicDelta*DELTA_COMPENSATOR;
                     car_kinematics.rot.y = fmod(car_kinematics.rot.y, 360*DEG2RAD);
                     keyDPressed = false;
                 } else if(keyAPressed){ //Feature #5E - Pressing A Increases Car's Heading (2 points)
-                    car_kinematics.rot.y += Y_HEADING_ANGLE_INCREMENT*DEG2RAD;
+                    car_kinematics.rot.y += Y_HEADING_ANGLE_INCREMENT*DEG2RAD*logicDelta*DELTA_COMPENSATOR;
                     car_kinematics.rot.y = fmod(car_kinematics.rot.y, 360*DEG2RAD);
                     keyAPressed = false;
                 } 
@@ -346,6 +346,10 @@ int main()
                 car_kinematics.pos.x = fmod(car_kinematics.pos.x, PLANE_WIDTH/2);
                 car_kinematics.pos.z = fmod(car_kinematics.pos.z, PLANE_LENGTH/2);
                 car_kinematics.pos.y = std::max(car_kinematics.pos.y, (float)0.0);
+            }
+
+            if(freebird_factor >= 0.90){ //There's no going back
+                keyWPressed = true;
             }
 
             freebird.Update();
