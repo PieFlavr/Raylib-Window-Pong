@@ -352,6 +352,10 @@ int main()
                 car_kinematics.pos.y = std::max(car_kinematics.pos.y, (float)0.0);
             }
 
+            if(freebird_factor >= 0.90){ //There's no going back
+                keyWPressed = true;
+            }
+
             freebird.Update();
 
         // ===========================================================
