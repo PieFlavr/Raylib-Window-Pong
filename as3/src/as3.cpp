@@ -253,7 +253,7 @@ int main()
                     car_kinematics.vel = lerp(car_kinematics.vel, -MAX_SPEED, car_vel_lerp_ratio);
                     keySPressed = false;
                 } else {
-                    car_kinematics.vel = lerp(car_kinematics.vel, 0, 0.25*car_vel_lerp_ratio);
+                    car_kinematics.vel = lerp(car_kinematics.vel, 0, 0.05*car_vel_lerp_ratio);
                     camera.SetFovy(lerp(camera.GetFovy(), CAMERA_MINIMUM_FOV, camera_lerp_ratio));
                     //Feature #5B - Car Continues to Move even w/o active control (30 points)
                 }
@@ -315,7 +315,7 @@ int main()
             
             float neg_velocity_factor = MAX_SPEED/std::max(car_kinematics.vel,(double)(MAX_SPEED*0.90));
             float pos_velocity_factor = std::max(car_kinematics.vel,(double)(MAX_SPEED*0.90))/MAX_SPEED;
-            float heading_factor = std::max(std::abs(car_kinematics.rot.x)/(X_HEAD_LIMIT),0.1);
+            float heading_factor = std::min(std::max(std::abs(car_kinematics.rot.x)/(X_HEAD_LIMIT),0.1),0.5);
 
             if(car_kinematics.vel > (MAX_SPEED/2) && car_kinematics.pos.y != 0){
                 freebird_volume = lerp(freebird_volume, DEFAULT_VOLUME, 0.0003*heading_factor*pos_velocity_factor*DELTA_COMPENSATOR*logicDelta);
@@ -365,7 +365,7 @@ int main()
                 DrawBoundedModel(cow, combine(rotate({0,1,0},180*DEG2RAD),translate({0,10,0}),car_transform));
 
                 if(freebird_factor > 0.5){
-                    DrawBoundedModel(rocket, combine(rotate({1,0,0},90*DEG2RAD),translate({0,10,-50}),car_transform));
+                    DrawBoundedModel(rocket, combine(rotate({1,0,0},90*DEG2RAD),translate({0,10,-100}),car_transform));
                 }
             }
             //EC Feature #2 - Add Four Wheels to the Car that FOllow (5 points)
