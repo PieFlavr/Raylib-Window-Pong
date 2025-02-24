@@ -148,6 +148,7 @@ int main()
     bool keySPressed = false;
     bool keyAPressed = false;
     bool keyDPressed = false;
+    bool keySpacePressed = false;
 
     Vector3 cameraCarOffset = {0, 120, 500};
 
@@ -195,6 +196,9 @@ int main()
 
             double logicDelta = GetFrameTime();
 
+            // I think this counts as unbuffered input??? 
+            // Feature #5 - Use Unbuffered Input (10 points total)
+            //EC Feature #1 - Don't Use IsKeyPressed(), instead use a Bool/Timer (2 points)
             keyLeftPressed = keyLeftPressed ? keyLeftPressed : raylib::Keyboard::IsKeyDown(KEY_LEFT);
             keyRightPressed = keyRightPressed ? keyRightPressed : raylib::Keyboard::IsKeyDown(KEY_RIGHT);
             keyQPressed = keyQPressed ? keyQPressed : raylib::Keyboard::IsKeyDown(KEY_Q);
@@ -203,35 +207,37 @@ int main()
             keySPressed = keySPressed ? keySPressed : raylib::Keyboard::IsKeyDown(KEY_S);
             keyAPressed = keyAPressed ? keyAPressed : raylib::Keyboard::IsKeyDown(KEY_A);
             keyDPressed = keyDPressed ? keyDPressed : raylib::Keyboard::IsKeyDown(KEY_D);
+            keySpacePressed = keySpacePressed ? keySpacePressed : raylib::Keyboard::IsKeyDown(KEY_SPACE);
 
-            if(timer <= 0){
+            if(timer <= 0){ //Feature #5A - Incremenenting, not Continuous Values (5pts)
                 double camera_lerp_ratio = std::min( CAMERA_FOV_LERP * DELTA_COMPENSATOR * logicDelta, 1.0);
                 
-                if(keyDPressed){ 
+                if(keyDPressed){ //Feature 5F - Pressing D Increases Car's Heading (2 points)
                     car_kinematics.rot.y -= Y_HEADING_ANGLE_INCREMENT*DEG2RAD;
                     car_kinematics.rot.y = fmod(car_kinematics.rot.y, 360*DEG2RAD);
                     keyDPressed = false;
-                } else if(keyAPressed){
+                } else if(keyAPressed){ //Feature 5E - Pressing A Increases Car's Heading (2 points)
                     car_kinematics.rot.y += Y_HEADING_ANGLE_INCREMENT*DEG2RAD;
                     car_kinematics.rot.y = fmod(car_kinematics.rot.y, 360*DEG2RAD);
                     keyAPressed = false;
                 } 
     
-                if(keyWPressed){
+                if(keyWPressed){ //Feature 5C - Pressin W Increases Car Velcoity (1 point)
                     car_kinematics.vel = lerp(car_kinematics.vel, MAX_SPEED, 0.1);
                     camera.SetFovy(std::max(lerp(camera.GetFovy(), CAMERA_MAXIMUM_FOV, camera_lerp_ratio),CAMERA_MINIMUM_FOV));
                     keyWPressed = false;
-                } else if(keySPressed){
+                } else if(keySPressed){ //Feature 5D - Pressing S Decreases Car Velcoity (1 point)
                     car_kinematics.vel = lerp(car_kinematics.vel, -MAX_SPEED, 0.1);
                     keySPressed= false;
                 } else {
                     car_kinematics.vel = lerp(car_kinematics.vel, 0, 0.1);
                     camera.SetFovy(lerp(camera.GetFovy(), CAMERA_MINIMUM_FOV, camera_lerp_ratio));
+                    //Feature #5B - Car Continues to Move even w/o active control (30 points)
                 }
 
                 double X_heading_lerp_ratio = std::min(X_HEADING_LERP * DELTA_COMPENSATOR * logicDelta, 1.0);
                 
-                if(keyQPressed){
+                if(keyQPressed){ //EC Feature #4 - The Ability to Fly (10 points)
                     car_kinematics.rot.x = lerp(car_kinematics.rot.x, X_HEAD_LIMIT, X_heading_lerp_ratio);
                     car_kinematics.rot.x = fmod(car_kinematics.rot.x, 360*DEG2RAD);
                     keyQPressed = false;
@@ -243,9 +249,15 @@ int main()
                     car_kinematics.rot.x = lerp(car_kinematics.rot.x, 0, X_heading_lerp_ratio);
                 }
 
+                if(keySpacePressed){ //Feature 5G - Pressing Space Resets Car's Velocity (4 points)
+                    car_kinematics.vel = 0;
+                    keySpacePressed = false;
+                }
+
+
                 //std::cout << car_kinematics.pos.x << " " << car_kinematics.pos.z << std::endl;
                 std::cout << car_kinematics.rot.x << " " << car_kinematics.rot.y << std::endl;
-                timer = 2.5;
+                timer = 2.5; //Arbitrary timer value to prevent infinite procession :p
             }
 
             
@@ -289,6 +301,7 @@ int main()
             sky.Draw();       //Feature #2 - Create Scene w/ a Car, Skybox, and Ground Plane (5 points)
             grass.Draw({});
             
+            //EC Feature #2 - Add Four Wheels to the Car that FOllow (5 points)
             DrawBoundedModel(wheel, combine(translate({15, 0, 20}), car_transform));
             DrawBoundedModel(wheel, combine(rotate({0,1,0},180*DEG2RAD), translate({-15, 0, 20}), car_transform));
             DrawBoundedModel(wheel, combine(translate({15, 0, -20}), car_transform));
@@ -297,9 +310,7 @@ int main()
             DrawBoundedModel(car, car_transform); 
                 
             camera.EndMode();
-        
-
-        //DrawTextEx(GetFontDefault(), "[Left Click] to Toggle Extra Credit Features", Vector2(10,10), INITIAL_FONT_SIZE/2, INITIAL_FONT_SPACING, WHITE);
+    
 
         window.EndDrawing(); 
         
