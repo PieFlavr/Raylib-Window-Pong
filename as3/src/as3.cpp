@@ -33,11 +33,13 @@
 
  #define MAX_SPEED 300
  #define Y_HEADING_LERP (0.1)
- #define Y_HEADING_ANGLE_INCREMENT (5.0)
+ #define Y_HEADING_ANGLE_INCREMENT (7.0)
 
  #define CAMERA_MINIMUM_FOV 45.0
  #define CAMERA_MAXIMUM_FOV 60.0
  #define CAMERA_FOV_LERP (0.005)
+
+ #define CAR_ACCELERATION_INCREMENT (30)
 
  #define X_HEADING_LERP (0.02)
  #define X_HEAD_LIMIT (45.0*DEG2RAD)
@@ -158,6 +160,8 @@ int main()
     bool keyDPressed = false;
     bool keySpacePressed = false;
 
+    bool freebird_controls = false;
+
     bool freebird_playing = false;
 
     Vector3 cameraCarOffset = {0, 120, 500};
@@ -240,36 +244,71 @@ int main()
                 double camera_lerp_ratio = std::min( pow(freebird_factor,2) * CAMERA_FOV_LERP * DELTA_COMPENSATOR * logicDelta, 1.0);
                 double car_vel_lerp_ratio = std::min(CAR_LERP*DELTA_COMPENSATOR * logicDelta, 1.0);
                 if(keyDPressed){ //Feature #5F - Pressing D Increases Car's Heading (2 points)
-                    car_kinematics.rot.y -= Y_HEADING_ANGLE_INCREMENT*DEG2RAD*logicDelta*DELTA_COMPENSATOR;
-                    car_kinematics.rot.y = fmod(car_kinematics.rot.y, 360*DEG2RAD);
-                    keyDPressed = false;
+                    if(freebird_controls){
+                        car_kinematics.rot.y -= Y_HEADING_ANGLE_INCREMENT*DEG2RAD*logicDelta*DELTA_COMPENSATOR;
+                    } else if (raylib::Keyboard::IsKeyUp(KEY_D)){
+                        car_kinematics.rot.y -= Y_HEADING_ANGLE_INCREMENT*DEG2RAD;
+                        std::cout << "REAL" << std::endl;
+                    }
+                    if(freebird_controls || raylib::Keyboard::IsKeyUp(KEY_D)){
+                        car_kinematics.rot.y = fmod(car_kinematics.rot.y, 360*DEG2RAD);
+                        keyDPressed = false;
+                    }
                 } else if(keyAPressed){ //Feature #5E - Pressing A Increases Car's Heading (2 points)
-                    car_kinematics.rot.y += Y_HEADING_ANGLE_INCREMENT*DEG2RAD*logicDelta*DELTA_COMPENSATOR;
-                    car_kinematics.rot.y = fmod(car_kinematics.rot.y, 360*DEG2RAD);
-                    keyAPressed = false;
+                    if(freebird_controls){
+                        car_kinematics.rot.y += Y_HEADING_ANGLE_INCREMENT*DEG2RAD*logicDelta*DELTA_COMPENSATOR;
+                    } else if (raylib::Keyboard::IsKeyUp(KEY_A)) {
+                        car_kinematics.rot.y += Y_HEADING_ANGLE_INCREMENT*DEG2RAD;
+                    }
+                    if(freebird_controls || raylib::Keyboard::IsKeyUp(KEY_A)){
+                        car_kinematics.rot.y = fmod(car_kinematics.rot.y, 360*DEG2RAD);
+                        keyAPressed = false;
+                    }
                 } 
     
                 if(keyWPressed){ //Feature #5C - Pressin W Increases Car Velcoity (1 point)
-                    car_kinematics.vel = lerp(car_kinematics.vel, MAX_SPEED+(std::pow(3,10*freebird_factor)-1), car_vel_lerp_ratio);
-                    camera.SetFovy(std::max(lerp(camera.GetFovy(), CAMERA_MAXIMUM_FOV, camera_lerp_ratio),CAMERA_MINIMUM_FOV));
-                    keyWPressed = false;
+                    if(freebird_controls){
+                        car_kinematics.vel = lerp(car_kinematics.vel, MAX_SPEED+(std::pow(3,10*freebird_factor)-1), car_vel_lerp_ratio);
+                    } else if (raylib::Keyboard::IsKeyUp(KEY_W)) {
+                        car_kinematics.vel += CAR_ACCELERATION_INCREMENT;
+                    }
+                    if(freebird_controls || raylib::Keyboard::IsKeyUp(KEY_W)){
+                        camera.SetFovy(std::max(lerp(camera.GetFovy(), CAMERA_MAXIMUM_FOV, camera_lerp_ratio),CAMERA_MINIMUM_FOV));
+                        keyWPressed = false;
+                    }
                 } else if(keySPressed){ //Feature #5D - Pressing S Decreases Car Velcoity (1 point)
-                    car_kinematics.vel = lerp(car_kinematics.vel, -MAX_SPEED, car_vel_lerp_ratio);
-                    keySPressed = false;
+                    if(freebird_controls){
+                        car_kinematics.vel = lerp(car_kinematics.vel, -MAX_SPEED, car_vel_lerp_ratio);
+                    } else if (raylib::Keyboard::IsKeyUp(KEY_S)) {
+                        car_kinematics.vel -= CAR_ACCELERATION_INCREMENT;
+                    }
+                    if(freebird_controls || raylib::Keyboard::IsKeyUp(KEY_S)){
+                        keySPressed = false;
+                    }
                 } else {
-                    car_kinematics.vel = lerp(car_kinematics.vel, 0, 0.05*car_vel_lerp_ratio);
-                    camera.SetFovy(lerp(camera.GetFovy(), CAMERA_MINIMUM_FOV, camera_lerp_ratio));
-                    //Feature #5B - Car Continues to Move even w/o active control (30 points)
+                    if(freebird_controls){
+                        car_kinematics.vel = lerp(car_kinematics.vel, 0, 0.05*car_vel_lerp_ratio);
+                        camera.SetFovy(lerp(camera.GetFovy(), CAMERA_MINIMUM_FOV, camera_lerp_ratio));
+                        //Feature #5B - Car Continues to Move even w/o active control (30 points)
+                    }
                 }
 
                 double X_heading_lerp_ratio = std::min(X_HEADING_LERP * DELTA_COMPENSATOR * logicDelta, 1.0);
                 
                 if(keyQPressed){ //EC Feature #4 - The Ability to Fly (10 points)
-                    car_kinematics.rot.x = lerp(car_kinematics.rot.x, X_HEAD_LIMIT, X_heading_lerp_ratio);
+                    if(freebird_controls){
+                        car_kinematics.rot.x = lerp(car_kinematics.rot.x, X_HEAD_LIMIT, X_heading_lerp_ratio);
+                    } else {
+                        car_kinematics.rot.x += Y_HEADING_ANGLE_INCREMENT;
+                    }
                     car_kinematics.rot.x = fmod(car_kinematics.rot.x, 360*DEG2RAD);
                     keyQPressed = false;
                 } else if(keyEPressed){
-                    car_kinematics.rot.x = lerp(car_kinematics.rot.x, -X_HEAD_LIMIT, X_heading_lerp_ratio);
+                    if(freebird_controls){
+                        car_kinematics.rot.x = lerp(car_kinematics.rot.x, -X_HEAD_LIMIT, X_heading_lerp_ratio);
+                    } else {
+                        car_kinematics.rot.x -= Y_HEADING_ANGLE_INCREMENT;
+                    }
                     car_kinematics.rot.x = fmod(car_kinematics.rot.x, 360*DEG2RAD);
                     keyEPressed = false;
                 } else {
@@ -281,12 +320,11 @@ int main()
                     keySpacePressed = false;
                 }
 
-
                 //std::cout << car_kinematics.pos.x << " " << car_kinematics.pos.z << std::endl;
                 //std::cout << car_kinematics.rot.x << " " << car_kinematics.rot.y << std::endl;
+
                 timer = 2.5; //Arbitrary timer value to prevent infinite procession :p
             }
-
             
             //Feature #3 - Kinematics Physics (10 points), 3D too!
             //to be honest I'm not if I'm doing it right, but it seems to be working so :p
@@ -314,8 +352,13 @@ int main()
                 translate(car_kinematics.pos),
                 scale({1, 1, 1})
             ); 
-
-            timer -= window.GetFrameTime()*1000;
+            
+            if(freebird_controls){
+                timer -= window.GetFrameTime()*1000;
+            } else {
+                timer -= window.GetFrameTime()*500;
+            }
+            
             
             float neg_velocity_factor = MAX_SPEED/std::max(car_kinematics.vel,(double)(MAX_SPEED*0.90));
             float pos_velocity_factor = std::max(car_kinematics.vel,(double)(MAX_SPEED*0.90))/MAX_SPEED;
