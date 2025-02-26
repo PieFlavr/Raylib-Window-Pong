@@ -331,8 +331,13 @@ int main()
                     std::cout << "Freebird Controls: " << (freebird_controls ? "Enabled" : "Disabled") << std::endl;
                 }
 
-                if(keySpacePressed && raylib::Keyboard::IsKeyUp(KEY_SPACE)){ //Feature #5G - Pressing Space Resets Car's Velocity (4 points)
-                    car_kinematics.vel = 0;
+                if(keySpacePressed){ //Feature #5G - Pressing Space Resets Car's Velocity (4 points)
+                    if(freebird_controls){  //Multiples speed in freebird mode lol
+                        car_kinematics.vel *= std::max((1.50)*freebird_factor, 1.05)*((logicDelta)/(1.0/60.0)); //FINALLY FIGURED OUT HOW TO PROPERLY SCALE LOGIC DELTA
+                    } else if(raylib::Keyboard::IsKeyUp(KEY_SPACE)) {
+                        car_kinematics.vel = 0;
+                    }
+                    
                     keySpacePressed = false;
                 }
 
