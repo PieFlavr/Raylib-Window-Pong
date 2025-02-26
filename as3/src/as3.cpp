@@ -158,6 +158,7 @@ int main()
     bool keySPressed = false;
     bool keyAPressed = false;
     bool keyDPressed = false;
+    bool keyTPressed = false;
     bool keySpacePressed = false;
 
     bool freebird_controls = false;
@@ -233,6 +234,7 @@ int main()
             keySPressed = keySPressed ? keySPressed : raylib::Keyboard::IsKeyDown(KEY_S);
             keyAPressed = keyAPressed ? keyAPressed : raylib::Keyboard::IsKeyDown(KEY_A);
             keyDPressed = keyDPressed ? keyDPressed : raylib::Keyboard::IsKeyDown(KEY_D);
+            keyTPressed = keyTPressed ? keyTPressed : raylib::Keyboard::IsKeyDown(KEY_T);
             keySpacePressed = keySpacePressed ? keySpacePressed : raylib::Keyboard::IsKeyDown(KEY_SPACE);
 
             if(freebird_factor >= 0.90){ //There's no going back
@@ -248,7 +250,7 @@ int main()
                         car_kinematics.rot.y -= Y_HEADING_ANGLE_INCREMENT*DEG2RAD*logicDelta*DELTA_COMPENSATOR;
                     } else if (raylib::Keyboard::IsKeyUp(KEY_D)){
                         car_kinematics.rot.y -= Y_HEADING_ANGLE_INCREMENT*DEG2RAD;
-                        std::cout << "REAL" << std::endl;
+                        //std::cout << "REAL" << std::endl;
                     }
                     if(freebird_controls || raylib::Keyboard::IsKeyUp(KEY_D)){
                         car_kinematics.rot.y = fmod(car_kinematics.rot.y, 360*DEG2RAD);
@@ -285,6 +287,7 @@ int main()
                     if(freebird_controls || raylib::Keyboard::IsKeyUp(KEY_S)){
                         keySPressed = false;
                     }
+                
                 } else {
                     if(freebird_controls){
                         car_kinematics.vel = lerp(car_kinematics.vel, 0, 0.05*car_vel_lerp_ratio);
@@ -298,24 +301,37 @@ int main()
                 if(keyQPressed){ //EC Feature #4 - The Ability to Fly (10 points)
                     if(freebird_controls){
                         car_kinematics.rot.x = lerp(car_kinematics.rot.x, X_HEAD_LIMIT, X_heading_lerp_ratio);
-                    } else {
-                        car_kinematics.rot.x += Y_HEADING_ANGLE_INCREMENT;
+                    } else if (raylib::Keyboard::IsKeyUp(KEY_Q)){
+                        car_kinematics.rot.x += Y_HEADING_ANGLE_INCREMENT*DEG2RAD;
                     }
                     car_kinematics.rot.x = fmod(car_kinematics.rot.x, 360*DEG2RAD);
-                    keyQPressed = false;
+                    if(freebird_controls || raylib::Keyboard::IsKeyUp(KEY_Q)){
+                        keyQPressed = false;
+                    }
                 } else if(keyEPressed){
                     if(freebird_controls){
                         car_kinematics.rot.x = lerp(car_kinematics.rot.x, -X_HEAD_LIMIT, X_heading_lerp_ratio);
-                    } else {
-                        car_kinematics.rot.x -= Y_HEADING_ANGLE_INCREMENT;
+                    } else if (raylib::Keyboard::IsKeyUp(KEY_E)){
+                        car_kinematics.rot.x -= Y_HEADING_ANGLE_INCREMENT*DEG2RAD;
                     }
                     car_kinematics.rot.x = fmod(car_kinematics.rot.x, 360*DEG2RAD);
-                    keyEPressed = false;
+                    if(freebird_controls || raylib::Keyboard::IsKeyUp(KEY_E)){
+                        keyEPressed = false;
+                    }
+                    
                 } else {
-                    car_kinematics.rot.x = lerp(car_kinematics.rot.x, 0, X_heading_lerp_ratio);
+                    if(freebird_controls){
+                        car_kinematics.rot.x = lerp(car_kinematics.rot.x, 0, X_heading_lerp_ratio);
+                    }
                 }
 
-                if(keySpacePressed){ //Feature #5G - Pressing Space Resets Car's Velocity (4 points)
+                if(keyTPressed && raylib::Keyboard::IsKeyUp(KEY_T)){
+                    freebird_controls = !freebird_controls;
+                    keyTPressed = false;
+                    std::cout << "Freebird Controls: " << (freebird_controls ? "Enabled" : "Disabled") << std::endl;
+                }
+
+                if(keySpacePressed && raylib::Keyboard::IsKeyUp(KEY_SPACE)){ //Feature #5G - Pressing Space Resets Car's Velocity (4 points)
                     car_kinematics.vel = 0;
                     keySpacePressed = false;
                 }
@@ -429,9 +445,11 @@ int main()
                 
             camera.EndMode();
             
-            
+            std::string controls = "[A/D] to rotate car\n[W/S] to move car\n[Q/E] to rotate car vertically\n[Space] to stop car";
+            controls += "\n[T] to toggle control scheme [" + std::string(freebird_controls ? "Freebird" : "Car") + "]";
+            const char* controls_cstr = controls.c_str();
             DrawTextEx(GetFontDefault(), 
-            "[A/D] to rotate car\n[W/S] to move car\n[Q/E] to rotate car vertically\n[Space] to stop car", 
+            controls_cstr, 
             Vector2(10,10), 
             INITIAL_FONT_SIZE/2, 
             INITIAL_FONT_SPACING, 
