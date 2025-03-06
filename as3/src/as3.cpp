@@ -336,9 +336,12 @@ int main()
                         car_kinematics.vel *= std::max((1.50)*freebird_factor, 1.05)*((logicDelta)/(1.0/60.0)); //FINALLY FIGURED OUT HOW TO PROPERLY SCALE LOGIC DELTA
                     } else if(raylib::Keyboard::IsKeyUp(KEY_SPACE)) {
                         car_kinematics.vel = 0;
+                        std::cout << "stopping car" << std::endl;
                     }
-                    
-                    keySpacePressed = false;
+                        
+                    if(freebird_controls || raylib::Keyboard::IsKeyUp(KEY_SPACE)){
+                        keySpacePressed = false;
+                    } 
                 }
 
                 //std::cout << car_kinematics.pos.x << " " << car_kinematics.pos.z << std::endl;
