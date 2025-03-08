@@ -7,8 +7,8 @@ add_subdirectory(../raylib_multi_window_experimental ${CMAKE_BINARY_DIR}/raylib_
 
 include(../assets/includeable.cmake)
 
-# add_executable(as4 src/as4.cpp src/skybox.cpp)
-# target_link_libraries(as4 PUBLIC raylib raylib_cpp)
+add_executable(as4 src/as4.cpp)
+target_link_libraries(as4 PUBLIC raylib)
 
 make_includeable(../assets/shaders/cubemap.fs generated/cubemap.fs)
 make_includeable(../assets/shaders/cubemap.vs generated/cubemap.vs)

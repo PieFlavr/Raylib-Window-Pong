@@ -9,10 +9,11 @@
  * 
  */
 
-#include <iostream>
+#include "raylib.h"
+#include "raymath.h"
+#include "rlgl.h"
 
-#include "raylib-cpp.hpp"	
-#include "skybox.hpp"
+#include <iostream>
 
 // DEFAULT RENDER SETTINGs
 #define DEFAULT_SCALE 30
@@ -31,8 +32,8 @@
 
 
 template<typename T> //Cool type validation!
-concept Transformer = requires(T t, raylib::Matrix m) {
-    { t(m) } -> std::convertible_to<raylib::Matrix>;
+concept Transformer = requires(T t, Matrix m) {
+    { t(m) } -> std::convertible_to<Matrix>;
 };
 
 
@@ -43,19 +44,19 @@ concept Transformer = requires(T t, raylib::Matrix m) {
  * @brief Arbitrary translation function that translates on each axis accordingly using a vector.
  * 
  */
-auto translate = [](raylib::Vector3 translation) { 
+auto translate = [](Vector3 translation) { 
     // Lambda Inception (￣▽￣)"
-    return [=](raylib::Matrix& transform) -> raylib::Matrix {
-        return transform.Translate(translation);
+    return [=](Matrix& transform) -> Matrix {
+        return MatrixTranslate(translation.x, translation.y, translation.z);
     };
 };
 /**
  * @brief Arbitrary scaling function that scales each axis accordingly using a vector.
  * 
  */
-auto scale = [](raylib::Vector3 scaling) { 
+auto scale = [](Vector3 scaling) { 
     // Lambda Inception (￣▽￣)"
-    return [=](raylib::Matrix& transform) -> raylib::Matrix {
+    return [=](Matrix& transform) -> Matrix {
         return MatrixMultiply(transform, MatrixScale(scaling.x, scaling.y, scaling.z));
     };
 };
@@ -63,9 +64,9 @@ auto scale = [](raylib::Vector3 scaling) {
  * @brief Arbitrary rotation function that rotates (assumedly right hand rule) around the given axis vector.
  * 
  */
-auto rotate = [](raylib::Vector3 axis, float angle) {
+auto rotate = [](Vector3 axis, float angle) {
     // Lambda Inception (￣▽￣)"
-    return [=](raylib::Matrix& transform) -> raylib::Matrix {
+    return [=](Matrix& transform) -> Matrix {
         return MatrixMultiply(transform, MatrixRotate(axis, angle)); 
     };
 };
@@ -74,8 +75,8 @@ auto rotate = [](raylib::Vector3 axis, float angle) {
  */
 auto combine = [](auto... transformers) {
     // Lambda uh... ㄟ( ▔, ▔ )ㄏ
-    return [=](raylib::Matrix& transform) -> raylib::Matrix {
-        raylib::Matrix median_transform; //Will in fact flip the hell out if I don't do this (╯°□°）╯︵ ┻━┻
+    return [=](Matrix& transform) -> Matrix {
+        Matrix median_transform; //Will in fact flip the hell out if I don't do this (╯°□°）╯︵ ┻━┻
         median_transform = transform; //Not exactly sure why??? My guess is its some goofy addressing hallucinations
         ((median_transform = transformers(median_transform)), ...); //Also this is super cool(￣▽￣)b
         return median_transform;
@@ -90,28 +91,27 @@ auto combine = [](auto... transformers) {
  * @brief Draws a model with a transformation applied to it.
  * 
  * @param model The model to be drawn.
- * @param transformer A function or lambda that takes a raylib::Matrix and returns a transformed raylib::Matrix.
+ * @param transformer A function or lambda that takes a Matrix and returns a transformed Matrix.
  */
-void DrawBoundedModel(raylib::Model& model, Transformer auto transformer)
+void DrawBoundedModel(Model& model, Transformer auto transformer)
 {   
-    raylib::Matrix backup = model.transform;   
+    Matrix backup = model.transform;   
     model.transform = transformer(backup);  
-    model.Draw({});
-    model.GetTransformedBoundingBox().Draw(); 
-    model.transform = backup;   
+    DrawModelWires(model, {0, 0, 0}, 1.0f, WHITE);
+    model.transform = backup;
 }
 
 /**
  * @brief Draws a model with a transformation applied to it.
  * 
  * @param model The model to be drawn.
- * @param transformer A function or lambda that takes a raylib::Matrix and returns a transformed raylib::Matrix.
+ * @param transformer A function or lambda that takes a Matrix and returns a transformed Matrix.
  */
-void DrawUnboundedModel(raylib::Model& model, Transformer auto transformer)
+void DrawUnboundedModel(Model& model, Transformer auto transformer)
 {   
-    raylib::Matrix backup = model.transform;   
+    Matrix backup = model.transform;   
     model.transform = transformer(backup);  
-    model.Draw({});
+    DrawModel(model, {0, 0, 0}, 1.0f, WHITE);
     model.transform = backup;   
 }
 
@@ -131,21 +131,15 @@ int main(){
 
         std::string window_title = DEFAULT_TITLE;
 
-        raylib::Window window_main(400, 400, window_title); //FOUND OUT WHY THIS CRAP SEGFAULTs
-        raylib::Window window_A(800, 600, "Window_A");      //IF YOU TRY TO LOAD A MODEL/CAMERA BEFORE A WINDOW, IT EXPLODES!
-        raylib::Window window_B(400, 600, "Window_B");      //SO DON'T DO THAT!
+        //unsigned int window_flags_generic = FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MINIMIZABLE | FLAG_WINDOW_MAXIMIZABLE | FLAG_WINDOW_CLOSEABLE | FLAG_WINDOW_UNDECORATED;
+        unsigned int window_main_flags = 0;
+        int window_main = InitWindowPro(800, 450, window_title.c_str(), window_main_flags);
 
         // ===========================================================
         // Model Loading + Default Transforms
         // ===========================================================
 
-        raylib::Model cube = raylib::Mesh::Cube(30, 30, 30).LoadModelFrom();
-        cube.transform = raylib::Matrix::Identity().Scale(DEFAULT_SCALE);
-
-        raylib::Model cow = raylib::Model("../../custom_assets/as2/Cow.glb");   
-        cow.transform = raylib::Matrix::Identity().Scale(DEFAULT_SCALE);    // From... https://www.fab.com/listings/fbd8c8b0-fc59-460e-adb8-c7ab8f19a6f9    
-
-        raylib::Camera camera = raylib::Camera(
+        Camera camera = Camera(
             {0, 120, 500}, 
             {0, 0, 0}, 
             {0, 1, 0}, 
@@ -156,7 +150,7 @@ int main(){
         // Audio Initialization
         // ===========================================================
 
-        //raylib::AudioDevice defaultDevice;
+        //AudioDevice defaultDevice;
 
         // ===========================================================
         // Primary Booleans
@@ -169,9 +163,8 @@ int main(){
         // Non-Delta Logic BLock
         // ===========================================================
 
-            active_game = !window_main.ShouldClose();
-            active_game = active_game && !window_A.ShouldClose();
-            active_game = active_game && !window_B.ShouldClose();
+        SetActiveWindowContext(window_main);
+        active_game = !WindowShouldClose();
 
         // ===========================================================
         // Delta Logic Block
@@ -185,7 +178,7 @@ int main(){
         // ===========================================================
         // Draw Block
         // ==========================================================
-
+            
             // ===========================================================
             // Draw Logics
             // ===========================================================
@@ -195,39 +188,17 @@ int main(){
             // Render Block 
             // ===========================================================
 
-            window_main.BeginDrawing();
-            window_main.ClearBackground(BLACK);
-
-            window_A.BeginDrawing();
-            window_A.ClearBackground(BLACK);
-
-            window_B.BeginDrawing();
-            window_B.ClearBackground(BLACK);
-
-            camera.BeginMode();
-
-
                 // ===========================================================
-                // Background Draw
+                // Window MAIN Draw
                 // ===========================================================
+                SetActiveWindowContext(window_main);
 
-                DrawBoundedModel(cow, translate({0, 0, 0}));
+                BeginDrawing();
+                ClearBackground(BLACK);
+                
+                DrawTextEx(GetFontDefault(), "Hello, World!", {0, 0}, 50, 2, WHITE);
 
-                // ===========================================================
-                // Midground Draw
-                // ===========================================================
-
-
-
-                // ===========================================================
-                // Foreground Draw
-                // ===========================================================
-
-            camera.EndMode();
-
-            window_main.EndDrawing();
-            window_A.EndDrawing();
-            window_B.EndDrawing();
+                EndDrawing();
 
     }
     
