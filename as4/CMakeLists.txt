@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
-project(as3 C CXX)
+project(as4 C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 # Modified so I don't have to execute my precious drive space
@@ -7,8 +7,8 @@ add_subdirectory(../raylib-cpp ${CMAKE_BINARY_DIR}/raylib-cpp-build)
 
 include(../assets/includeable.cmake)
 
-add_executable(as3 src/as3.cpp src/skybox.cpp)
-target_link_libraries(as3 PUBLIC raylib raylib_cpp)
+add_executable(as4 src/as4.cpp src/skybox.cpp)
+target_link_libraries(as4 PUBLIC raylib raylib_cpp)
 
 make_includeable(../assets/shaders/cubemap.fs generated/cubemap.fs)
 make_includeable(../assets/shaders/cubemap.vs generated/cubemap.vs)
