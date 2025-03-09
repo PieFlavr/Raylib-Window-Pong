@@ -135,9 +135,10 @@ IN THE AME OVER SCREEN...
 The following have been implemented in the program...
 
 1) Multiplayer (Left/Right Player Paddles)
-2) Audio Input (Yelling Accelerator)
+2) Audio Input (Yelling Accelerator using Miniaudio (the lib. under raudio) to do it)
 3) Terminal ASCII Art (Audio Input Visualizer)
 4) Funny Name (see README title)
-5) Manual Cleanup (literally using a random Raylib fork, not the CPP wrapper ￣へ￣)
+5) Manual Cleanup (literally using a random Raylib fork so have to, not the CPP wrapper ￣へ￣)
 6) ~~[maybe???] Custom Shaders (Raymarching that sometimes works, sometimes doesn't have no idea why)~~
+^^^ i just gave up this thing is out of my scope with the time i got
 7) Leaderboard Implementation (persists + lets you type name)
