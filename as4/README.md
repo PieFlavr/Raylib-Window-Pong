@@ -80,13 +80,17 @@ Additionally, if receivng a `DRIVER TIMOUT` or some sort of `DRIVER CRASH`, it i
 
 ## APPLICATION CONTROLs
 
-`[A]` and `[D]` turns the car's horizontal heading left/right respectively.
+`[W]` and `[S]` moves the left paddle up and down respectively.
 
-`[W]` and `[S]` moves/accelerates the car forward/backward respectively.
+`[UP]` and `[DOWN]` arrow keys move the right paddle up and down respectively.
 
-`[SPACE]` instantly stops the car.
+`[SPACE]` holds the scoreboard window and enlarges it.
 
-`[Q]` and `[E]` turns the car's vertical heading down/up respectively.
+`[MIDDLE_CLICK]` on the scoreboard window while enlarged let's you move it.
+
+`[T]` in the starting menu shows the leaderboard.
+
+`[ENTER]` re/starts the main game.
 
 ## EXTRA CREDIT FEATURE IMPLEMENTATIONs
 
