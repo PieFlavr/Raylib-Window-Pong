@@ -40,6 +40,17 @@
 #define PADDLE_HEIGHT 100
 #define PADDLE_WIDTH 20
 
+#define DRAW_SCENE \
+    do { \
+        BeginMode3D(camera);\
+                                \
+        DrawSphere({0, 0, 0}, 1.0f, RED);\
+        DrawGrid(10, 1.0f);\
+        DrawSphere(camera.target, 1.0f, BLUE);\
+    EndMode3D();\
+    } while(0)
+    
+
 
 template<typename T> //Cool type validation!
 concept Transformer = requires(T t, Matrix m) {
@@ -145,17 +156,21 @@ int main(){
 
         //unsigned int window_flags_generic = FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MINIMIZABLE | FLAG_WINDOW_MAXIMIZABLE | FLAG_WINDOW_CLOSEABLE | FLAG_WINDOW_UNDECORATED;
         unsigned int window_main_flags = 0;
-        int window_main = InitWindowPro(800, 450, window_title.c_str(), window_main_flags);
+
+        Vector2 window_main_dim = {400, 400};
+
+        int window_main = InitWindowPro(window_main_dim.x, window_main_dim.y, window_title.c_str(), window_main_flags);
+        int window_1 = InitWindowPro(400, 400, "Window 1", window_main_flags);
 
         // ===========================================================
         // Model Loading + Default Transforms
         // ===========================================================
 
-        Camera3D camera_1 = { 0 };
-        camera_1.position = (Vector3){ 10.0f, 10.0f, 10.0f };  // Camera position
-        camera_1.target = (Vector3){ 0.0f, 0.0f, 0.0f };       // Looking at the origin
-        camera_1.up = (Vector3){ 0.0f, 1.0f, 0.0f };           // Y-axis is up
-        camera_1.fovy = 45.0f;                                  // Field of view (in degrees)
+        Camera3D camera = { 0 };
+        camera.position = (Vector3){ 10.0f, 10.0f, 10.0f };  // Camera position
+        camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };       // Looking at the origin
+        camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };           // Y-axis is up
+        camera.fovy = 45.0f;                                  // Field of view (in degrees)
 
         // ===========================================================
         // Shader + Other Loading
@@ -183,6 +198,18 @@ int main(){
         // ===========================================================
 
         bool active_game = true;
+
+        Vector3 camera_base_target = {0, 0, 0};
+        Vector3 camera_base_position = {10, 10, 10};
+        float camera_base_fov = 45.0f;
+
+        Vector3 forward = Vector3Normalize(Vector3Subtract(camera.target, camera.position));  
+        Vector3 right = Vector3Normalize(Vector3CrossProduct(forward, camera.up));  
+        Vector3 up = camera.up; 
+
+        Vector2 screen_dim = {GetMonitorWidth(0), GetMonitorHeight(0)};
+        Vector2 screen_center = {screen_dim.x/2, screen_dim.y/2};
+
         SetTargetFPS(DRAW_FPS);
 
     while (active_game){
@@ -193,6 +220,8 @@ int main(){
 
             SetActiveWindowContext(window_main);
             active_game = !WindowShouldClose();
+            SetActiveWindowContext(window_1);
+            active_game = active_game || !WindowShouldClose();
 
         // ===========================================================
         // Delta Logic Block
@@ -211,6 +240,21 @@ int main(){
             // Draw Logics
             // ===========================================================
 
+            UpdateCamera(&camera, CAMERA_PERSPECTIVE);
+            
+            Matrix view_matrix = MatrixLookAt(camera.position, camera.target, camera.up);
+            float camera_distance = Vector3Distance(camera.position, camera.target);
+            int diameter_width = 2 * tan(camera.fovy * DEG2RAD * 0.5) * camera_distance;
+
+            int screenWidth = GetMonitorWidth(0);
+            int screenHeight = GetMonitorHeight(0);
+
+            SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "cameraPos"), &camera.position, SHADER_UNIFORM_VEC3);
+            SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenWidth"), &screenWidth, SHADER_UNIFORM_INT);
+            SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenHeight"), &screenHeight, SHADER_UNIFORM_INT);  
+            SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "view"), view_matrix);
+            SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "projection"), MatrixPerspective(camera.fovy, (double)GetScreenWidth()/(double)GetScreenHeight(), 0.1, 1000.0));
+
 
             // ===========================================================
             // Render Block 
@@ -219,43 +263,84 @@ int main(){
                 // ===========================================================
                 // Window MAIN Draw
                 // ===========================================================
-
+            
                 SetActiveWindowContext(window_main);
 
-                UpdateCamera(&camera_1, CAMERA_FREE);
+                Vector2 window_main_dim = {GetScreenWidth(), GetScreenHeight()};
+                Vector2 window_coords = GetWindowPosition();
+                Vector2 window_center = Vector2Add(GetWindowPosition(),Vector2Multiply(window_main_dim, {0.5, 0.5}));
+                Vector2 window_offset = Vector2Subtract(window_center, screen_center);
 
-                Matrix view_matrix = MatrixLookAt(camera_1.position, camera_1.target, camera_1.up);
-                int screenWidth = GetScreenWidth();
-                int screenHeight = GetScreenHeight();
+                Vector2 normalized_position = Vector2Divide(window_offset, screen_center);
+                normalized_position.y *= -1;
 
-                SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "cameraPos"), &camera_1.position, SHADER_UNIFORM_VEC3);
-                SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenWidth"), &screenWidth, SHADER_UNIFORM_INT);
-                SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenHeight"), &screenHeight, SHADER_UNIFORM_INT);  
-                SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "view"), view_matrix);
-                SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "projection"), MatrixPerspective(camera_1.fovy, (double)GetScreenWidth()/(double)GetScreenHeight(), 0.1, 1000.0));
+                Vector3 world_offset = {normalized_position.x * diameter_width, normalized_position.y * diameter_width, 0};
+                float reduction_factor = 1.0f / (1.0f + Vector2Length(normalized_position));
+
+                std::cout << "Normalized Position: " << normalized_position.x << " " << normalized_position.y << " ";
+                std::cout << "Window Center: " << window_center.x << " " << window_center.y << " ";
+                std::cout << "Window Offset: " << window_offset.x << " " << window_offset.y << " ";
+                std::cout << "World Offset: " << world_offset.x << " " << world_offset.y << " " << world_offset.z << std::endl;
+
+                camera.position = Vector3Add(camera_base_position, world_offset);
+
+                Vector3 camera_translation = Vector3Add(
+                    Vector3Add(
+                        Vector3Scale(right, world_offset.x),
+                        Vector3Scale(up, world_offset.y)
+                    ),
+                    Vector3Scale(forward, world_offset.z)
+                );
+
+                camera.target = Vector3Add(camera_base_target, camera_translation);
+                camera.position = Vector3Add(camera_base_position, camera_translation);
+                camera.fovy = camera_base_fov * reduction_factor;
+
+
+                //camera.fovy = 2.0f * atan(reduction_ratio * tan(camera_base_fov * DEG2RAD * 0.5)) * RAD2DEG;
+   
 
                 BeginDrawing();
                     ClearBackground(RAYWHITE);
-
-                    BeginMode3D(camera_1);
-
-                        DrawSphere({0, 0, 0}, 1.0f, RED);
-                        DrawGrid(10, 1.0f);
-
-                    EndMode3D();
-
-                    BeginShaderMode(raymarching_shader);
-                        
-                        DrawSphere({0, 0, 0}, 1.0f, RED);
-
-                    EndShaderMode();
+                    DRAW_SCENE;
 
                 EndDrawing();
+
+                camera.fovy = camera_base_fov;
+                camera.target = camera_base_target;
+                camera.position = camera_base_position;
+
+                // ===========================================================
+                // Window 1 Draw
+                // ===========================================================
+                
+                    SetActiveWindowContext(window_1);
+
+                    BeginDrawing();
+                        ClearBackground(RAYWHITE);
+                        DRAW_SCENE;
+
+                        float rectX = (window_coords.x/screen_dim.x) * GetScreenWidth();
+                        float rectY = (window_coords.y/screen_dim.y) * GetScreenHeight();
+                        float rectWidth = window_main_dim.x / screen_dim.x * GetScreenWidth();
+                        float rectHeight = window_main_dim.y / screen_dim.x * GetScreenHeight();
+
+                        DrawRectangleLines(rectX, rectY, rectWidth, rectHeight, RED);
+
+                    EndDrawing();
+                
+
+                
 
     }
     
     //Clean-up
     UnloadShader(raymarching_shader);
+
+    SetActiveWindowContext(window_main);
+    CloseWindow();
+
+    SetActiveWindowContext(window_1);
     CloseWindow();
 
 
