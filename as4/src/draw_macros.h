@@ -1,0 +1,68 @@
+#ifndef DRAW_MACROS_H
+#define DRAW_MACROS_H
+
+#define DRAW_3D_SCENE \
+    do { \
+        BeginMode3D(camera);\
+                                \
+        DrawSphere({0, 0, 0}, 1.0f, RED);\
+        DrawGrid(10, 1.0f);\
+        /**DrawSphere(camera.target, 1.0f, BLUE);**/ \
+    EndMode3D();\
+    } while(0)
+    
+#define GAME_DRAW_LOGIC(base_window, return_window) \
+    do { \
+        Vector2 left_paddle_relative_pos = GetRelativePosition(left_paddle_pos, base_window, return_window);\
+        Vector2 right_paddle_relative_pos = GetRelativePosition(right_paddle_pos, base_window, return_window);\
+        Vector2 ball_relative_pos = GetRelativePosition(ball_pos, base_window, return_window);\
+        \
+        DrawRectangleLines(left_paddle_relative_pos.x, left_paddle_relative_pos.y, left_paddle_size.x, left_paddle_size.y, RED);\
+        DrawRectangleLines(right_paddle_relative_pos.x, right_paddle_relative_pos.y, right_paddle_size.x, right_paddle_size.y, BLUE);\
+        DrawCircleV(ball_relative_pos, ball_radius, GREEN);\
+    } while (0)
+
+#define GET_WINDOW_INFO \   
+        Vector2 window_coords = {GetWindowPosition().x, GetWindowPosition().y}; \
+        Vector2 window_dim = {GetScreenWidth(), GetScreenHeight()}; \
+        Vector2 window_center = Vector2Add(window_coords,Vector2Multiply(window_dim, {0.5, 0.5})); \
+        Vector2 window_offset = Vector2Subtract(window_center, screen_center); \
+
+#define GET_NORMALIZED_WINDOW_INFO \ 
+        Vector2 normalized_position = Vector2Divide(window_offset, screen_center); \
+        float square_y_normal = window_offset.y / screen_center.x; \
+        normalized_position.y *= -1; \
+                                        \
+        Vector3 world_offset = {normalized_position.x * diameter_width, normalized_position.y * diameter_width, 0}; \
+        float reduction_factor = 1.0f / (1.0f + Vector2Length({normalized_position.x, square_y_normal})); \
+
+#define UPDATE_CAMERA \
+        camera.position = Vector3Add(camera_base_position, world_offset); \
+                            \
+        Vector3 camera_translation = Vector3Add( \
+            Vector3Add( \
+                Vector3Scale(right, world_offset.x), \
+                Vector3Scale(up, world_offset.y) \
+            ), \
+            Vector3Scale(forward, world_offset.z) \
+        ); \
+                        \
+        camera.target = Vector3Add(camera_base_target, camera_translation); \
+        camera.position = Vector3Add(camera_base_position, camera_translation); \
+        camera.fovy = camera_base_fov * reduction_factor; \
+
+#define RESET_CAMERA \ 
+    camera.fovy = camera_base_fov; \
+    camera.target = camera_base_target; \
+    camera.position = camera_base_position; \
+
+#define DRAW_VIEWPORT_VIEW \
+        float rectX = (window_coords.x/ screen_dim.x) * GetScreenWidth(); \
+        float rectY = (window_coords.y/ screen_dim.y) * GetScreenHeight(); \
+        float rectWidth = window_dim.x / screen_dim.x * GetScreenWidth(); \
+        float rectHeight = window_dim.y / screen_dim.y * GetScreenHeight(); \
+                                                                        \
+        DrawRectangleLines(rectX, rectY, rectWidth, rectHeight, RED); \
+
+
+#endif // DRAW_MACROS_H

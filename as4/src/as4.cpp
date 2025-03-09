@@ -1,7 +1,11 @@
 /**
  * @file as4.cpp
  * @author your name (you@domain.com)
- * @brief 
+ * @brief I'm not gonna lie, I'm not sure what I'm doing anymore.
+ *        This is cursed to an unimaginable extent, and I'm not sure if I'm proud of it or not.
+ *        The way this is coded is an afront to nature itself.
+ *        I guess this is what happens when you can't use lists/obejcts and try to do a goofy thing.
+ *      I'm sorry. (¬_¬")
  * @version 0.1
  * @date 2025-03-08
  * 
@@ -25,13 +29,13 @@
 
 #include <iostream>
 
+// Organizational Inncludes
+#include "draw_macros.h"
 #include "utils.cpp"
 
 // AUDIO AAAAAAAAAAAGGGGGHHHHH
 #include "miniaudio.h"
-#include <cstdint>
-
-#define AUDIO_BUFFER_SIZE 1024
+#include "input_audio.cpp"
 
 // DEFAULT RENDER SETTINGs
 #define DEFAULT_SCALE 5
@@ -42,6 +46,7 @@
 #define INITIAL_FONT_SIZE 50
 #define INITIAL_FONT_SPACING 2
 #define DEFAULT_WINDOW_WIDTH 400
+#define MAIN_WINDOW_WIDTH 600
 
 #define DEFAULT_TITLE "CS381 - Assignment 4"
 
@@ -51,19 +56,9 @@
 
 #define BALL_RADIUS 10
 
-#define WINDOW_VELOCITY 100000.0f
-#define GRAVITY 98000000.0f
+#define WINDOW_VELOCITY 10.0f
+#define GRAVITY -9.8f
 
-#define DRAW_3D_SCENE \
-    do { \
-        BeginMode3D(camera);\
-                                \
-        DrawSphere({0, 0, 0}, 1.0f, RED);\
-        DrawGrid(10, 1.0f);\
-        /**DrawSphere(camera.target, 1.0f, BLUE);**/ \
-    EndMode3D();\
-    } while(0)
-    
 
 
 template<typename T> //Cool type validation!
@@ -86,7 +81,7 @@ auto translate = [](Vector3 translation) {
     };
 };
 /**
- * @brief Arbitrary scaling function that scales each axis accordingly using a vector.
+ * @brief Arbitrary scaling function that scales each axis accordingly using a vector.Ok
  * 
  */
 auto scale = [](Vector3 scaling) { 
@@ -151,34 +146,6 @@ void DrawUnboundedModel(Model& model, Transformer auto transformer)
 }
 
 // ===========================================================
-// Input Audio Shenanignans
-// ===========================================================
-
-float audioBuffer[AUDIO_BUFFER_SIZE];
-
-void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, uint32_t frameCount)
-{
-    const float* inputSamples = (const float*)pInput;
-
-    // Copy the input audio data into the audioBuffer
-    for (uint32_t i = 0; i < frameCount; i++) {
-        audioBuffer[i] = inputSamples[i];
-    }
-}
-float calculate_loud() {
-    float sum = 0.0f;
-
-    // Calculate the square of each sample and sum them
-    for (int i = 0; i < 1024; i++) {
-        sum += audioBuffer[i] * audioBuffer[i];
-    }
-
-    // Return the RMS (root mean square) of the audio samples as the loudness
-    return sqrtf(sum / 1024.0f);
-}
-
-
-// ===========================================================
 // Main Function
 // ===========================================================
 
@@ -197,9 +164,9 @@ int main(){
         //unsigned int window_flags_generic = FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MINIMIZABLE | FLAG_WINDOW_MAXIMIZABLE | FLAG_WINDOW_CLOSEABLE | FLAG_WINDOW_UNDECORATED;
         unsigned int window_main_flags = 0;
 
-        Vector2 window_main_dim = {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH};
+        Vector2 main_window_dim = {MAIN_WINDOW_WIDTH, MAIN_WINDOW_WIDTH};
 
-        int window_main = InitWindowPro(window_main_dim.x, window_main_dim.y, window_title.c_str(), window_main_flags);
+        int window_main = InitWindowPro(main_window_dim.x, main_window_dim.y, window_title.c_str(), window_main_flags);
 
         int screenWidth = GetMonitorWidth(0);
         int screenHeight = GetMonitorHeight(0);
@@ -207,12 +174,24 @@ int main(){
         float aspect_ratio = (double)screenWidth / (double)screenHeight;
         std::cout << "Aspect Ratio: " << aspect_ratio << std::endl;
 
-        int scoreboard_window = InitWindowPro(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH/aspect_ratio, "Window 1", window_main_flags);
+        int scoreboard_window = InitWindowPro(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH/aspect_ratio, "Scoreboard", window_main_flags);
+        int left_paddle_window = InitWindowPro(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH, "Left Paddle View", window_main_flags);
+        int right_paddle_window = InitWindowPro(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH, "Right Paddle View", window_main_flags);
 
         SetActiveWindowContext(window_main);
+        SetTargetFPS(DRAW_FPS);
         SetWindowPosition(screenWidth/2, screenHeight/2);
 
         SetActiveWindowContext(scoreboard_window);
+        SetTargetFPS(DRAW_FPS);
+        SetWindowPosition(screenWidth/2, screenHeight/2);
+
+        SetActiveWindowContext(left_paddle_window);
+        SetTargetFPS(DRAW_FPS);
+        SetWindowPosition(screenWidth/2, screenHeight/2);
+
+        SetActiveWindowContext(right_paddle_window);
+        SetTargetFPS(DRAW_FPS);
         SetWindowPosition(screenWidth/2, screenHeight/2);
 
 
@@ -273,7 +252,7 @@ int main(){
         // Game "Objects" and Variables
         // ===========================================================
 
-            float drag = 0.9f;
+            float drag = 0.8f;
             float gravity = GRAVITY;
             float time_scale = 1.0f;
             
@@ -293,6 +272,9 @@ int main(){
             Vector2 scoreboard_window_dim = {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH/aspect_ratio};
             Vector2 scoreboard_window_dim_default = {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH/aspect_ratio};
             Vector2 scoreboard_window_coords = GetWindowPosition();
+
+            Vector2 left_paddle_window_pos = {10, (screenHeight/2) - (PADDLE_HEIGHT/2)};
+            Vector2 right_paddle_window_pos = {screenWidth - 10 - PADDLE_WIDTH - DEFAULT_WINDOW_WIDTH, (screenHeight/2) - (PADDLE_HEIGHT/2)};
 
         // ===========================================================
         // Miscallaneous Initialization/Variables
@@ -329,13 +311,9 @@ int main(){
             // ===========================================================
                 SetActiveWindowContext(window_main);
 
-                Vector2 window_main_dim = {GetScreenWidth(), GetScreenHeight()};
-                Vector2 main_window_center = Vector2Add(GetWindowPosition(),Vector2Multiply(window_main_dim, {0.5, 0.5}));
+                Vector2 main_window_dim = {GetScreenWidth(), GetScreenHeight()};
+                Vector2 main_window_center = Vector2Add(GetWindowPosition(),Vector2Multiply(main_window_dim, {0.5, 0.5}));
                 Vector2 main_window_offset = Vector2Subtract(main_window_center, screen_center);
-
-                Vector2 normalized_position = Vector2Divide(main_window_offset, screen_center);
-                float square_y_normal = main_window_offset.y / screen_center.x;
-                normalized_position.y *= -1;
 
             // ===========================================================
             // Audio Block
@@ -346,18 +324,16 @@ int main(){
                 }
 
                 float LOUD = calculate_loud();
-                std::cout << "LOUD: " << LOUD << std::endl;
+                //std::cout << "LOUD: " << LOUD << std::endl;
+
+
 
         // ===========================================================
         // Delta Logic Block
         // ===========================================================
 
-            // ===========================================================
-            // Main Window Iteration Logic
-            // ===========================================================
-
             double logicFrameTime = GetFrameTime();
-            float logicDelta = logicFrameTime/LOGIC_FPS;
+            float logicDelta = logicFrameTime  * (float)LOGIC_FPS;
             if(LOUD > 0.05f){
                 time_scale = lerp(time_scale, 1.0f/LOUD, 0.1f);
             } else {
@@ -365,74 +341,112 @@ int main(){
             }
             logicDelta = logicDelta * time_scale;
 
+            // ===========================================================
+            // Pong Controls
+            // ===========================================================
+            if(IsKeyDown(KEY_W)){
+                left_paddle_pos.y -= 10.0f * logicDelta;
+            }
+            if(IsKeyDown(KEY_S)){
+                left_paddle_pos.y += 10.0f * logicDelta;
+            }
+
+            if(IsKeyDown(KEY_UP)){
+                right_paddle_pos.y -= 10.0f * logicDelta;
+            }
+            if(IsKeyDown(KEY_DOWN)){
+                right_paddle_pos.y += 10.0f * logicDelta;
+            }
+
+            left_paddle_pos.y = std::fmax(0, std::fmin(screenHeight - left_paddle_size.y, left_paddle_pos.y));
+            right_paddle_pos.y = std::fmax(0, std::fmin(screenHeight - right_paddle_size.y, right_paddle_pos.y));
+
+
+            // ===========================================================  
+            // Main Window Iteration Logic
+            // ===========================================================
+
             SetActiveWindowContext(window_main);
                 main_window_coords.x = main_window_coords.x + (main_window_velocity.x * logicDelta);
                 main_window_coords.y = main_window_coords.y + (main_window_velocity.y * logicDelta);
 
                 // std::cout << main_window_coords.x << " " << main_window_coords.y << " ";
-                // std::cout << (main_window_coords.x <= 0 && main_window_velocity.x < 0) << " " << (main_window_coords.x + window_main_dim.x >= screenWidth && main_window_velocity.x > 0);  
+                // std::cout << (main_window_coords.x <= 0 && main_window_velocity.x < 0) << " " << (main_window_coords.x + main_window_dim.x >= screenWidth && main_window_velocity.x > 0);  
                 // std::cout << " " << main_window_velocity.x << std::endl;
 
                 //My hatred for this code is immeasurable
                 //And my day is ruined
 
-                Vector2 main_window_collision = CheckCollisionWithBoundary({main_window_coords.x, main_window_coords.y, window_main_dim.x, window_main_dim.y}, 
+                Vector2 main_window_collision = CheckCollisionWithBoundary({main_window_coords.x, main_window_coords.y, main_window_dim.x, main_window_dim.y}, 
                     {0, 0, screenWidth, screenHeight}, main_window_velocity);
 
                 main_window_velocity.x *= main_window_collision.x;
                 main_window_velocity.y *= main_window_collision.y;
 
                 // if((main_window_coords.x <= 0 && main_window_velocity.x < 0) || 
-                //     (main_window_coords.x + window_main_dim.x >= screenWidth && main_window_velocity.x > 0)){
+                //     (main_window_coords.x + main_window_dim.x >= screenWidth && main_window_velocity.x > 0)){
                 //     main_window_velocity.x *= -1.0f;
                 // } 
                 // if((main_window_coords.y <= 0 && main_window_velocity.y < 0) || 
-                //     (main_window_coords.y + window_main_dim.y >= screenHeight && main_window_velocity.y > 0)){
+                //     (main_window_coords.y + main_window_dim.y >= screenHeight && main_window_velocity.y > 0)){
                 //     main_window_velocity.y *= -1.0f;
                 // }
 
 
-                main_window_coords.x = std::fmax(0, std::fmin(screenWidth - window_main_dim.x, main_window_coords.x));
-                main_window_coords.y = std::fmax(0, std::fmin(screenHeight - window_main_dim.y, main_window_coords.y));
+                main_window_coords.x = std::fmax(0, std::fmin(screenWidth - main_window_dim.x, main_window_coords.x));
+                main_window_coords.y = std::fmax(0, std::fmin(screenHeight - main_window_dim.y, main_window_coords.y));
 
                 SetWindowPosition((int)main_window_coords.x, (int)main_window_coords.y);  
-                SetWindowSize(window_main_dim.x, window_main_dim.y);
+                SetWindowSize(main_window_dim.x, main_window_dim.y);
 
-        // ===========================================================
-        // Scoreboard Window Iteration Logic
-        // ===========================================================
+            // ===========================================================
+            // Scoreboard Window Iteration Logic
+            // ===========================================================
 
             SetActiveWindowContext(scoreboard_window);
- 
+
                 Vector2 scoreboard_window_collision = CheckCollisionWithBoundary({scoreboard_window_coords.x, scoreboard_window_coords.y, scoreboard_window_dim.x, scoreboard_window_dim.y}, 
                 {0, 0, screenWidth, screenHeight}, scoreboard_window_velocity);
 
                 Vector2 mouse_pos = GetMousePosition();
+                Vector2 mouse_delta = GetMouseDelta();
+                float mouse_delta_absolute = Vector2Length(mouse_delta);
+                mouse_delta_absolute = std::fmin(1.0f, mouse_delta_absolute); 
+                //std::cout << mouse_delta_absolute << std::endl;
+
+                Vector2 old_scoreboard_window_dim = scoreboard_window_dim; //For shrinking to the center as opposed to the corner.
 
                 if(IsKeyDown(KEY_SPACE)){
-                    scoreboard_window_dim.x = lerp(scoreboard_window_dim.x, scoreboard_window_dim_default.x*1.3, 0.1f);
-                    scoreboard_window_dim.y = lerp(scoreboard_window_dim.y, scoreboard_window_dim_default.y*1.3, 0.1f);
+                    scoreboard_window_dim.x = lerp(scoreboard_window_dim.x, scoreboard_window_dim_default.x * 1.3, 0.1f);
+                    scoreboard_window_dim.y = lerp(scoreboard_window_dim.y, scoreboard_window_dim_default.y * 1.3, 0.1f);
+
+                    scoreboard_window_coords.x -= (scoreboard_window_dim.x - old_scoreboard_window_dim.x)/2; //Shirnk compensation
+                    scoreboard_window_coords.y -= (scoreboard_window_dim.y - old_scoreboard_window_dim.y)/2;
+
 
                     if(IsMouseButtonDown(MOUSE_LEFT_BUTTON)){
-                        scoreboard_window_coords.x = lerp(scoreboard_window_coords.x, scoreboard_window_coords.x + mouse_pos.x - scoreboard_window_dim.x/2, 0.5f);
-                        scoreboard_window_coords.y = lerp(scoreboard_window_coords.y, scoreboard_window_coords.y + mouse_pos.y - scoreboard_window_dim.y/2, 0.5f);
+                        scoreboard_window_coords.x = lerp(scoreboard_window_coords.x, scoreboard_window_coords.x + mouse_pos.x - scoreboard_window_dim.x/2, 0.5f * mouse_delta_absolute);
+                        scoreboard_window_coords.y = lerp(scoreboard_window_coords.y, scoreboard_window_coords.y + mouse_pos.y - scoreboard_window_dim.y/2, 0.5f * mouse_delta_absolute);
                     } 
 
                     scoreboard_window_coords.x = std::fmax(0, std::fmin(screenWidth - scoreboard_window_dim.x, scoreboard_window_coords.x));
                     scoreboard_window_coords.y = std::fmax(0, std::fmin(screenHeight - scoreboard_window_dim.y, scoreboard_window_coords.y));
- 
+
                 } else {
                     scoreboard_window_coords.x = scoreboard_window_coords.x + (scoreboard_window_velocity.x * logicDelta);
                     scoreboard_window_coords.y = scoreboard_window_coords.y + (scoreboard_window_velocity.y * logicDelta); 
 
                     scoreboard_window_velocity.x *= scoreboard_window_collision.x;
-                    scoreboard_window_velocity.y *= scoreboard_window_collision.y;
+                    scoreboard_window_velocity.y *= scoreboard_window_collision.y; 
                 
                     scoreboard_window_velocity.y += gravity * logicDelta;
-                    scoreboard_window_velocity = Vector2Multiply(scoreboard_window_velocity, {drag, drag});
+                    scoreboard_window_velocity = Vector2Multiply(scoreboard_window_velocity, {pow(drag, logicDelta), pow(drag, logicDelta)});
 
                     scoreboard_window_dim.x = lerp(scoreboard_window_dim.x, scoreboard_window_dim_default.x, 0.1f);
                     scoreboard_window_dim.y = lerp(scoreboard_window_dim.y, scoreboard_window_dim_default.y, 0.1f);
+
+                    scoreboard_window_coords.x -= (scoreboard_window_dim.x - old_scoreboard_window_dim.x)/2; //Shirnk compensation
+                    scoreboard_window_coords.y -= (scoreboard_window_dim.y - old_scoreboard_window_dim.y)/2;
 
                     scoreboard_window_coords.x = std::fmax(0, std::fmin(screenWidth - scoreboard_window_dim.x, scoreboard_window_coords.x));
                     scoreboard_window_coords.y = std::fmax(0, std::fmin(screenHeight - scoreboard_window_dim.y, scoreboard_window_coords.y));
@@ -440,7 +454,23 @@ int main(){
 
                 SetWindowPosition((int)scoreboard_window_coords.x, (int)scoreboard_window_coords.y);
                 SetWindowSize(scoreboard_window_dim.x, scoreboard_window_dim.y);
-                    
+
+            // ===========================================================  
+            // Paddle Windows Iteration Logic
+            // ===========================================================
+                SetActiveWindowContext(left_paddle_window);
+                
+                left_paddle_window_pos.y = lerp(left_paddle_window_pos.y, (left_paddle_pos.y+left_paddle_size.y/2)-((float)DEFAULT_WINDOW_WIDTH/2.0f), 0.1f);
+                left_paddle_window_pos.y = std::fmax(0, std::fmin(screenHeight - DEFAULT_WINDOW_WIDTH, left_paddle_window_pos.y));
+
+                SetWindowPosition((int)left_paddle_window_pos.x, (int)left_paddle_window_pos.y);
+
+                SetActiveWindowContext(right_paddle_window);
+
+                right_paddle_window_pos.y = lerp(right_paddle_window_pos.y, (right_paddle_pos.y+right_paddle_size.y/2)-((float)DEFAULT_WINDOW_WIDTH/2.0f), 0.1f);
+                right_paddle_window_pos.y = std::fmax(0, std::fmin(screenHeight - DEFAULT_WINDOW_WIDTH, right_paddle_window_pos.y));
+
+                SetWindowPosition((int)right_paddle_window_pos.x, (int)right_paddle_window_pos.y);
 
         // ===========================================================
         // Draw Block
@@ -472,87 +502,103 @@ int main(){
                 // ===========================================================
                 // Window MAIN Draw
                 // ===========================================================
-            
-                    // ===========================================================
-                    // 3D Background Logic
-                    // ===========================================================
-
+        
                         SetActiveWindowContext(window_main);
 
-                        Vector3 world_offset = {normalized_position.x * diameter_width, normalized_position.y * diameter_width, 0};
-                        float reduction_factor = 1.0f / (1.0f + Vector2Length({normalized_position.x, square_y_normal}));
+                        do{ //WHO THE HELL NNEEDS OBJECTS WHEN YOU HAVE MACROOSS AND SCOPE OPERATORS SBABYYYYYYYYYYYYYYYYY (╯°□°）╯︵ ┻━┻
+                            GET_WINDOW_INFO;
 
-                        // std::cout << "Normalized Position: " << normalized_position.x << " " << normalized_position.y << " ";
-                        // std::cout << "Window Center: " << main_window_center.x << " " << main_window_center.y << " ";
-                        // std::cout << "Window Offset: " << main_window_offset.x << " " << main_window_offset.y << " ";
-                        // std::cout << "World Offset: " << world_offset.x << " " << world_offset.y << " " << world_offset.z << std::endl;
+                            GET_NORMALIZED_WINDOW_INFO;
 
-                        camera.position = Vector3Add(camera_base_position, world_offset);
-
-                        Vector3 camera_translation = Vector3Add(
-                            Vector3Add(
-                                Vector3Scale(right, world_offset.x),
-                                Vector3Scale(up, world_offset.y)
-                            ),
-                            Vector3Scale(forward, world_offset.z)
-                        );
-
-                        camera.target = Vector3Add(camera_base_target, camera_translation);
-                        camera.position = Vector3Add(camera_base_position, camera_translation);
-                        camera.fovy = camera_base_fov * reduction_factor;
-
-                    do{
-                        // ===========================================================
-                        // Game Draw Logic
-                        // ===========================================================
-            
-                        Vector2 left_paddle_relative_pos = GetRelativePosition(left_paddle_pos, window_main, window_main);
-                        Vector2 right_paddle_relative_pos = GetRelativePosition(right_paddle_pos, window_main, window_main);
-                        Vector2 ball_relative_pos = GetRelativePosition(ball_pos, window_main, window_main);
-                    
-                        // ===========================================================
-                        // ACTUAL RENDERING
-                        // ===========================================================
-
+                            UPDATE_CAMERA;
+                        } while (0);
+                        
                         BeginDrawing();
-
-                        ClearBackground(RAYWHITE);
-                        DRAW_3D_SCENE;
-
-                        // std::cout << "Screen Dim: " << screenWidth << " " << screenHeight << std::endl;
-                        // std::cout << "Paddle Pos: " << left_paddle_pos.x << " " << left_paddle_pos.y;
-                        // std::cout << " Paddle Size: " << left_paddle_size.x << " " << left_paddle_size.y;
-                        // std::cout << " Ball Pos: " << ball_pos.x << " " << ball_pos.y;
-                        // std::cout << " Ball Radius: " << ball_radius << std::endl;
-
-                        DrawRectangleLines(left_paddle_relative_pos.x, left_paddle_relative_pos.y, left_paddle_size.x, left_paddle_size.y, RED);
-                        DrawRectangleLines(right_paddle_relative_pos.x, right_paddle_relative_pos.y, right_paddle_size.x, right_paddle_size.y, BLUE);
-                        DrawCircleV(ball_relative_pos, ball_radius, GREEN);
-
+                            ClearBackground(RAYWHITE);
+                            DRAW_3D_SCENE;
+                            GAME_DRAW_LOGIC(window_main, window_main);
                         EndDrawing();
+                    
+                     RESET_CAMERA;
+
+                    // ===========================================================
+                    // Left Paddle Window Draw
+                    // ===========================================================
+                    
+                        SetActiveWindowContext(left_paddle_window);
+
+                        do{ //WHO THE HELL NNEEDS OBJECTS WHEN YOU HAVE MACROOSS AND SCOPE OPERATORS SBABYYYYYYYYYYYYYYYYY (╯°□°）╯︵ ┻━┻
+                            GET_WINDOW_INFO;
+
+                            GET_NORMALIZED_WINDOW_INFO;
+
+                            UPDATE_CAMERA;
+                        } while (0);
+                        
+                        BeginDrawing();
+                            ClearBackground(RAYWHITE);
+                            DRAW_3D_SCENE;
+                            GAME_DRAW_LOGIC(left_paddle_window, left_paddle_window);
+                        EndDrawing();
+                    
+                    RESET_CAMERA;
+
+                    // ===========================================================
+                    // Right Paddle Window Draw
+                    // ===========================================================
+                    
+                    SetActiveWindowContext(right_paddle_window);
+
+                    do{ //WHO THE HELL NNEEDS OBJECTS WHEN YOU HAVE MACROOSS AND SCOPE OPERATORS SBABYYYYYYYYYYYYYYYYY (╯°□°）╯︵ ┻━┻
+                        GET_WINDOW_INFO;
+
+                        GET_NORMALIZED_WINDOW_INFO;
+
+                        UPDATE_CAMERA;
                     } while (0);
                     
-
-                    camera.fovy = camera_base_fov;
-                    camera.target = camera_base_target;
-                    camera.position = camera_base_position;
+                    BeginDrawing();
+                        ClearBackground(RAYWHITE);
+                        DRAW_3D_SCENE;
+                        GAME_DRAW_LOGIC(right_paddle_window, right_paddle_window);
+                    EndDrawing();
+                
+                RESET_CAMERA;
 
                 // ===========================================================
-                // Window 1 Draw
+                // Scoreboard Draw
                 // ===========================================================
                 
                     SetActiveWindowContext(scoreboard_window);
-
+                    
                     BeginDrawing();
                         ClearBackground(RAYWHITE);
                         DRAW_3D_SCENE;
 
-                        float rectX = (main_window_coords.x/screen_dim.x) * GetScreenWidth();
-                        float rectY = (main_window_coords.y/screen_dim.y) * GetScreenHeight();
-                        float rectWidth = window_main_dim.x / screen_dim.x * GetScreenWidth();
-                        float rectHeight = window_main_dim.y / screen_dim.y * GetScreenHeight();
+                        do{
+                            SetActiveWindowContext(window_main);
+                            GET_WINDOW_INFO;
+                            
+                            SetActiveWindowContext(scoreboard_window);
+                            DRAW_VIEWPORT_VIEW;
+                        } while (0);
 
-                        DrawRectangleLines(rectX, rectY, rectWidth, rectHeight, RED);
+                        do{
+                            SetActiveWindowContext(left_paddle_window);
+                            GET_WINDOW_INFO;
+                            
+                            SetActiveWindowContext(scoreboard_window);
+                            DRAW_VIEWPORT_VIEW;
+                        } while (0);
+
+                        do{
+                            SetActiveWindowContext(right_paddle_window);
+                            GET_WINDOW_INFO;
+                            
+                            SetActiveWindowContext(scoreboard_window);
+                            DRAW_VIEWPORT_VIEW;
+                        } while (0);
+                        
 
                     EndDrawing();
                 
