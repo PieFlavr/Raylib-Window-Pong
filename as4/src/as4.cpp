@@ -272,8 +272,10 @@ int main(){
         InitAudioDevice();
         SetMasterVolume(0.5f);
 
-        Music background_music = LoadMusicStream("../../custom_assets/as4/cats_on_mars.mp3");
-        PlayMusicStream(background_music);
+        Music game_state_0_music = LoadMusicStream("../../custom_assets/as4/lucky_star.mp3");
+        Music game_state_1_music = LoadMusicStream("../../custom_assets/as4/cats_on_mars.mp3");
+        Music game_state_3_music = LoadMusicStream("../../custom_assets/as4/determination.mp3");
+        PlayMusicStream(game_state_0_music);
 
         ma_device_config device_config = ma_device_config_init(ma_device_type_capture);
         device_config.capture.format = ma_format_f32;
@@ -379,6 +381,9 @@ int main(){
 
                         main_window_velocity.x = (rand() % 2 == 0 ? 1 : -1) * WINDOW_VELOCITY;
                         main_window_velocity.y = (rand() % 2 == 0 ? 1 : -1) * WINDOW_VELOCITY;
+
+                        StopMusicStream(game_state_0_music);
+                        PlayMusicStream(game_state_1_music);
                     }
                     // Menu State
                 } else if(game_state == 1){ // Playing State
@@ -389,6 +394,9 @@ int main(){
                     if(timer <= 0){
                         timer = 0;
                         game_state = 3;
+
+                        StopMusicStream(game_state_1_music);
+                        PlayMusicStream(game_state_3_music);
                     }
                 } else if(game_state == 2){
                     // ??? State
@@ -405,6 +413,9 @@ int main(){
 
                         main_window_velocity.x = (rand() % 2 == 0 ? 1 : -1) * WINDOW_VELOCITY;
                         main_window_velocity.y = (rand() % 2 == 0 ? 1 : -1) * WINDOW_VELOCITY;
+
+                        PlayMusicStream(game_state_0_music);
+                        StopMusicStream(game_state_1_music);
                    }
                 }
 
@@ -412,13 +423,12 @@ int main(){
             // Audio Block
             // ===========================================================
 
-                if(game_state == 0){
-
-                } else if(game_state == 1){
-                    //UpdateMusicStream(background_music);
-                } else if(game_state == 3){
-                    // Stop all music
-                    StopMusicStream(background_music);
+                if(game_state == 0){//https://youtu.be/1hbHgZDB95o?si=ceS8gfdORZbHu4tL
+                    UpdateMusicStream(game_state_0_music);
+                } else if(game_state == 1){//https://youtu.be/97xfV6yXcrk?si=MhnQx-91z3umuxd3
+                    UpdateMusicStream(game_state_1_music);
+                } else if(game_state == 3){//https://www.youtube.com/watch?v=h1wSPmlZV-w
+                    UpdateMusicStream(game_state_3_music);
                 }
 
                 float LOUD = calculate_loud();
@@ -436,6 +446,7 @@ int main(){
                     }
                 }
 
+            
                 
 
         // ===========================================================
@@ -444,8 +455,16 @@ int main(){
 
             double logicFrameTime = GetFrameTime();
             float logicDelta = logicFrameTime  * (float)LOGIC_FPS;
-            if(LOUD > 0.05f){
-                time_scale = lerp(time_scale, 1.0f/LOUD, 0.1f);
+            
+
+            if(game_state == 1){
+                if(LOUD > 0.05f){
+                    time_scale = lerp(time_scale, 1.0f/LOUD, 0.1f);
+                } else {
+                    time_scale = lerp(time_scale, 1.0f, 0.1f);
+                }
+            } else if (game_state == 3){
+                time_scale = lerp(time_scale, 0.3f, 0.5f);
             } else {
                 time_scale = lerp(time_scale, 1.0f, 0.1f);
             }
@@ -850,7 +869,7 @@ int main(){
     //Clean-up
     ma_device_uninit(&device);
 
-    UnloadMusicStream(background_music);
+    UnloadMusicStream(game_state_1_music);
     UnloadShader(raymarching_shader);
 
     SetActiveWindowContext(window_main);
