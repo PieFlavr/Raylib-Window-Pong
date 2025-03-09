@@ -15,6 +15,9 @@
 #include "raylib.h"
 #include "raymath.h"
 
+#include <iostream>
+#include <cmath>
+
 Vector2 GetRelativePosition(Vector2 world_pos, int window_id, int current_window_id) {
     SetActiveWindowContext(window_id);  
 
@@ -45,5 +48,37 @@ bool CheckBoundaryContainment(Vector2 position, Rectangle boundary_rect) {
             position.y >= boundary_rect.y && position.y <= boundary_rect.y + boundary_rect.height);
 }
 
+std::string generateEncodedString(float value, float minValue, float maxValue, int numLines) {
+    float percent = (value - minValue) / (maxValue - minValue);
+    percent = std::fmax(0.0f, std::fmin(1.0f, percent));
+    int fillPosition = std::min((int)(percent * numLines),numLines-1);
+
+    std::string filler = ".";
+
+    std::string encoding = "";
+
+    for(int j = numLines-1; j >= 0 ; j--){
+        encoding += (j == fillPosition) ? "#" : ".";
+    }
+
+    return encoding;
+}
+
+void renderEncodedString(std::string &encoding, int lineLength, int numLines) {
+    // Move cursor up numLines to overwrite previous output
+    for (int i = 0; i < numLines; i++) {
+        std::cout << "\033[A";  
+    }
+
+    for (int i = 0 ; i < numLines; i++) { 
+        for(int j = lineLength-1; j >= 0; j--){
+            if(i + (j * numLines) >= encoding.size()){
+                break;
+            }
+            std::cout << encoding[i + (j * numLines)];
+        }
+        std::cout << std::endl;
+    }
+}
 
 #endif // UTILS_CPP

@@ -13,15 +13,6 @@
  * 
  */
 
- // Raytracer includes
-//  #include "Raytracer/Raytracer.h"
-//  #include "Renderer/display.h"
-//  #include "Util/Array.h"
-//  #include "raymath.h"
-
-//Ray_Tracer includes
-
-
 // Multi Window Raylib includes
 #include "raylib.h"
 #include "raymath.h"
@@ -37,9 +28,12 @@
 #include "miniaudio.h"
 #include "input_audio.cpp"
 
+// Other innclude
+#include <chrono>
+
 // DEFAULT RENDER SETTINGs
 #define DEFAULT_SCALE 5
-#define DRAW_FPS 60
+#define DRAW_FPS 300
 #define LOGIC_FPS 120.0f
 
 // DEFAULT INTERFACE SETTINGs
@@ -48,11 +42,17 @@
 #define DEFAULT_WINDOW_WIDTH 400
 #define MAIN_WINDOW_WIDTH 600
 
+// TERMINAL ASCII VISUALIZER SETTINGS
+#define AUDIO_LINE_LENGTH 200
+#define AUDIO_NUM_LINES 10
+#define VISUALIZER_SPEED_SCALE 100.0f
+
 #define DEFAULT_TITLE "CS381 - Assignment 4"
 
 // DEFAULT GAME SETTINGs
 #define PADDLE_HEIGHT 300
 #define PADDLE_WIDTH 30
+#define PADDLE_SPEED 15.0f
 
 #define BALL_RADIUS 10
 
@@ -236,6 +236,8 @@ int main(){
         device_config.sampleRate = 44100;
         device_config.dataCallback = data_callback; // I don't know anymore i'm reaching actual voodoo territory
 
+        std::string bar_encoding = "";
+
         ma_device device;
 
         if(ma_device_init(NULL, &device_config, &device) != MA_SUCCESS){
@@ -247,6 +249,7 @@ int main(){
             return -1;
         }
 
+        float visualizer_accumulator = 0.0f;
 
         // ===========================================================
         // Game "Objects" and Variables
@@ -300,7 +303,6 @@ int main(){
         // ===========================================================
         // Non-Delta Logic BLock
         // ===========================================================
-
             SetActiveWindowContext(window_main);
             active_game = !WindowShouldClose();
             SetActiveWindowContext(scoreboard_window);
@@ -325,8 +327,16 @@ int main(){
 
                 float LOUD = calculate_loud();
                 //std::cout << "LOUD: " << LOUD << std::endl;
+                
+                visualizer_accumulator += GetFrameTime();
+                if(visualizer_accumulator >= (1.0f/((float)LOGIC_FPS * VISUALIZER_SPEED_SCALE))){
 
-
+                    bar_encoding += generateEncodedString(LOUD, 0.0f, 0.1f, AUDIO_NUM_LINES); 
+                    if(bar_encoding.size() > AUDIO_LINE_LENGTH*AUDIO_NUM_LINES){
+                        bar_encoding = bar_encoding.substr(bar_encoding.size() - AUDIO_LINE_LENGTH*AUDIO_NUM_LINES);
+                        renderEncodedString(bar_encoding, AUDIO_LINE_LENGTH, AUDIO_NUM_LINES);
+                    }
+                }
 
         // ===========================================================
         // Delta Logic Block
@@ -344,22 +354,35 @@ int main(){
             // ===========================================================
             // Pong Controls
             // ===========================================================
-            if(IsKeyDown(KEY_W)){
-                left_paddle_pos.y -= 10.0f * logicDelta;
-            }
-            if(IsKeyDown(KEY_S)){
-                left_paddle_pos.y += 10.0f * logicDelta;
-            }
 
-            if(IsKeyDown(KEY_UP)){
-                right_paddle_pos.y -= 10.0f * logicDelta;
-            }
-            if(IsKeyDown(KEY_DOWN)){
-                right_paddle_pos.y += 10.0f * logicDelta;
-            }
+                if(IsKeyDown(KEY_W)){
+                    left_paddle_pos.y -= PADDLE_SPEED * logicDelta;
+                }
+                if(IsKeyDown(KEY_S)){
+                    left_paddle_pos.y += PADDLE_SPEED * logicDelta;
+                }
 
-            left_paddle_pos.y = std::fmax(0, std::fmin(screenHeight - left_paddle_size.y, left_paddle_pos.y));
-            right_paddle_pos.y = std::fmax(0, std::fmin(screenHeight - right_paddle_size.y, right_paddle_pos.y));
+                if(IsKeyDown(KEY_UP)){
+                    right_paddle_pos.y -= PADDLE_SPEED * logicDelta;
+                }
+                if(IsKeyDown(KEY_DOWN)){
+                    right_paddle_pos.y += PADDLE_SPEED * logicDelta;
+                }
+
+                left_paddle_pos.y = std::fmax(0, std::fmin(screenHeight - left_paddle_size.y, left_paddle_pos.y));
+                right_paddle_pos.y = std::fmax(0, std::fmin(screenHeight - right_paddle_size.y, right_paddle_pos.y));
+
+            // ===========================================================
+            // Pong Logic
+            // ===========================================================
+                #define BALL_SPEED 10.0f
+
+                if(ball_pos.y <= 0 || ball_pos.y >= screenHeight){
+                    ball_pos.y = lerp(ball_pos.y, screenHeight/2, 0.1f);
+                }
+
+                ball_pos.x += BALL_SPEED * logicDelta;
+                ball_pos.y += BALL_SPEED * logicDelta;
 
 
             // ===========================================================  
@@ -411,10 +434,9 @@ int main(){
                 Vector2 mouse_pos = GetMousePosition();
                 Vector2 mouse_delta = GetMouseDelta();
                 float mouse_delta_absolute = Vector2Length(mouse_delta);
-                mouse_delta_absolute = std::fmin(1.0f, mouse_delta_absolute); 
-                //std::cout << mouse_delta_absolute << std::endl;
 
                 Vector2 old_scoreboard_window_dim = scoreboard_window_dim; //For shrinking to the center as opposed to the corner.
+                Vector2 old_scoreboard_window_velocity = {scoreboard_window_velocity.x, scoreboard_window_velocity.y};
 
                 if(IsKeyDown(KEY_SPACE)){
                     scoreboard_window_dim.x = lerp(scoreboard_window_dim.x, scoreboard_window_dim_default.x * 1.3, 0.1f);
@@ -425,9 +447,10 @@ int main(){
 
 
                     if(IsMouseButtonDown(MOUSE_LEFT_BUTTON)){
-                        scoreboard_window_coords.x = lerp(scoreboard_window_coords.x, scoreboard_window_coords.x + mouse_pos.x - scoreboard_window_dim.x/2, 0.5f * mouse_delta_absolute);
-                        scoreboard_window_coords.y = lerp(scoreboard_window_coords.y, scoreboard_window_coords.y + mouse_pos.y - scoreboard_window_dim.y/2, 0.5f * mouse_delta_absolute);
-                    } 
+                        scoreboard_window_coords.x = lerp(scoreboard_window_coords.x, scoreboard_window_coords.x + mouse_pos.x - scoreboard_window_dim.x/2, 0.5f);
+                        scoreboard_window_coords.y = lerp(scoreboard_window_coords.y, scoreboard_window_coords.y + mouse_pos.y - scoreboard_window_dim.y/2, 0.5f);
+            
+                    }
 
                     scoreboard_window_coords.x = std::fmax(0, std::fmin(screenWidth - scoreboard_window_dim.x, scoreboard_window_coords.x));
                     scoreboard_window_coords.y = std::fmax(0, std::fmin(screenHeight - scoreboard_window_dim.y, scoreboard_window_coords.y));
@@ -441,6 +464,16 @@ int main(){
                 
                     scoreboard_window_velocity.y += gravity * logicDelta;
                     scoreboard_window_velocity = Vector2Multiply(scoreboard_window_velocity, {pow(drag, logicDelta), pow(drag, logicDelta)});
+
+                    if(Vector2Length(scoreboard_window_velocity) < 5.0f && 
+                        (old_scoreboard_window_velocity.x/fabs(old_scoreboard_window_velocity.x) != scoreboard_window_velocity.x/fabs(scoreboard_window_velocity.x))){
+                        scoreboard_window_velocity.x = 0.0f;
+                        scoreboard_window_velocity.y = 0.0f;
+                    }
+
+                    if(scoreboard_window_velocity.x == 0.0f && scoreboard_window_velocity.y == 0.0f){
+                        scoreboard_window_coords.y = lerp(scoreboard_window_coords.y, 0, 0.1f);
+                    } 
 
                     scoreboard_window_dim.x = lerp(scoreboard_window_dim.x, scoreboard_window_dim_default.x, 0.1f);
                     scoreboard_window_dim.y = lerp(scoreboard_window_dim.y, scoreboard_window_dim_default.y, 0.1f);
