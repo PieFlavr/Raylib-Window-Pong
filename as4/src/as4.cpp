@@ -244,6 +244,11 @@ int main(){
         // Model Loading + Default Transforms
         // ===========================================================
 
+        Model cube = LoadModelFromMesh(GenMeshCube(1.0f, 1.0f, 1.0f));   
+        Model cow = LoadModel("../../custom_assets/as2/Cow.glb");
+        Texture2D cow_texture = LoadTexture("../../custom_assets/as2/cow_color_1.png");
+        cow.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = cow_texture;
+
         Camera3D camera = { 0 };
         camera.position = (Vector3){ 10.0f, 10.0f, 10.0f };  // Camera position
         camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };       // Looking at the origin
@@ -377,6 +382,7 @@ int main(){
 
                         float angle = (rand() % 4) * 90.0f + 45.0f;
                         angle *= DEG2RAD;
+                        ball_pos = {(float)screenWidth/2, (float)screenHeight/2};
                         ball_velocity = {BALL_SPEED * cos(angle), BALL_SPEED * sin(angle)};
 
                         main_window_velocity.x = (rand() % 2 == 0 ? 1 : -1) * WINDOW_VELOCITY;
@@ -401,7 +407,7 @@ int main(){
                 } else if(game_state == 2){
                     // ??? State
                 } else if(game_state == 3){// Game Over State
-                   gravity = GRAVITY;
+                   gravity = GRAVITY*0.5f;
                    if(IsKeyPressed(KEY_ENTER)){
                        game_state = 0;
                        timer = 30.0f;
@@ -409,6 +415,7 @@ int main(){
 
                        float angle = (rand() % 4) * 90.0f + 45.0f;
                         angle *= DEG2RAD;
+                        ball_pos = {(float)screenWidth/2, (float)screenHeight/2};
                         ball_velocity = {BALL_SPEED * cos(angle), BALL_SPEED * sin(angle)};
 
                         main_window_velocity.x = (rand() % 2 == 0 ? 1 : -1) * WINDOW_VELOCITY;
@@ -691,11 +698,11 @@ int main(){
             float camera_distance = Vector3Distance(camera.position, camera.target);
             int diameter_width = 2 * tan(camera.fovy * DEG2RAD * 0.5) * camera_distance;
 
-            SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "cameraPos"), &camera.position, SHADER_UNIFORM_VEC3);
-            SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenWidth"), &screenWidth, SHADER_UNIFORM_INT);
-            SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenHeight"), &screenHeight, SHADER_UNIFORM_INT);  
-            SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "view"), view_matrix);
-            SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "projection"), MatrixPerspective(camera.fovy, (double)GetScreenWidth()/(double)GetScreenHeight(), 0.1, 1000.0));
+            // SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "cameraPos"), &camera.position, SHADER_UNIFORM_VEC3);
+            // SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenWidth"), &screenWidth, SHADER_UNIFORM_INT);
+            // SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenHeight"), &screenHeight, SHADER_UNIFORM_INT);  
+            // SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "view"), view_matrix);
+            // SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "projection"), MatrixPerspective(camera.fovy, (double)GetScreenWidth()/(double)GetScreenHeight(), 0.1, 1000.0));
 
 
             // ===========================================================
@@ -719,6 +726,14 @@ int main(){
                         BeginDrawing();
                             ClearBackground(RAYWHITE);
                             DRAW_3D_SCENE;
+
+                            BeginMode3D(camera);
+                                DrawBoundedModel(cube, combine(translate({0, 0, 0}), scale({10, 0.1, 10})));
+                                DrawBoundedModel(cube, combine(translate({0, 0, 0}), scale({0.1, 10, 10})));
+                                DrawBoundedModel(cube, combine(translate({0, 0, 0}), scale({10, 10, 0.1})));
+                                DrawBoundedModel(cow, combine(translate({0, 0, 0}), scale({0.1, 0.1, 0.1}))); //Cow is too big
+                            EndMode3D();
+
                             GAME_DRAW_LOGIC(window_main, window_main);
                         EndDrawing();
                     
@@ -870,12 +885,21 @@ int main(){
     ma_device_uninit(&device);
 
     UnloadMusicStream(game_state_1_music);
+    //UnloadTexture(cow_texture);
+    UnloadModel(cow);
+
     UnloadShader(raymarching_shader);
 
     SetActiveWindowContext(window_main);
     CloseWindow();
 
     SetActiveWindowContext(scoreboard_window);
+    CloseWindow();
+
+    SetActiveWindowContext(left_paddle_window);
+    CloseWindow();
+
+    SetActiveWindowContext(right_paddle_window);
     CloseWindow();
 
 

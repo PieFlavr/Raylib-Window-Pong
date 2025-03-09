@@ -7,6 +7,7 @@
 \
         DrawSphere({0, 0, 0}, 1.0f, RED);\
         DrawGrid(10, 1.0f);\
+        /**DrawModel(cow, (Vector3){0,0,0}, 30.0f, BLACK);**/\
         /**DrawSphere(camera.target, 1.0f, BLUE);**/\
     EndMode3D();\
     } while(0)
