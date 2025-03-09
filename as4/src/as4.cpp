@@ -25,6 +25,8 @@
 
 #include <iostream>
 
+#include "utils.cpp"
+
 // DEFAULT RENDER SETTINGs
 #define DEFAULT_SCALE 5
 #define DRAW_FPS 60
@@ -33,14 +35,19 @@
 // DEFAULT INTERFACE SETTINGs
 #define INITIAL_FONT_SIZE 50
 #define INITIAL_FONT_SPACING 2
+#define DEFAULT_WINDOW_WIDTH 400
 
 #define DEFAULT_TITLE "CS381 - Assignment 4"
 
 // DEFAULT GAME SETTINGs
-#define PADDLE_HEIGHT 100
-#define PADDLE_WIDTH 20
+#define PADDLE_HEIGHT 300
+#define PADDLE_WIDTH 30
 
-#define DRAW_SCENE \
+#define BALL_RADIUS 10
+
+#define WINDOW_VELOCITY 5.0f
+
+#define DRAW_3D_SCENE \
     do { \
         BeginMode3D(camera);\
                                 \
@@ -137,7 +144,6 @@ void DrawUnboundedModel(Model& model, Transformer auto transformer)
 }
 
 
-
 // ===========================================================
 // Main Function
 // ===========================================================
@@ -157,10 +163,24 @@ int main(){
         //unsigned int window_flags_generic = FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MINIMIZABLE | FLAG_WINDOW_MAXIMIZABLE | FLAG_WINDOW_CLOSEABLE | FLAG_WINDOW_UNDECORATED;
         unsigned int window_main_flags = 0;
 
-        Vector2 window_main_dim = {400, 400};
+        Vector2 window_main_dim = {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH};
 
         int window_main = InitWindowPro(window_main_dim.x, window_main_dim.y, window_title.c_str(), window_main_flags);
-        int window_1 = InitWindowPro(400, 400, "Window 1", window_main_flags);
+
+        int screenWidth = GetMonitorWidth(0);
+        int screenHeight = GetMonitorHeight(0);
+
+        float aspect_ratio = (double)screenWidth / (double)screenHeight;
+        std::cout << "Aspect Ratio: " << aspect_ratio << std::endl;
+
+        int window_1 = InitWindowPro(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH/aspect_ratio, "Window 1", window_main_flags);
+
+        SetActiveWindowContext(window_main);
+        SetWindowPosition(screenWidth/2, screenHeight/2);
+
+        SetActiveWindowContext(window_1);
+        SetWindowPosition(screenWidth/2, screenHeight/2);
+
 
         // ===========================================================
         // Model Loading + Default Transforms
@@ -191,7 +211,21 @@ int main(){
         // Audio Initialization
         // ===========================================================
 
-        //AudioDevice defaultDevice;
+
+        // ===========================================================
+        // Game "Objects"
+        // ===========================================================
+        
+        Vector2 left_paddle_size = {PADDLE_WIDTH, PADDLE_HEIGHT};
+        Vector2 left_paddle_pos = {50, (screenHeight/2) - (PADDLE_HEIGHT/2)};
+
+        Vector2 right_paddle_size = {PADDLE_WIDTH, PADDLE_HEIGHT};
+        Vector2 right_paddle_pos = {screenWidth - 50 - PADDLE_WIDTH, (screenHeight/2) - (PADDLE_HEIGHT/2)};
+
+        Vector2 ball_pos = {screenWidth/2, screenHeight/2};
+        float ball_radius = BALL_RADIUS;
+
+        Vector2 main_window_velocity = {WINDOW_VELOCITY, WINDOW_VELOCITY};
 
         // ===========================================================
         // Miscallaneous Initialization/Variables
@@ -223,13 +257,49 @@ int main(){
             SetActiveWindowContext(window_1);
             active_game = active_game || !WindowShouldClose();
 
+            // ===========================================================
+            // Main Window Positioning Logic
+            // ===========================================================
+                SetActiveWindowContext(window_main);
+
+                Vector2 window_main_dim = {GetScreenWidth(), GetScreenHeight()};
+                Vector2 main_window_coords = GetWindowPosition();
+                Vector2 main_window_center = Vector2Add(GetWindowPosition(),Vector2Multiply(window_main_dim, {0.5, 0.5}));
+                Vector2 main_window_offset = Vector2Subtract(main_window_center, screen_center);
+
+                Vector2 normalized_position = Vector2Divide(main_window_offset, screen_center);
+                float square_y_normal = main_window_offset.y / screen_center.x;
+                normalized_position.y *= -1;
+
         // ===========================================================
         // Delta Logic Block
         // ===========================================================
 
             double logicFrameTime = GetFrameTime();
-            double logicDelta = logicFrameTime/LOGIC_FPS;
+            float logicDelta = logicFrameTime/LOGIC_FPS;
 
+            SetActiveWindowContext(window_main);
+
+            main_window_coords = Vector2Add(main_window_coords, Vector2Multiply(main_window_velocity, {logicDelta, logicDelta}));
+
+            Vector2 main_window_collision = CheckInternalBoxCollision({main_window_coords.x, main_window_coords.y, window_main_dim.x, window_main_dim.y}, 
+                                                                            {0, 0, screenWidth, screenHeight});
+
+            std::cout << "Main Window: " << main_window_coords.x << " " << main_window_coords.y << " ";
+            std::cout << "Main Window Dim: " << window_main_dim.x << " " << window_main_dim.y << " ";
+            std::cout << "Screen Dim: " << screenWidth << " " << screenHeight << " ";
+            std::cout << "Collision: " << main_window_collision.x << " " << main_window_collision.y;
+            std::cout << " Velocity: " << main_window_velocity.x << " " << main_window_velocity.y << std::endl;
+
+            main_window_velocity = Vector2Multiply(main_window_velocity, main_window_collision);
+
+            main_window_coords.x = std::fmax(0, std::fmin(screenWidth - window_main_dim.x, main_window_coords.x));
+            main_window_coords.y = std::fmax(0, std::fmin(screenHeight - window_main_dim.y, main_window_coords.y));
+
+            SetWindowPosition(main_window_coords.x, main_window_coords.y);
+
+            SetWindowSize(window_main_dim.x, window_main_dim.y);
+            
 
 
         // ===========================================================
@@ -246,9 +316,6 @@ int main(){
             float camera_distance = Vector3Distance(camera.position, camera.target);
             int diameter_width = 2 * tan(camera.fovy * DEG2RAD * 0.5) * camera_distance;
 
-            int screenWidth = GetMonitorWidth(0);
-            int screenHeight = GetMonitorHeight(0);
-
             SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "cameraPos"), &camera.position, SHADER_UNIFORM_VEC3);
             SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenWidth"), &screenWidth, SHADER_UNIFORM_INT);
             SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenHeight"), &screenHeight, SHADER_UNIFORM_INT);  
@@ -264,51 +331,69 @@ int main(){
                 // Window MAIN Draw
                 // ===========================================================
             
-                SetActiveWindowContext(window_main);
+                    // ===========================================================
+                    // 3D Background Logic
+                    // ===========================================================
 
-                Vector2 window_main_dim = {GetScreenWidth(), GetScreenHeight()};
-                Vector2 window_coords = GetWindowPosition();
-                Vector2 window_center = Vector2Add(GetWindowPosition(),Vector2Multiply(window_main_dim, {0.5, 0.5}));
-                Vector2 window_offset = Vector2Subtract(window_center, screen_center);
+                        SetActiveWindowContext(window_main);
 
-                Vector2 normalized_position = Vector2Divide(window_offset, screen_center);
-                normalized_position.y *= -1;
+                        Vector3 world_offset = {normalized_position.x * diameter_width, normalized_position.y * diameter_width, 0};
+                        float reduction_factor = 1.0f / (1.0f + Vector2Length({normalized_position.x, square_y_normal}));
 
-                Vector3 world_offset = {normalized_position.x * diameter_width, normalized_position.y * diameter_width, 0};
-                float reduction_factor = 1.0f / (1.0f + Vector2Length(normalized_position));
+                        // std::cout << "Normalized Position: " << normalized_position.x << " " << normalized_position.y << " ";
+                        // std::cout << "Window Center: " << main_window_center.x << " " << main_window_center.y << " ";
+                        // std::cout << "Window Offset: " << main_window_offset.x << " " << main_window_offset.y << " ";
+                        // std::cout << "World Offset: " << world_offset.x << " " << world_offset.y << " " << world_offset.z << std::endl;
 
-                std::cout << "Normalized Position: " << normalized_position.x << " " << normalized_position.y << " ";
-                std::cout << "Window Center: " << window_center.x << " " << window_center.y << " ";
-                std::cout << "Window Offset: " << window_offset.x << " " << window_offset.y << " ";
-                std::cout << "World Offset: " << world_offset.x << " " << world_offset.y << " " << world_offset.z << std::endl;
+                        camera.position = Vector3Add(camera_base_position, world_offset);
 
-                camera.position = Vector3Add(camera_base_position, world_offset);
+                        Vector3 camera_translation = Vector3Add(
+                            Vector3Add(
+                                Vector3Scale(right, world_offset.x),
+                                Vector3Scale(up, world_offset.y)
+                            ),
+                            Vector3Scale(forward, world_offset.z)
+                        );
 
-                Vector3 camera_translation = Vector3Add(
-                    Vector3Add(
-                        Vector3Scale(right, world_offset.x),
-                        Vector3Scale(up, world_offset.y)
-                    ),
-                    Vector3Scale(forward, world_offset.z)
-                );
+                        camera.target = Vector3Add(camera_base_target, camera_translation);
+                        camera.position = Vector3Add(camera_base_position, camera_translation);
+                        camera.fovy = camera_base_fov * reduction_factor;
 
-                camera.target = Vector3Add(camera_base_target, camera_translation);
-                camera.position = Vector3Add(camera_base_position, camera_translation);
-                camera.fovy = camera_base_fov * reduction_factor;
+                    do{
+                        // ===========================================================
+                        // Game Draw Logic
+                        // ===========================================================
+            
+                        Vector2 left_paddle_relative_pos = GetRelativePosition(left_paddle_pos, window_main, window_main);
+                        Vector2 right_paddle_relative_pos = GetRelativePosition(right_paddle_pos, window_main, window_main);
+                        Vector2 ball_relative_pos = GetRelativePosition(ball_pos, window_main, window_main);
+                    
+                        // ===========================================================
+                        // ACTUAL RENDERING
+                        // ===========================================================
 
+                        BeginDrawing();
 
-                //camera.fovy = 2.0f * atan(reduction_ratio * tan(camera_base_fov * DEG2RAD * 0.5)) * RAD2DEG;
-   
+                        ClearBackground(RAYWHITE);
+                        DRAW_3D_SCENE;
 
-                BeginDrawing();
-                    ClearBackground(RAYWHITE);
-                    DRAW_SCENE;
+                        // std::cout << "Screen Dim: " << screenWidth << " " << screenHeight << std::endl;
+                        // std::cout << "Paddle Pos: " << left_paddle_pos.x << " " << left_paddle_pos.y;
+                        // std::cout << " Paddle Size: " << left_paddle_size.x << " " << left_paddle_size.y;
+                        // std::cout << " Ball Pos: " << ball_pos.x << " " << ball_pos.y;
+                        // std::cout << " Ball Radius: " << ball_radius << std::endl;
 
-                EndDrawing();
+                        DrawRectangleLines(left_paddle_relative_pos.x, left_paddle_relative_pos.y, left_paddle_size.x, left_paddle_size.y, RED);
+                        DrawRectangleLines(right_paddle_relative_pos.x, right_paddle_relative_pos.y, right_paddle_size.x, right_paddle_size.y, BLUE);
+                        DrawCircleV(ball_relative_pos, ball_radius, GREEN);
 
-                camera.fovy = camera_base_fov;
-                camera.target = camera_base_target;
-                camera.position = camera_base_position;
+                        EndDrawing();
+                    } while (0);
+                    
+
+                    camera.fovy = camera_base_fov;
+                    camera.target = camera_base_target;
+                    camera.position = camera_base_position;
 
                 // ===========================================================
                 // Window 1 Draw
@@ -318,12 +403,12 @@ int main(){
 
                     BeginDrawing();
                         ClearBackground(RAYWHITE);
-                        DRAW_SCENE;
+                        DRAW_3D_SCENE;
 
-                        float rectX = (window_coords.x/screen_dim.x) * GetScreenWidth();
-                        float rectY = (window_coords.y/screen_dim.y) * GetScreenHeight();
+                        float rectX = (main_window_coords.x/screen_dim.x) * GetScreenWidth();
+                        float rectY = (main_window_coords.y/screen_dim.y) * GetScreenHeight();
                         float rectWidth = window_main_dim.x / screen_dim.x * GetScreenWidth();
-                        float rectHeight = window_main_dim.y / screen_dim.x * GetScreenHeight();
+                        float rectHeight = window_main_dim.y / screen_dim.y * GetScreenHeight();
 
                         DrawRectangleLines(rectX, rectY, rectWidth, rectHeight, RED);
 
