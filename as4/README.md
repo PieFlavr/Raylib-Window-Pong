@@ -104,6 +104,8 @@ tl;dr I don't think I should be allowed to code again after this.
 
 ### APPLICATION CONTROLs
 
+All of the controls are enumerated in the menus/scoreboards. The following is simply an explicit listing of them, all of these can be found in the game. 
+
 IN THE START MENU ONLY...
 
 `[T]` in the starting menu shows the leaderboard.
@@ -128,16 +130,17 @@ IN THE START MENU AND GAME-OVER SCREEN...
 
 IN THE AME OVER SCREEN...
 
-`[SHIFT]' to submit your typed name
+`[SHIFT]` to submit your typed name
 
 ## EXTRA CREDIT FEATURE IMPLEMENTATIONs
 
 The following have been implemented in the program...
 
 1) Multiplayer (Left/Right Player Paddles)
-2) Audio Input (Yelling Accelerator)
+2) Audio Input (Yelling Accelerator using Miniaudio (the lib. under raudio) to do it)
 3) Terminal ASCII Art (Audio Input Visualizer)
 4) Funny Name (see README title)
-5) Manual Cleanup (literally using a random Raylib fork, not the CPP wrapper ￣へ￣)
+5) Manual Cleanup (literally using a random Raylib fork so have to, not the CPP wrapper ￣へ￣)
 6) ~~[maybe???] Custom Shaders (Raymarching that sometimes works, sometimes doesn't have no idea why)~~
+^^^ i just gave up this thing is out of my scope with the time i got
 7) Leaderboard Implementation (persists + lets you type name)
