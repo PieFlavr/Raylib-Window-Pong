@@ -24,22 +24,25 @@ Vector2 GetRelativePosition(Vector2 world_pos, int window_id, int current_window
     SetActiveWindowContext(current_window_id);
 }
 
-Vector2 CheckInternalBoxCollision(Rectangle box1, Rectangle box2) {
-    // Initialize the result as {1, 1} (no collision)
-    Vector2 result = {1.0f, 1.0f};
+Vector2 CheckCollisionWithBoundary(Rectangle internal_rect, Rectangle boundary_rect, Vector2 velocity) {
+    Vector2 collision_vector = {1.0f, 1.0f};  // Default: no collision (velocity remains 1)
 
-    // Check for horizontal (X axis) collision
-    if (box1.x < box2.x || box1.x + box1.width > box2.x + box2.width) {
-        result.x = -1.0f;  // Flip X velocity if there's a collision on X
+    if ((internal_rect.x <= boundary_rect.x && velocity.x < 0) || 
+        (internal_rect.x + internal_rect.width >= boundary_rect.width && velocity.x > 0)) {
+        collision_vector.x *= -1.0f;
+    } 
+
+    if ((internal_rect.y <= boundary_rect.y && velocity.y < 0) || 
+        (internal_rect.y + internal_rect.height >= boundary_rect.height && velocity.y > 0)) {
+        collision_vector.y *= -1.0f;
     }
 
-    // Check for vertical (Y axis) collision
-    if (box1.y < box2.y || box1.y + box1.height > box2.y + box2.height) {
-        result.y = -1.0f;  // Flip Y velocity if there's a collision on Y
-    }
+    return collision_vector;  // Return -1 for any axis with collision, 1 otherwise
+}
 
-    // Return the result, either {1, 1} (no collision) or flipped {1, -1} or {-1, 1}
-    return result;
+bool CheckBoundaryContainment(Vector2 position, Rectangle boundary_rect) {
+    return (position.x >= boundary_rect.x && position.x <= boundary_rect.x + boundary_rect.width &&
+            position.y >= boundary_rect.y && position.y <= boundary_rect.y + boundary_rect.height);
 }
 
 

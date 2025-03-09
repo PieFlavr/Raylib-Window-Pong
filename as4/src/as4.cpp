@@ -30,7 +30,7 @@
 // DEFAULT RENDER SETTINGs
 #define DEFAULT_SCALE 5
 #define DRAW_FPS 60
-#define LOGIC_FPS 120
+#define LOGIC_FPS 120.0f
 
 // DEFAULT INTERFACE SETTINGs
 #define INITIAL_FONT_SIZE 50
@@ -45,7 +45,8 @@
 
 #define BALL_RADIUS 10
 
-#define WINDOW_VELOCITY 5.0f
+#define WINDOW_VELOCITY 100000.0f
+#define GRAVITY 98000000.0f
 
 #define DRAW_3D_SCENE \
     do { \
@@ -53,7 +54,7 @@
                                 \
         DrawSphere({0, 0, 0}, 1.0f, RED);\
         DrawGrid(10, 1.0f);\
-        DrawSphere(camera.target, 1.0f, BLUE);\
+        /**DrawSphere(camera.target, 1.0f, BLUE);**/ \
     EndMode3D();\
     } while(0)
     
@@ -173,12 +174,12 @@ int main(){
         float aspect_ratio = (double)screenWidth / (double)screenHeight;
         std::cout << "Aspect Ratio: " << aspect_ratio << std::endl;
 
-        int window_1 = InitWindowPro(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH/aspect_ratio, "Window 1", window_main_flags);
+        int scoreboard_window = InitWindowPro(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH/aspect_ratio, "Window 1", window_main_flags);
 
         SetActiveWindowContext(window_main);
         SetWindowPosition(screenWidth/2, screenHeight/2);
 
-        SetActiveWindowContext(window_1);
+        SetActiveWindowContext(scoreboard_window);
         SetWindowPosition(screenWidth/2, screenHeight/2);
 
 
@@ -211,10 +212,18 @@ int main(){
         // Audio Initialization
         // ===========================================================
 
+        InitAudioDevice();
+        SetMasterVolume(0.5f);
+
+        Music background_music = LoadMusicStream("../../custom_assets/as4/cats_on_mars.mp3");
+        PlayMusicStream(background_music);
 
         // ===========================================================
-        // Game "Objects"
+        // Game "Objects" and Variables
         // ===========================================================
+
+        float drag = 0.9f;
+        float gravity = GRAVITY;
         
         Vector2 left_paddle_size = {PADDLE_WIDTH, PADDLE_HEIGHT};
         Vector2 left_paddle_pos = {50, (screenHeight/2) - (PADDLE_HEIGHT/2)};
@@ -226,6 +235,12 @@ int main(){
         float ball_radius = BALL_RADIUS;
 
         Vector2 main_window_velocity = {WINDOW_VELOCITY, WINDOW_VELOCITY};
+        Vector2 main_window_coords = GetWindowPosition();
+
+        Vector2 scoreboard_window_velocity = {0.0f, 0.0f};
+        Vector2 scoreboard_window_dim = {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH/aspect_ratio};
+        Vector2 scoreboard_window_dim_default = {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH/aspect_ratio};
+        Vector2 scoreboard_window_coords = GetWindowPosition();
 
         // ===========================================================
         // Miscallaneous Initialization/Variables
@@ -254,7 +269,7 @@ int main(){
 
             SetActiveWindowContext(window_main);
             active_game = !WindowShouldClose();
-            SetActiveWindowContext(window_1);
+            SetActiveWindowContext(scoreboard_window);
             active_game = active_game || !WindowShouldClose();
 
             // ===========================================================
@@ -263,7 +278,6 @@ int main(){
                 SetActiveWindowContext(window_main);
 
                 Vector2 window_main_dim = {GetScreenWidth(), GetScreenHeight()};
-                Vector2 main_window_coords = GetWindowPosition();
                 Vector2 main_window_center = Vector2Add(GetWindowPosition(),Vector2Multiply(window_main_dim, {0.5, 0.5}));
                 Vector2 main_window_offset = Vector2Subtract(main_window_center, screen_center);
 
@@ -271,36 +285,101 @@ int main(){
                 float square_y_normal = main_window_offset.y / screen_center.x;
                 normalized_position.y *= -1;
 
+            // ===========================================================
+            // Audio Block
+            // ===========================================================
+
+            if(IsMusicReady(background_music)){
+                //UpdateMusicStream(background_music);
+            }
+
         // ===========================================================
         // Delta Logic Block
         // ===========================================================
+
+            // ===========================================================
+            // Main Window Iteration Logic
+            // ===========================================================
 
             double logicFrameTime = GetFrameTime();
             float logicDelta = logicFrameTime/LOGIC_FPS;
 
             SetActiveWindowContext(window_main);
+                main_window_coords.x = main_window_coords.x + (main_window_velocity.x * logicDelta);
+                main_window_coords.y = main_window_coords.y + (main_window_velocity.y * logicDelta);
 
-            main_window_coords = Vector2Add(main_window_coords, Vector2Multiply(main_window_velocity, {logicDelta, logicDelta}));
+                // std::cout << main_window_coords.x << " " << main_window_coords.y << " ";
+                // std::cout << (main_window_coords.x <= 0 && main_window_velocity.x < 0) << " " << (main_window_coords.x + window_main_dim.x >= screenWidth && main_window_velocity.x > 0);  
+                // std::cout << " " << main_window_velocity.x << std::endl;
 
-            Vector2 main_window_collision = CheckInternalBoxCollision({main_window_coords.x, main_window_coords.y, window_main_dim.x, window_main_dim.y}, 
-                                                                            {0, 0, screenWidth, screenHeight});
+                //My hatred for this code is immeasurable
+                //And my day is ruined
 
-            std::cout << "Main Window: " << main_window_coords.x << " " << main_window_coords.y << " ";
-            std::cout << "Main Window Dim: " << window_main_dim.x << " " << window_main_dim.y << " ";
-            std::cout << "Screen Dim: " << screenWidth << " " << screenHeight << " ";
-            std::cout << "Collision: " << main_window_collision.x << " " << main_window_collision.y;
-            std::cout << " Velocity: " << main_window_velocity.x << " " << main_window_velocity.y << std::endl;
+                Vector2 main_window_collision = CheckCollisionWithBoundary({main_window_coords.x, main_window_coords.y, window_main_dim.x, window_main_dim.y}, 
+                    {0, 0, screenWidth, screenHeight}, main_window_velocity);
 
-            main_window_velocity = Vector2Multiply(main_window_velocity, main_window_collision);
+                main_window_velocity.x *= main_window_collision.x;
+                main_window_velocity.y *= main_window_collision.y;
 
-            main_window_coords.x = std::fmax(0, std::fmin(screenWidth - window_main_dim.x, main_window_coords.x));
-            main_window_coords.y = std::fmax(0, std::fmin(screenHeight - window_main_dim.y, main_window_coords.y));
+                // if((main_window_coords.x <= 0 && main_window_velocity.x < 0) || 
+                //     (main_window_coords.x + window_main_dim.x >= screenWidth && main_window_velocity.x > 0)){
+                //     main_window_velocity.x *= -1.0f;
+                // } 
+                // if((main_window_coords.y <= 0 && main_window_velocity.y < 0) || 
+                //     (main_window_coords.y + window_main_dim.y >= screenHeight && main_window_velocity.y > 0)){
+                //     main_window_velocity.y *= -1.0f;
+                // }
 
-            SetWindowPosition(main_window_coords.x, main_window_coords.y);
 
-            SetWindowSize(window_main_dim.x, window_main_dim.y);
-            
+                main_window_coords.x = std::fmax(0, std::fmin(screenWidth - window_main_dim.x, main_window_coords.x));
+                main_window_coords.y = std::fmax(0, std::fmin(screenHeight - window_main_dim.y, main_window_coords.y));
 
+                SetWindowPosition((int)main_window_coords.x, (int)main_window_coords.y);  
+                SetWindowSize(window_main_dim.x, window_main_dim.y);
+
+        // ===========================================================
+        // Scoreboard Window Iteration Logic
+        // ===========================================================
+
+            SetActiveWindowContext(scoreboard_window);
+ 
+                Vector2 scoreboard_window_collision = CheckCollisionWithBoundary({scoreboard_window_coords.x, scoreboard_window_coords.y, scoreboard_window_dim.x, scoreboard_window_dim.y}, 
+                {0, 0, screenWidth, screenHeight}, scoreboard_window_velocity);
+
+                Vector2 mouse_pos = GetMousePosition();
+
+                if(IsKeyDown(KEY_SPACE)){
+                    scoreboard_window_dim.x = lerp(scoreboard_window_dim.x, scoreboard_window_dim_default.x*1.3, 0.1f);
+                    scoreboard_window_dim.y = lerp(scoreboard_window_dim.y, scoreboard_window_dim_default.y*01.3, 0.1f);
+
+                    if(IsMouseButtonDown(MOUSE_LEFT_BUTTON)){
+                        scoreboard_window_coords.x = lerp(scoreboard_window_coords.x, scoreboard_window_coords.x + mouse_pos.x - scoreboard_window_dim.x/2, 0.5f);
+                        scoreboard_window_coords.y = lerp(scoreboard_window_coords.y, scoreboard_window_coords.y + mouse_pos.y - scoreboard_window_dim.y/2, 0.5f);
+                    } 
+
+                    scoreboard_window_coords.x = std::fmax(0, std::fmin(screenWidth - scoreboard_window_dim.x, scoreboard_window_coords.x));
+                    scoreboard_window_coords.y = std::fmax(0, std::fmin(screenHeight - scoreboard_window_dim.y, scoreboard_window_coords.y));
+ 
+                } else {
+                    scoreboard_window_coords.x = scoreboard_window_coords.x + (scoreboard_window_velocity.x * logicDelta);
+                    scoreboard_window_coords.y = scoreboard_window_coords.y + (scoreboard_window_velocity.y * logicDelta); 
+
+                    scoreboard_window_velocity.x *= scoreboard_window_collision.x;
+                    scoreboard_window_velocity.y *= scoreboard_window_collision.y;
+                
+                    scoreboard_window_velocity.y += gravity * logicDelta;
+                    scoreboard_window_velocity = Vector2Multiply(scoreboard_window_velocity, {drag, drag});
+
+                    scoreboard_window_dim.x = lerp(scoreboard_window_dim.x, scoreboard_window_dim_default.x, 0.1f);
+                    scoreboard_window_dim.y = lerp(scoreboard_window_dim.y, scoreboard_window_dim_default.y, 0.1f);
+
+                    scoreboard_window_coords.x = std::fmax(0, std::fmin(screenWidth - scoreboard_window_dim.x, scoreboard_window_coords.x));
+                    scoreboard_window_coords.y = std::fmax(0, std::fmin(screenHeight - scoreboard_window_dim.y, scoreboard_window_coords.y));
+                }
+
+                SetWindowPosition((int)scoreboard_window_coords.x, (int)scoreboard_window_coords.y);
+                SetWindowSize(scoreboard_window_dim.x, scoreboard_window_dim.y);
+                    
 
         // ===========================================================
         // Draw Block
@@ -309,6 +388,8 @@ int main(){
             // ===========================================================
             // Draw Logics
             // ===========================================================
+
+            SetActiveWindowContext(window_main);
 
             UpdateCamera(&camera, CAMERA_PERSPECTIVE);
             
@@ -399,7 +480,7 @@ int main(){
                 // Window 1 Draw
                 // ===========================================================
                 
-                    SetActiveWindowContext(window_1);
+                    SetActiveWindowContext(scoreboard_window);
 
                     BeginDrawing();
                         ClearBackground(RAYWHITE);
@@ -420,12 +501,14 @@ int main(){
     }
     
     //Clean-up
+
+    UnloadMusicStream(background_music);
     UnloadShader(raymarching_shader);
 
     SetActiveWindowContext(window_main);
     CloseWindow();
 
-    SetActiveWindowContext(window_1);
+    SetActiveWindowContext(scoreboard_window);
     CloseWindow();
 
 
