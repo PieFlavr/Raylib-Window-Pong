@@ -205,7 +205,7 @@ int main(){
         // Window Initialization
         // ===========================================================
 
-        std::string window_title = DEFAULT_TITLE;
+        std::string window_title = "MY HATRED FOR THIS CODE IS IMMEASURABLE, AND MY DAY IS RUINED (the game)";
 
         //unsigned int window_flags_generic = FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MINIMIZABLE | FLAG_WINDOW_MAXIMIZABLE | FLAG_WINDOW_CLOSEABLE | FLAG_WINDOW_UNDECORATED;
         unsigned int window_main_flags = 0;
@@ -261,7 +261,8 @@ int main(){
 
         SetActiveWindowContext(window_main);
 
-        Shader raymarching_shader = LoadShader(0, "../../custom_assets/as4/raytracing_shader.fs");
+        // Gave up doesn't want to work
+        Shader raymarching_shader = LoadShader(NULL, "../../custom_assets/as4/raytracing_shader.fs");
         RenderTexture2D targetTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
 
         if (raymarching_shader.id == 0) {
@@ -410,19 +411,10 @@ int main(){
                    gravity = GRAVITY*0.5f;
                    if(IsKeyPressed(KEY_ENTER)){
                        game_state = 0;
-                       timer = 30.0f;
-                       total_time = 0.0f;
-
-                       float angle = (rand() % 4) * 90.0f + 45.0f;
-                        angle *= DEG2RAD;
-                        ball_pos = {(float)screenWidth/2, (float)screenHeight/2};
-                        ball_velocity = {BALL_SPEED * cos(angle), BALL_SPEED * sin(angle)};
-
-                        main_window_velocity.x = (rand() % 2 == 0 ? 1 : -1) * WINDOW_VELOCITY;
-                        main_window_velocity.y = (rand() % 2 == 0 ? 1 : -1) * WINDOW_VELOCITY;
-
+                        timer = 30.0f;
+                        total_time = 0.0f;
                         PlayMusicStream(game_state_0_music);
-                        StopMusicStream(game_state_1_music);
+                        StopMusicStream(game_state_3_music);
                    }
                 }
 
@@ -698,11 +690,11 @@ int main(){
             float camera_distance = Vector3Distance(camera.position, camera.target);
             int diameter_width = 2 * tan(camera.fovy * DEG2RAD * 0.5) * camera_distance;
 
-            // SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "cameraPos"), &camera.position, SHADER_UNIFORM_VEC3);
-            // SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenWidth"), &screenWidth, SHADER_UNIFORM_INT);
-            // SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenHeight"), &screenHeight, SHADER_UNIFORM_INT);  
-            // SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "view"), view_matrix);
-            // SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "projection"), MatrixPerspective(camera.fovy, (double)GetScreenWidth()/(double)GetScreenHeight(), 0.1, 1000.0));
+            SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "cameraPos"), &camera.position, SHADER_UNIFORM_VEC3);
+            SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenWidth"), &screenWidth, SHADER_UNIFORM_INT);
+            SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenHeight"), &screenHeight, SHADER_UNIFORM_INT);  
+            SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "view"), view_matrix);
+            SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "projection"), MatrixPerspective(camera.fovy, (double)GetScreenWidth()/(double)GetScreenHeight(), 0.1, 1000.0));
 
 
             // ===========================================================
@@ -726,13 +718,6 @@ int main(){
                         BeginDrawing();
                             ClearBackground(RAYWHITE);
                             DRAW_3D_SCENE;
-
-                            BeginMode3D(camera);
-                                DrawBoundedModel(cube, combine(translate({0, 0, 0}), scale({10, 0.1, 10})));
-                                DrawBoundedModel(cube, combine(translate({0, 0, 0}), scale({0.1, 10, 10})));
-                                DrawBoundedModel(cube, combine(translate({0, 0, 0}), scale({10, 10, 0.1})));
-                                DrawBoundedModel(cow, combine(translate({0, 0, 0}), scale({0.1, 0.1, 0.1}))); //Cow is too big
-                            EndMode3D();
 
                             GAME_DRAW_LOGIC(window_main, window_main);
                         EndDrawing();
@@ -791,7 +776,9 @@ int main(){
                     
                     BeginDrawing();
                         ClearBackground(RAYWHITE);
-                        DRAW_3D_SCENE;
+                        BeginShaderMode(raymarching_shader);
+                            DRAW_3D_SCENE;
+                        EndShaderMode();
 
                         do{ //Visualize Main Window Area
                             SetActiveWindowContext(window_main);
@@ -845,8 +832,10 @@ int main(){
                                 DrawText("Player 1: Press [W] and [S] to Move Left Paddle", 10, 10, 20, BLACK);
                                 DrawText("Player 2: Press [UP] and [DOWN] to Move Right Paddle", 10, 30, 20, BLACK);
                                 DrawText("Yell to Accelerate the Game(check your terminal for visualizer)", 10, 50, 20, BLACK);
+                                DrawText("Press [T] to Show Leaderboard", 10, 70, 20, BLACK);
+                                DrawText("Press [ESC] to Quit", 10, 90, 20, BLACK); 
 
-                                DrawText("Press [ENTER] to Start Game", 10, 70, 20, BLACK);
+                                DrawText("Press [ENTER] to Start Game", 10, 110, 20, BLACK);
                             } else {
                                 DrawText("Hold [SPACE] to Hold Scoreboard", 10, 50, 20, BLACK);
                                 DrawText("Hold [SPACE] and [Middle Mouse Button] \n to Move Scoreboard", 10, 10, 20, BLACK);
@@ -866,27 +855,84 @@ int main(){
                             if(total_time >= rank_5_time){
                                 DrawText("You made it to the leaderboard!", 10, 90, 20, BLACK);
                                 DrawText("Enter your name: ", 10, 110, 20, BLACK);
+                                DrawText("Press [SHIFT] to Submit", 10, 130, 20, BLACK);
+                                static char player_name[20] = "\0";
+                                static int letter_count = 0;
+
+                                int key = GetCharPressed();
+
+                                while (key > 0) {
+                                    if ((key >= 32) && (key <= 125) && (letter_count < 20)) {
+                                        player_name[letter_count] = (char)key;
+                                        player_name[letter_count + 1] = '\0';
+                                        letter_count++;
+                                    }
+
+                                    key = GetCharPressed();
+                                }
+
+                                if (IsKeyPressed(KEY_BACKSPACE)) {
+                                    letter_count--;
+                                    if (letter_count < 0) letter_count = 0;
+                                    player_name[letter_count] = '\0';
+                                }
+
+                                DrawText(player_name, 200, 110, 20, BLACK);
+
+                                if ((IsKeyPressed(KEY_RIGHT_SHIFT) || IsKeyPressed(KEY_LEFT_SHIFT)) && letter_count > 0) {
+                                    std::ofstream leaderboard_out("../leaderboard.txt");
+
+                                    if (total_time >= rank_1_time) {
+                                        rank_5 = rank_4;
+                                        rank_4 = rank_3;
+                                        rank_3 = rank_2;
+                                        rank_2 = rank_1;
+                                        rank_1 = std::format("{} {:.2f}", player_name, total_time);
+                                    } else if (total_time >= rank_2_time) {
+                                        rank_5 = rank_4;
+                                        rank_4 = rank_3;
+                                        rank_3 = rank_2;
+                                        rank_2 = std::format("{} {:.2f}", player_name, total_time);
+                                    } else if (total_time >= rank_3_time) {
+                                        rank_5 = rank_4;
+                                        rank_4 = rank_3;
+                                        rank_3 = std::format("{} {:.2f}", player_name, total_time);
+                                    } else if (total_time >= rank_4_time) {
+                                        rank_5 = rank_4;
+                                        rank_4 = std::format("{} {:.2f}", player_name, total_time);
+                                    } else {
+                                        rank_5 = std::format("{} {:.2f}", player_name, total_time);
+                                    }
+
+                                    leaderboard_out << rank_1 << std::endl;
+                                    leaderboard_out << rank_2 << std::endl;
+                                    leaderboard_out << rank_3 << std::endl;
+                                    leaderboard_out << rank_4 << std::endl;
+                                    leaderboard_out << rank_5 << std::endl;
+
+                                    leaderboard_out.close();
+                                    game_state = 0;
+                                    timer = 30.0f;
+                                    total_time = 0.0f;
+                                    letter_count = 0;
+                                    player_name[0] = '\0';
+                                }
                             } else {
                                 DrawText("You didn't make it to the leaderboard :P", 10, 90, 20, BLACK);
                                 DrawText("Press [ENTER] to Restart", 10, 110, 20, BLACK);
                             }
                         }
 
-
-
                     EndDrawing();
-                
-
-                
-
     }
     
     //Clean-up
     ma_device_uninit(&device);
 
     UnloadMusicStream(game_state_1_music);
-    //UnloadTexture(cow_texture);
+    UnloadTexture(cow_texture);
     UnloadModel(cow);
+    UnloadModel(cube);
 
     UnloadShader(raymarching_shader);
 

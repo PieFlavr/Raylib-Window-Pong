@@ -126,6 +126,10 @@ IN THE START MENU AND GAME-OVER SCREEN...
 
 `[ESC]` at any point closes the game.
 
+IN THE AME OVER SCREEN...
+
+`[SHIFT]' to submit your typed name
+
 ## EXTRA CREDIT FEATURE IMPLEMENTATIONs
 
 The following have been implemented in the program...
@@ -135,5 +139,5 @@ The following have been implemented in the program...
 3) Terminal ASCII Art (Audio Input Visualizer)
 4) Funny Name (see README title)
 5) Manual Cleanup (literally using a random Raylib fork, not the CPP wrapper ￣へ￣)
-6) [maybe???] Custom Shaders (Raymarching that sometimes works, sometimes doesn't have no idea why)
+6) ~~[maybe???] Custom Shaders (Raymarching that sometimes works, sometimes doesn't have no idea why)~~
 7) Leaderboard Implementation (persists + lets you type name)
