@@ -13,12 +13,18 @@
  * 
  */
 
+ //Stupid windows macro
+ #ifdef DrawText
+ #undef DrawText
+ #endif
+
 // Multi Window Raylib includes
 #include "raylib.h"
 #include "raymath.h"
 #include "rlgl.h"
 
 #include <iostream>
+#include <fstream>
 
 // Organizational Inncludes
 #include "draw_macros.h"
@@ -44,7 +50,7 @@
 
 // TERMINAL ASCII VISUALIZER SETTINGS
 #define AUDIO_LINE_LENGTH 200
-#define AUDIO_NUM_LINES 10
+#define AUDIO_NUM_LINES 8
 #define VISUALIZER_SPEED_SCALE 100.0f
 
 #define DEFAULT_TITLE "CS381 - Assignment 4"
@@ -58,7 +64,7 @@
 #define BALL_RADIUS 10
 
 #define WINDOW_VELOCITY 10.0f
-#define GRAVITY -9.8f
+#define GRAVITY 9.8f
 
 
 
@@ -155,6 +161,45 @@ int main(){
     // ===========================================================
     // Initialization
     // ===========================================================
+    
+        // ===========================================================
+        // File Loading + Reading
+        // ===========================================================
+        std::fstream leaderboard("../leaderboard.txt");
+        if(!leaderboard.is_open()){
+            std::cout << "Error opening/creating leaderboard file!" << std::endl;
+            return -1;
+        } else {
+            std::cout << "Leaderboard file opened successfully." << std::endl;
+        }
+
+        std::string rank_1, rank_2, rank_3, rank_4, rank_5;
+        std::string line; 
+        while(std::getline(leaderboard, line)){
+            if(rank_1.empty()){
+                rank_1 = line;
+            } else if(rank_2.empty()){
+                rank_2 = line;
+            } else if(rank_3.empty()){
+                rank_3 = line;
+            } else if(rank_4.empty()){
+                rank_4 = line;
+            } else if(rank_5.empty()){
+                rank_5 = line;
+            }
+        }
+
+        std::string rank_1_name = rank_1.substr(0, rank_1.find(" "));
+        std::string rank_2_name = rank_2.substr(0, rank_2.find(" "));
+        std::string rank_3_name = rank_3.substr(0, rank_3.find(" "));
+        std::string rank_4_name = rank_4.substr(0, rank_4.find(" "));
+        std::string rank_5_name = rank_5.substr(0, rank_5.find(" "));
+
+        double rank_1_time = std::stod(rank_1.substr(rank_1.find(" ") + 1));
+        double rank_2_time = std::stod(rank_2.substr(rank_2.find(" ") + 1));
+        double rank_3_time = std::stod(rank_3.substr(rank_3.find(" ") + 1));
+        double rank_4_time = std::stod(rank_4.substr(rank_4.find(" ") + 1));
+        double rank_5_time = std::stod(rank_5.substr(rank_5.find(" ") + 1));
 
         // ===========================================================
         // Window Initialization
@@ -173,7 +218,6 @@ int main(){
         int screenHeight = GetMonitorHeight(0);
 
         float aspect_ratio = (double)screenWidth / (double)screenHeight;
-        std::cout << "Aspect Ratio: " << aspect_ratio << std::endl;
 
         int scoreboard_window = InitWindowPro(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH/aspect_ratio, "Scoreboard", window_main_flags);
         int left_paddle_window = InitWindowPro(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH, "Left Paddle View", window_main_flags);
@@ -256,6 +300,8 @@ int main(){
         // Game "Objects" and Variables
         // ===========================================================
 
+            int game_state = 0; // 0 - Menu | 1 - Playing | 2 - ??? | 3 - Game Over
+
             float drag = 0.8f;
             float gravity = GRAVITY;
             float time_scale = 1.0f;
@@ -271,7 +317,7 @@ int main(){
             float ball_radius = BALL_RADIUS;
 
             Vector2 main_window_velocity = {WINDOW_VELOCITY, WINDOW_VELOCITY};
-            Vector2 main_window_coords = GetWindowPosition();
+            Vector2 main_window_pos = GetWindowPosition();
 
             Vector2 scoreboard_window_velocity = {0.0f, 0.0f};
             Vector2 scoreboard_window_dim = {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH/aspect_ratio};
@@ -279,13 +325,20 @@ int main(){
             Vector2 scoreboard_window_coords = GetWindowPosition();
 
             Vector2 left_paddle_window_pos = {10, (screenHeight/2) - (PADDLE_HEIGHT/2)};
+            Vector2 left_paddle_window_velocity = {0.0f, 0.0f};
+            Vector2 left_paddle_window_dim = {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH};
+
             Vector2 right_paddle_window_pos = {screenWidth - 10 - PADDLE_WIDTH - DEFAULT_WINDOW_WIDTH, (screenHeight/2) - (PADDLE_HEIGHT/2)};
+            Vector2 right_paddle_window_velocity = {0.0f, 0.0f};
+            Vector2 right_paddle_window_dim = {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH};
 
         // ===========================================================
         // Miscallaneous Initialization/Variables
         // ===========================================================
 
             bool active_game = true;
+            double total_time = 0.0f;
+            double timer = 30.0f;
 
             Vector3 camera_base_target = {0, 0, 0};
             Vector3 camera_base_position = {10, 10, 10};
@@ -305,40 +358,85 @@ int main(){
         // ===========================================================
         // Non-Delta Logic BLock
         // ===========================================================
+            // Check for either scoreboard or main window
             SetActiveWindowContext(window_main);
             active_game = !WindowShouldClose();
             SetActiveWindowContext(scoreboard_window);
             active_game = active_game || !WindowShouldClose();
+            
 
             // ===========================================================
-            // Main Window Positioning Logic
+            // General Game State
             // ===========================================================
-                SetActiveWindowContext(window_main);
 
-                Vector2 main_window_dim = {GetScreenWidth(), GetScreenHeight()};
-                Vector2 main_window_center = Vector2Add(GetWindowPosition(),Vector2Multiply(main_window_dim, {0.5, 0.5}));
-                Vector2 main_window_offset = Vector2Subtract(main_window_center, screen_center);
+                if(game_state == 0){
+                    if(IsKeyPressed(KEY_ENTER)){
+                        game_state = 1;
+
+                        float angle = (rand() % 4) * 90.0f + 45.0f;
+                        angle *= DEG2RAD;
+                        ball_velocity = {BALL_SPEED * cos(angle), BALL_SPEED * sin(angle)};
+
+                        main_window_velocity.x = (rand() % 2 == 0 ? 1 : -1) * WINDOW_VELOCITY;
+                        main_window_velocity.y = (rand() % 2 == 0 ? 1 : -1) * WINDOW_VELOCITY;
+                    }
+                    // Menu State
+                } else if(game_state == 1){ // Playing State
+                    gravity = -GRAVITY;
+                    timer -= GetFrameTime(); 
+                    total_time += GetFrameTime();
+
+                    if(timer <= 0){
+                        timer = 0;
+                        game_state = 3;
+                    }
+                } else if(game_state == 2){
+                    // ??? State
+                } else if(game_state == 3){// Game Over State
+                   gravity = GRAVITY;
+                   if(IsKeyPressed(KEY_ENTER)){
+                       game_state = 0;
+                       timer = 30.0f;
+                       total_time = 0.0f;
+
+                       float angle = (rand() % 4) * 90.0f + 45.0f;
+                        angle *= DEG2RAD;
+                        ball_velocity = {BALL_SPEED * cos(angle), BALL_SPEED * sin(angle)};
+
+                        main_window_velocity.x = (rand() % 2 == 0 ? 1 : -1) * WINDOW_VELOCITY;
+                        main_window_velocity.y = (rand() % 2 == 0 ? 1 : -1) * WINDOW_VELOCITY;
+                   }
+                }
 
             // ===========================================================
             // Audio Block
             // ===========================================================
 
-                if(IsMusicReady(background_music)){
+                if(game_state == 0){
+
+                } else if(game_state == 1){
                     //UpdateMusicStream(background_music);
+                } else if(game_state == 3){
+                    // Stop all music
+                    StopMusicStream(background_music);
                 }
 
                 float LOUD = calculate_loud();
-                //std::cout << "LOUD: " << LOUD << std::endl;
                 
-                visualizer_accumulator += GetFrameTime();
-                if(visualizer_accumulator >= (1.0f/((float)LOGIC_FPS * VISUALIZER_SPEED_SCALE))){
+                if(game_state != 3){ //Game Over, no visualizer
 
-                    bar_encoding += generateEncodedString(LOUD, 0.0f, 0.1f, AUDIO_NUM_LINES); 
-                    if(bar_encoding.size() > AUDIO_LINE_LENGTH*AUDIO_NUM_LINES){
-                        bar_encoding = bar_encoding.substr(bar_encoding.size() - AUDIO_LINE_LENGTH*AUDIO_NUM_LINES);
-                        renderEncodedString(bar_encoding, AUDIO_LINE_LENGTH, AUDIO_NUM_LINES);
+                    visualizer_accumulator += GetFrameTime();
+                    if(visualizer_accumulator >= (1.0f/((float)LOGIC_FPS * VISUALIZER_SPEED_SCALE))){
+
+                        bar_encoding += generateEncodedString(LOUD, 0.0f, 0.1f, AUDIO_NUM_LINES); 
+                        if(bar_encoding.size() > AUDIO_LINE_LENGTH*AUDIO_NUM_LINES){
+                            bar_encoding = bar_encoding.substr(bar_encoding.size() - AUDIO_LINE_LENGTH*AUDIO_NUM_LINES);
+                            renderEncodedString(bar_encoding, AUDIO_LINE_LENGTH, AUDIO_NUM_LINES);
+                        }
                     }
                 }
+
+                
 
         // ===========================================================
         // Delta Logic Block
@@ -357,18 +455,20 @@ int main(){
             // Pong Controls
             // ===========================================================
 
-                if(IsKeyDown(KEY_W)){
-                    left_paddle_pos.y -= PADDLE_SPEED * logicDelta;
-                }
-                if(IsKeyDown(KEY_S)){
-                    left_paddle_pos.y += PADDLE_SPEED * logicDelta;
-                }
-
-                if(IsKeyDown(KEY_UP)){
-                    right_paddle_pos.y -= PADDLE_SPEED * logicDelta;
-                }
-                if(IsKeyDown(KEY_DOWN)){
-                    right_paddle_pos.y += PADDLE_SPEED * logicDelta;
+                if(game_state == 1){
+                    if(IsKeyDown(KEY_W)){
+                        left_paddle_pos.y -= PADDLE_SPEED * logicDelta;
+                    }
+                    if(IsKeyDown(KEY_S)){
+                        left_paddle_pos.y += PADDLE_SPEED * logicDelta;
+                    }
+    
+                    if(IsKeyDown(KEY_UP)){
+                        right_paddle_pos.y -= PADDLE_SPEED * logicDelta;
+                    }
+                    if(IsKeyDown(KEY_DOWN)){
+                        right_paddle_pos.y += PADDLE_SPEED * logicDelta;
+                    }
                 }
 
                 left_paddle_pos.y = std::fmax(0, std::fmin(screenHeight - left_paddle_size.y, left_paddle_pos.y));
@@ -378,62 +478,69 @@ int main(){
             // Pong Logic
             // ===========================================================
                 
-                ball_pos.x += ball_velocity.x * logicDelta;
-                ball_pos.y += ball_velocity.y * logicDelta;
+                if(game_state == 1){
+                    ball_pos.x += ball_velocity.x * logicDelta;
+                    ball_pos.y += ball_velocity.y * logicDelta;
 
-                Vector2 ball_collision = CheckCollisionBoundary({ball_pos.x, ball_pos.y, ball_radius, ball_radius}, 
-                    {0, 0, screenWidth, screenHeight}, ball_velocity);
+                    Vector2 ball_collision = CheckCollisionBoundary({ball_pos.x, ball_pos.y, ball_radius, ball_radius}, 
+                        {0, 0, screenWidth, screenHeight}, ball_velocity);
 
-                if(ball_collision.x < 0.0f){ //Side Missed
-                    bool game_over = true;
+                    if(ball_collision.x < 0.0f){ //Side Missed
+                        timer -= 10.0f;
+                    }
+
+                    ball_velocity.y *= ball_collision.y;
+                    ball_velocity.x *= ball_collision.x;
+
+                        ball_collision = CheckCollisionBoxPro({ball_pos.x, ball_pos.y, ball_radius, ball_radius}, 
+                            {left_paddle_pos.x, left_paddle_pos.y, left_paddle_size.x, left_paddle_size.y}, ball_velocity);
+
+                        ball_collision = Vector2Multiply(ball_collision, CheckCollisionBoxPro({ball_pos.x, ball_pos.y, ball_radius, ball_radius}, 
+                            {right_paddle_pos.x, right_paddle_pos.y, right_paddle_size.x, right_paddle_size.y}, ball_velocity));
+
+                    if(ball_collision.y <= 0.0f){ //Timer Extended!
+                        timer += 3.0f; 
+                    }
+
+                    ball_velocity.y *= ball_collision.y;
+                    ball_velocity.x *= ball_collision.x;
+
+                    ball_pos.x = std::fmax(0, std::fmin(screenWidth - ball_radius, ball_pos.x));
+                    ball_pos.y = std::fmax(0, std::fmin(screenHeight - ball_radius, ball_pos.y));
                 }
-                    ball_collision = Vector2Multiply(ball_collision, CheckCollisionBoxPro({ball_pos.x, ball_pos.y, ball_radius, ball_radius}, 
-                        {left_paddle_pos.x, left_paddle_pos.y, left_paddle_size.x, left_paddle_size.y}, ball_velocity));
-
-                    ball_collision = Vector2Multiply(ball_collision, CheckCollisionBoxPro({ball_pos.x, ball_pos.y, ball_radius, ball_radius}, 
-                        {right_paddle_pos.x, right_paddle_pos.y, right_paddle_size.x, right_paddle_size.y}, ball_velocity));
-            
-                ball_velocity.y *= ball_collision.y;
-                ball_velocity.x *= ball_collision.x;
-
-                ball_pos.x = std::fmax(0, std::fmin(screenWidth - ball_radius, ball_pos.x));
-                ball_pos.y = std::fmax(0, std::fmin(screenHeight - ball_radius, ball_pos.y));
+                
 
             // ===========================================================  
             // Main Window Iteration Logic
             // ===========================================================
 
             SetActiveWindowContext(window_main);
-                main_window_coords.x = main_window_coords.x + (main_window_velocity.x * logicDelta);
-                main_window_coords.y = main_window_coords.y + (main_window_velocity.y * logicDelta);
 
-                // std::cout << main_window_coords.x << " " << main_window_coords.y << " ";
-                // std::cout << (main_window_coords.x <= 0 && main_window_velocity.x < 0) << " " << (main_window_coords.x + main_window_dim.x >= screenWidth && main_window_velocity.x > 0);  
-                // std::cout << " " << main_window_velocity.x << std::endl;
+                if(game_state == 1){
+                    main_window_pos.x = main_window_pos.x + (main_window_velocity.x * logicDelta);
+                    main_window_pos.y = main_window_pos.y + (main_window_velocity.y * logicDelta);
 
-                //My hatred for this code is immeasurable
-                //And my day is ruined
+                    //My hatred for this code is immeasurable
+                    //And my day is ruined
 
-                Vector2 main_window_collision = CheckCollisionBoundary({main_window_coords.x, main_window_coords.y, main_window_dim.x, main_window_dim.y}, 
-                    {0, 0, screenWidth, screenHeight}, main_window_velocity);
+                    Vector2 main_window_collision = CheckCollisionBoundary({main_window_pos.x, main_window_pos.y, main_window_dim.x, main_window_dim.y}, 
+                        {0, 0, screenWidth, screenHeight}, main_window_velocity);
 
-                main_window_velocity.x *= main_window_collision.x;
-                main_window_velocity.y *= main_window_collision.y;
+                    main_window_velocity.x *= main_window_collision.x;
+                    main_window_velocity.y *= main_window_collision.y;
 
-                // if((main_window_coords.x <= 0 && main_window_velocity.x < 0) || 
-                //     (main_window_coords.x + main_window_dim.x >= screenWidth && main_window_velocity.x > 0)){
-                //     main_window_velocity.x *= -1.0f;
-                // } 
-                // if((main_window_coords.y <= 0 && main_window_velocity.y < 0) || 
-                //     (main_window_coords.y + main_window_dim.y >= screenHeight && main_window_velocity.y > 0)){
-                //     main_window_velocity.y *= -1.0f;
-                // }
+                    main_window_pos.x = std::fmax(0, std::fmin(screenWidth - main_window_dim.x, main_window_pos.x));
+                    main_window_pos.y = std::fmax(0, std::fmin(screenHeight - main_window_dim.y, main_window_pos.y));
+                } else if (game_state == 1 || game_state == 3){
+                    do{
+                        DO_WINDOW_GRAVITY(main_window_pos, main_window_velocity, main_window_dim);
 
-
-                main_window_coords.x = std::fmax(0, std::fmin(screenWidth - main_window_dim.x, main_window_coords.x));
-                main_window_coords.y = std::fmax(0, std::fmin(screenHeight - main_window_dim.y, main_window_coords.y));
-
-                SetWindowPosition((int)main_window_coords.x, (int)main_window_coords.y);  
+                        main_window_pos = window_pos;
+                        main_window_dim = window_dim;
+                        main_window_velocity = window_velocity;
+                    } while(0);
+                }
+                SetWindowPosition((int)main_window_pos.x, (int)main_window_pos.y);  
                 SetWindowSize(main_window_dim.x, main_window_dim.y);
 
             // ===========================================================
@@ -448,19 +555,24 @@ int main(){
                 Vector2 mouse_pos = GetMousePosition();
                 Vector2 mouse_delta = GetMouseDelta();
                 float mouse_delta_absolute = Vector2Length(mouse_delta);
+                
+                float default_multiplier = 1.3f;
+                if(game_state == 0 || game_state == 3){
+                    default_multiplier = 3.0f;
+                }
 
                 Vector2 old_scoreboard_window_dim = scoreboard_window_dim; //For shrinking to the center as opposed to the corner.
                 Vector2 old_scoreboard_window_velocity = {scoreboard_window_velocity.x, scoreboard_window_velocity.y};
 
                 if(IsKeyDown(KEY_SPACE)){
-                    scoreboard_window_dim.x = lerp(scoreboard_window_dim.x, scoreboard_window_dim_default.x * 1.3, 0.1f);
-                    scoreboard_window_dim.y = lerp(scoreboard_window_dim.y, scoreboard_window_dim_default.y * 1.3, 0.1f);
+                    scoreboard_window_dim.x = lerp(scoreboard_window_dim.x, scoreboard_window_dim_default.x * default_multiplier, 0.1f);
+                    scoreboard_window_dim.y = lerp(scoreboard_window_dim.y, scoreboard_window_dim_default.y * default_multiplier, 0.1f);
 
                     scoreboard_window_coords.x -= (scoreboard_window_dim.x - old_scoreboard_window_dim.x)/2; //Shirnk compensation
                     scoreboard_window_coords.y -= (scoreboard_window_dim.y - old_scoreboard_window_dim.y)/2;
 
 
-                    if(IsMouseButtonDown(MOUSE_LEFT_BUTTON)){
+                    if(IsMouseButtonDown(MOUSE_MIDDLE_BUTTON)){
                         scoreboard_window_coords.x = lerp(scoreboard_window_coords.x, scoreboard_window_coords.x + mouse_pos.x - scoreboard_window_dim.x/2, 0.5f);
                         scoreboard_window_coords.y = lerp(scoreboard_window_coords.y, scoreboard_window_coords.y + mouse_pos.y - scoreboard_window_dim.y/2, 0.5f);
             
@@ -486,8 +598,12 @@ int main(){
                     }
 
                     if(scoreboard_window_velocity.x == 0.0f && scoreboard_window_velocity.y == 0.0f){
-                        scoreboard_window_coords.y = lerp(scoreboard_window_coords.y, 0, 0.1f);
-                    } 
+                        if(gravity > 0){
+                            scoreboard_window_coords.y = lerp(scoreboard_window_coords.y, screenHeight - scoreboard_window_dim.y, 0.1f);
+                        } else {
+                            scoreboard_window_coords.y = lerp(scoreboard_window_coords.y, 0, 0.1f);
+                        }
+                    }
 
                     scoreboard_window_dim.x = lerp(scoreboard_window_dim.x, scoreboard_window_dim_default.x, 0.1f);
                     scoreboard_window_dim.y = lerp(scoreboard_window_dim.y, scoreboard_window_dim_default.y, 0.1f);
@@ -506,16 +622,37 @@ int main(){
             // Paddle Windows Iteration Logic
             // ===========================================================
                 SetActiveWindowContext(left_paddle_window);
-                
-                left_paddle_window_pos.y = lerp(left_paddle_window_pos.y, (left_paddle_pos.y+left_paddle_size.y/2)-((float)DEFAULT_WINDOW_WIDTH/2.0f), 0.1f);
-                left_paddle_window_pos.y = std::fmax(0, std::fmin(screenHeight - DEFAULT_WINDOW_WIDTH, left_paddle_window_pos.y));
 
+                if(game_state == 1){
+                    left_paddle_window_pos.y = lerp(left_paddle_window_pos.y, (left_paddle_pos.y+left_paddle_size.y/2)-((float)DEFAULT_WINDOW_WIDTH/2.0f), 0.1f);
+                    left_paddle_window_pos.y = std::fmax(0, std::fmin(screenHeight - DEFAULT_WINDOW_WIDTH, left_paddle_window_pos.y));
+                } else if(game_state == 0 || game_state == 3){
+                    do{
+                        DO_WINDOW_GRAVITY(left_paddle_window_pos, left_paddle_window_velocity, left_paddle_window_dim);
+
+                        left_paddle_window_pos = window_pos;
+                        left_paddle_window_velocity = window_velocity;
+                        left_paddle_window_dim = window_dim;
+                    } while(0);
+                }
+                
                 SetWindowPosition((int)left_paddle_window_pos.x, (int)left_paddle_window_pos.y);
 
                 SetActiveWindowContext(right_paddle_window);
 
-                right_paddle_window_pos.y = lerp(right_paddle_window_pos.y, (right_paddle_pos.y+right_paddle_size.y/2)-((float)DEFAULT_WINDOW_WIDTH/2.0f), 0.1f);
-                right_paddle_window_pos.y = std::fmax(0, std::fmin(screenHeight - DEFAULT_WINDOW_WIDTH, right_paddle_window_pos.y));
+                if(game_state == 1){
+                    right_paddle_window_pos.y = lerp(right_paddle_window_pos.y, (right_paddle_pos.y+right_paddle_size.y/2)-((float)DEFAULT_WINDOW_WIDTH/2.0f), 0.1f);
+                    right_paddle_window_pos.y = std::fmax(0, std::fmin(screenHeight - DEFAULT_WINDOW_WIDTH, right_paddle_window_pos.y));
+                } else if(game_state == 0 || game_state == 3){
+                    do{
+                        DO_WINDOW_GRAVITY(right_paddle_window_pos, right_paddle_window_velocity, right_paddle_window_dim);
+
+                        right_paddle_window_pos = window_pos;
+                        right_paddle_window_velocity = window_velocity;
+                        right_paddle_window_dim = window_dim;
+                    } while(0);
+                }
+                
 
                 SetWindowPosition((int)right_paddle_window_pos.x, (int)right_paddle_window_pos.y);
 
@@ -622,7 +759,7 @@ int main(){
                         ClearBackground(RAYWHITE);
                         DRAW_3D_SCENE;
 
-                        do{
+                        do{ //Visualize Main Window Area
                             SetActiveWindowContext(window_main);
                             GET_WINDOW_INFO;
                             
@@ -630,7 +767,7 @@ int main(){
                             DRAW_VIEWPORT_VIEW;
                         } while (0);
 
-                        do{
+                        do{ //Visualize Left Paddle Area
                             SetActiveWindowContext(left_paddle_window);
                             GET_WINDOW_INFO;
                             
@@ -638,14 +775,70 @@ int main(){
                             DRAW_VIEWPORT_VIEW;
                         } while (0);
 
-                        do{
+                        do{ //Visualize Right Paddle Area
                             SetActiveWindowContext(right_paddle_window);
                             GET_WINDOW_INFO;
                             
                             SetActiveWindowContext(scoreboard_window);
                             DRAW_VIEWPORT_VIEW;
                         } while (0);
+
+                        do{ //Visualize Scoreboard Area
+                            SetActiveWindowContext(scoreboard_window);
+                            GET_WINDOW_INFO;
+                            
+                            SetActiveWindowContext(scoreboard_window);
+                            DRAW_VIEWPORT_VIEW;
+                        } while (0);
+
+                        SetActiveWindowContext(scoreboard_window);
+                            GET_WINDOW_INFO;
                         
+                        if(game_state == 0){
+                            if(IsKeyDown(KEY_SPACE)){
+                                DrawText("Hold [SPACE] to Expand Scoreboard", 10, window_dim.y-80, 20, BLACK);
+                                DrawText("Hold [SPACE] and [Middle Mouse Button] to Move Scoreboard", 10, window_dim.y-50, 20, BLACK);
+
+                                if(IsKeyDown(KEY_T)){
+                                    DrawText("Leaderboard", 10, 200, 50, BLACK);
+                                    DrawText(std::format("1. {} - {:.2f}", rank_1_name, rank_1_time).c_str(), 10, 250, 20, BLACK);
+                                    DrawText(std::format("2. {} - {:.2f}", rank_2_name, rank_2_time).c_str(), 10, 270, 20, BLACK);
+                                    DrawText(std::format("3. {} - {:.2f}", rank_3_name, rank_3_time).c_str(), 10, 290, 20, BLACK);
+                                    DrawText(std::format("4. {} - {:.2f}", rank_4_name, rank_4_time).c_str(), 10, 310, 20, BLACK);
+                                    DrawText(std::format("5. {} - {:.2f}", rank_5_name, rank_5_time).c_str(), 10, 330, 20, BLACK);
+                                }
+                                
+                                DrawText("Player 1: Press [W] and [S] to Move Left Paddle", 10, 10, 20, BLACK);
+                                DrawText("Player 2: Press [UP] and [DOWN] to Move Right Paddle", 10, 30, 20, BLACK);
+                                DrawText("Yell to Accelerate the Game(check your terminal for visualizer)", 10, 50, 20, BLACK);
+
+                                DrawText("Press [ENTER] to Start Game", 10, 70, 20, BLACK);
+                            } else {
+                                DrawText("Hold [SPACE] to Hold Scoreboard", 10, 50, 20, BLACK);
+                                DrawText("Hold [SPACE] and [Middle Mouse Button] \n to Move Scoreboard", 10, 10, 20, BLACK);
+                            }
+                        }
+
+                        if(game_state == 1){
+                            DrawText("Hold [SPACE] to Hold Scoreboard", 10, window_dim.y-80, 20, BLACK);
+                            DrawText("Hold [SPACE] and [Middle Mouse Button] \nto Move Scoreboard", 10, window_dim.y-50, 20, BLACK);
+
+                            DrawText(std::format("Time Left: {:.2f}", timer).c_str(), 10, 30, 20, BLACK);
+                            DrawText(std::format("Total Time Survived: {:.2f}", total_time).c_str(), 10, 50, 20, BLACK);
+                        }
+                    
+                        if(game_state == 3){
+                            DrawText("GAME OVER!", 10, 70, 20, BLACK);
+                            if(total_time >= rank_5_time){
+                                DrawText("You made it to the leaderboard!", 10, 90, 20, BLACK);
+                                DrawText("Enter your name: ", 10, 110, 20, BLACK);
+                            } else {
+                                DrawText("You didn't make it to the leaderboard :P", 10, 90, 20, BLACK);
+                                DrawText("Press [ENTER] to Restart", 10, 110, 20, BLACK);
+                            }
+                        }
+
+
 
                     EndDrawing();
                 

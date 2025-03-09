@@ -90,7 +90,7 @@ std::string generateEncodedString(float value, float minValue, float maxValue, i
 void renderEncodedString(std::string &encoding, int lineLength, int numLines) {
     // Move cursor up numLines to overwrite previous output
     for (int i = 0; i < numLines; i++) {
-        std::cout << "\033[A";  
+        std::cout << "\033[A" << std::flush;  
     }
 
     for (int i = 0 ; i < numLines; i++) { 
