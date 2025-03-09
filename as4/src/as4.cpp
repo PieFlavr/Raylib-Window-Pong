@@ -27,6 +27,12 @@
 
 #include "utils.cpp"
 
+// AUDIO AAAAAAAAAAAGGGGGHHHHH
+#include "miniaudio.h"
+#include <cstdint>
+
+#define AUDIO_BUFFER_SIZE 1024
+
 // DEFAULT RENDER SETTINGs
 #define DEFAULT_SCALE 5
 #define DRAW_FPS 60
@@ -144,6 +150,33 @@ void DrawUnboundedModel(Model& model, Transformer auto transformer)
     model.transform = backup;   
 }
 
+// ===========================================================
+// Input Audio Shenanignans
+// ===========================================================
+
+float audioBuffer[AUDIO_BUFFER_SIZE];
+
+void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, uint32_t frameCount)
+{
+    const float* inputSamples = (const float*)pInput;
+
+    // Copy the input audio data into the audioBuffer
+    for (uint32_t i = 0; i < frameCount; i++) {
+        audioBuffer[i] = inputSamples[i];
+    }
+}
+float calculate_loud() {
+    float sum = 0.0f;
+
+    // Calculate the square of each sample and sum them
+    for (int i = 0; i < 1024; i++) {
+        sum += audioBuffer[i] * audioBuffer[i];
+    }
+
+    // Return the RMS (root mean square) of the audio samples as the loudness
+    return sqrtf(sum / 1024.0f);
+}
+
 
 // ===========================================================
 // Main Function
@@ -211,55 +244,74 @@ int main(){
         // ===========================================================
         // Audio Initialization
         // ===========================================================
-
+        
         InitAudioDevice();
         SetMasterVolume(0.5f);
 
         Music background_music = LoadMusicStream("../../custom_assets/as4/cats_on_mars.mp3");
         PlayMusicStream(background_music);
 
+        ma_device_config device_config = ma_device_config_init(ma_device_type_capture);
+        device_config.capture.format = ma_format_f32;
+        device_config.capture.channels = 1;
+        device_config.sampleRate = 44100;
+        device_config.dataCallback = data_callback; // I don't know anymore i'm reaching actual voodoo territory
+
+        ma_device device;
+
+        if(ma_device_init(NULL, &device_config, &device) != MA_SUCCESS){
+            std::cout << "I hate audio" << std::endl;
+            return -1;
+        }
+        if (ma_device_start(&device) != MA_SUCCESS) {
+            std::cout << "I ASDDDDDDD" << std::endl;
+            return -1;
+        }
+
+
         // ===========================================================
         // Game "Objects" and Variables
         // ===========================================================
 
-        float drag = 0.9f;
-        float gravity = GRAVITY;
-        
-        Vector2 left_paddle_size = {PADDLE_WIDTH, PADDLE_HEIGHT};
-        Vector2 left_paddle_pos = {50, (screenHeight/2) - (PADDLE_HEIGHT/2)};
+            float drag = 0.9f;
+            float gravity = GRAVITY;
+            float time_scale = 1.0f;
+            
+            Vector2 left_paddle_size = {PADDLE_WIDTH, PADDLE_HEIGHT};
+            Vector2 left_paddle_pos = {50, (screenHeight/2) - (PADDLE_HEIGHT/2)};
 
-        Vector2 right_paddle_size = {PADDLE_WIDTH, PADDLE_HEIGHT};
-        Vector2 right_paddle_pos = {screenWidth - 50 - PADDLE_WIDTH, (screenHeight/2) - (PADDLE_HEIGHT/2)};
+            Vector2 right_paddle_size = {PADDLE_WIDTH, PADDLE_HEIGHT};
+            Vector2 right_paddle_pos = {screenWidth - 50 - PADDLE_WIDTH, (screenHeight/2) - (PADDLE_HEIGHT/2)};
 
-        Vector2 ball_pos = {screenWidth/2, screenHeight/2};
-        float ball_radius = BALL_RADIUS;
+            Vector2 ball_pos = {screenWidth/2, screenHeight/2};
+            float ball_radius = BALL_RADIUS;
 
-        Vector2 main_window_velocity = {WINDOW_VELOCITY, WINDOW_VELOCITY};
-        Vector2 main_window_coords = GetWindowPosition();
+            Vector2 main_window_velocity = {WINDOW_VELOCITY, WINDOW_VELOCITY};
+            Vector2 main_window_coords = GetWindowPosition();
 
-        Vector2 scoreboard_window_velocity = {0.0f, 0.0f};
-        Vector2 scoreboard_window_dim = {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH/aspect_ratio};
-        Vector2 scoreboard_window_dim_default = {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH/aspect_ratio};
-        Vector2 scoreboard_window_coords = GetWindowPosition();
+            Vector2 scoreboard_window_velocity = {0.0f, 0.0f};
+            Vector2 scoreboard_window_dim = {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH/aspect_ratio};
+            Vector2 scoreboard_window_dim_default = {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH/aspect_ratio};
+            Vector2 scoreboard_window_coords = GetWindowPosition();
 
         // ===========================================================
         // Miscallaneous Initialization/Variables
         // ===========================================================
 
-        bool active_game = true;
+            bool active_game = true;
 
-        Vector3 camera_base_target = {0, 0, 0};
-        Vector3 camera_base_position = {10, 10, 10};
-        float camera_base_fov = 45.0f;
+            Vector3 camera_base_target = {0, 0, 0};
+            Vector3 camera_base_position = {10, 10, 10};
+            float camera_base_fov = 45.0f;
 
-        Vector3 forward = Vector3Normalize(Vector3Subtract(camera.target, camera.position));  
-        Vector3 right = Vector3Normalize(Vector3CrossProduct(forward, camera.up));  
-        Vector3 up = camera.up; 
+            Vector3 forward = Vector3Normalize(Vector3Subtract(camera.target, camera.position));  
+            Vector3 right = Vector3Normalize(Vector3CrossProduct(forward, camera.up));  
+            Vector3 up = camera.up; 
 
-        Vector2 screen_dim = {GetMonitorWidth(0), GetMonitorHeight(0)};
-        Vector2 screen_center = {screen_dim.x/2, screen_dim.y/2};
+            Vector2 screen_dim = {GetMonitorWidth(0), GetMonitorHeight(0)};
+            Vector2 screen_center = {screen_dim.x/2, screen_dim.y/2};
 
-        SetTargetFPS(DRAW_FPS);
+            SetTargetFPS(DRAW_FPS);
 
     while (active_game){
 
@@ -289,9 +341,12 @@ int main(){
             // Audio Block
             // ===========================================================
 
-            if(IsMusicReady(background_music)){
-                //UpdateMusicStream(background_music);
-            }
+                if(IsMusicReady(background_music)){
+                    //UpdateMusicStream(background_music);
+                }
+
+                float LOUD = calculate_loud();
+                std::cout << "LOUD: " << LOUD << std::endl;
 
         // ===========================================================
         // Delta Logic Block
@@ -303,6 +358,12 @@ int main(){
 
             double logicFrameTime = GetFrameTime();
             float logicDelta = logicFrameTime/LOGIC_FPS;
+            if(LOUD > 0.05f){
+                time_scale = lerp(time_scale, 1.0f/LOUD, 0.1f);
+            } else {
+                time_scale = lerp(time_scale, 1.0f, 0.1f);
+            }
+            logicDelta = logicDelta * time_scale;
 
             SetActiveWindowContext(window_main);
                 main_window_coords.x = main_window_coords.x + (main_window_velocity.x * logicDelta);
@@ -350,7 +411,7 @@ int main(){
 
                 if(IsKeyDown(KEY_SPACE)){
                     scoreboard_window_dim.x = lerp(scoreboard_window_dim.x, scoreboard_window_dim_default.x*1.3, 0.1f);
-                    scoreboard_window_dim.y = lerp(scoreboard_window_dim.y, scoreboard_window_dim_default.y*01.3, 0.1f);
+                    scoreboard_window_dim.y = lerp(scoreboard_window_dim.y, scoreboard_window_dim_default.y*1.3, 0.1f);
 
                     if(IsMouseButtonDown(MOUSE_LEFT_BUTTON)){
                         scoreboard_window_coords.x = lerp(scoreboard_window_coords.x, scoreboard_window_coords.x + mouse_pos.x - scoreboard_window_dim.x/2, 0.5f);
@@ -501,6 +562,7 @@ int main(){
     }
     
     //Clean-up
+    ma_device_uninit(&device);
 
     UnloadMusicStream(background_music);
     UnloadShader(raymarching_shader);
