@@ -54,6 +54,7 @@
 #define PADDLE_WIDTH 30
 #define PADDLE_SPEED 15.0f
 
+#define BALL_SPEED 8.0f
 #define BALL_RADIUS 10
 
 #define WINDOW_VELOCITY 10.0f
@@ -266,6 +267,7 @@ int main(){
             Vector2 right_paddle_pos = {screenWidth - 50 - PADDLE_WIDTH, (screenHeight/2) - (PADDLE_HEIGHT/2)};
 
             Vector2 ball_pos = {screenWidth/2, screenHeight/2};
+            Vector2 ball_velocity = {BALL_SPEED, BALL_SPEED};
             float ball_radius = BALL_RADIUS;
 
             Vector2 main_window_velocity = {WINDOW_VELOCITY, WINDOW_VELOCITY};
@@ -375,15 +377,27 @@ int main(){
             // ===========================================================
             // Pong Logic
             // ===========================================================
-                #define BALL_SPEED 10.0f
+                
+                ball_pos.x += ball_velocity.x * logicDelta;
+                ball_pos.y += ball_velocity.y * logicDelta;
 
-                if(ball_pos.y <= 0 || ball_pos.y >= screenHeight){
-                    ball_pos.y = lerp(ball_pos.y, screenHeight/2, 0.1f);
+                Vector2 ball_collision = CheckCollisionBoundary({ball_pos.x, ball_pos.y, ball_radius, ball_radius}, 
+                    {0, 0, screenWidth, screenHeight}, ball_velocity);
+
+                if(ball_collision.x < 0.0f){ //Side Missed
+                    bool game_over = true;
                 }
+                    ball_collision = Vector2Multiply(ball_collision, CheckCollisionBoxPro({ball_pos.x, ball_pos.y, ball_radius, ball_radius}, 
+                        {left_paddle_pos.x, left_paddle_pos.y, left_paddle_size.x, left_paddle_size.y}, ball_velocity));
 
-                ball_pos.x += BALL_SPEED * logicDelta;
-                ball_pos.y += BALL_SPEED * logicDelta;
+                    ball_collision = Vector2Multiply(ball_collision, CheckCollisionBoxPro({ball_pos.x, ball_pos.y, ball_radius, ball_radius}, 
+                        {right_paddle_pos.x, right_paddle_pos.y, right_paddle_size.x, right_paddle_size.y}, ball_velocity));
+            
+                ball_velocity.y *= ball_collision.y;
+                ball_velocity.x *= ball_collision.x;
 
+                ball_pos.x = std::fmax(0, std::fmin(screenWidth - ball_radius, ball_pos.x));
+                ball_pos.y = std::fmax(0, std::fmin(screenHeight - ball_radius, ball_pos.y));
 
             // ===========================================================  
             // Main Window Iteration Logic
@@ -400,7 +414,7 @@ int main(){
                 //My hatred for this code is immeasurable
                 //And my day is ruined
 
-                Vector2 main_window_collision = CheckCollisionWithBoundary({main_window_coords.x, main_window_coords.y, main_window_dim.x, main_window_dim.y}, 
+                Vector2 main_window_collision = CheckCollisionBoundary({main_window_coords.x, main_window_coords.y, main_window_dim.x, main_window_dim.y}, 
                     {0, 0, screenWidth, screenHeight}, main_window_velocity);
 
                 main_window_velocity.x *= main_window_collision.x;
@@ -428,7 +442,7 @@ int main(){
 
             SetActiveWindowContext(scoreboard_window);
 
-                Vector2 scoreboard_window_collision = CheckCollisionWithBoundary({scoreboard_window_coords.x, scoreboard_window_coords.y, scoreboard_window_dim.x, scoreboard_window_dim.y}, 
+                Vector2 scoreboard_window_collision = CheckCollisionBoundary({scoreboard_window_coords.x, scoreboard_window_coords.y, scoreboard_window_dim.x, scoreboard_window_dim.y}, 
                 {0, 0, screenWidth, screenHeight}, scoreboard_window_velocity);
 
                 Vector2 mouse_pos = GetMousePosition();
