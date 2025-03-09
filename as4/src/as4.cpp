@@ -26,7 +26,7 @@
 #include <iostream>
 
 // DEFAULT RENDER SETTINGs
-#define DEFAULT_SCALE 30
+#define DEFAULT_SCALE 5
 #define DRAW_FPS 60
 #define LOGIC_FPS 120
 
@@ -125,6 +125,8 @@ void DrawUnboundedModel(Model& model, Transformer auto transformer)
     model.transform = backup;   
 }
 
+
+
 // ===========================================================
 // Main Function
 // ===========================================================
@@ -149,6 +151,27 @@ int main(){
         // Model Loading + Default Transforms
         // ===========================================================
 
+        Camera3D camera_1 = { 0 };
+        camera_1.position = (Vector3){ 10.0f, 10.0f, 10.0f };  // Camera position
+        camera_1.target = (Vector3){ 0.0f, 0.0f, 0.0f };       // Looking at the origin
+        camera_1.up = (Vector3){ 0.0f, 1.0f, 0.0f };           // Y-axis is up
+        camera_1.fovy = 45.0f;                                  // Field of view (in degrees)
+
+        // ===========================================================
+        // Shader + Other Loading
+        // ===========================================================
+
+        SetActiveWindowContext(window_main);
+
+        Shader raymarching_shader = LoadShader(0, "../../custom_assets/as4/raytracing_shader.fs");
+        RenderTexture2D targetTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+
+        if (raymarching_shader.id == 0) {
+            printf("Error loading raytracing shader!\n");
+        } else {
+            printf("Raytracing shader loaded successfully.\n");
+        }
+
         // ===========================================================
         // Audio Initialization
         // ===========================================================
@@ -156,19 +179,20 @@ int main(){
         //AudioDevice defaultDevice;
 
         // ===========================================================
-        // Primary Booleans
+        // Miscallaneous Initialization/Variables
         // ===========================================================
 
         bool active_game = true;
-        
+        SetTargetFPS(DRAW_FPS);
+
     while (active_game){
 
         // ===========================================================
         // Non-Delta Logic BLock
         // ===========================================================
 
-        SetActiveWindowContext(window_main);
-        active_game = !WindowShouldClose();
+            SetActiveWindowContext(window_main);
+            active_game = !WindowShouldClose();
 
         // ===========================================================
         // Delta Logic Block
@@ -195,17 +219,44 @@ int main(){
                 // ===========================================================
                 // Window MAIN Draw
                 // ===========================================================
+
                 SetActiveWindowContext(window_main);
 
+                UpdateCamera(&camera_1, CAMERA_FREE);
+
+                Matrix view_matrix = MatrixLookAt(camera_1.position, camera_1.target, camera_1.up);
+                int screenWidth = GetScreenWidth();
+                int screenHeight = GetScreenHeight();
+
+                SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "cameraPos"), &camera_1.position, SHADER_UNIFORM_VEC3);
+                SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenWidth"), &screenWidth, SHADER_UNIFORM_INT);
+                SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenHeight"), &screenHeight, SHADER_UNIFORM_INT);  
+                SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "view"), view_matrix);
+                SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "projection"), MatrixPerspective(camera_1.fovy, (double)GetScreenWidth()/(double)GetScreenHeight(), 0.1, 1000.0));
+
                 BeginDrawing();
-                ClearBackground(BLACK);
-                
-                DrawTextEx(GetFontDefault(), "Hello, World!", {0, 0}, 50, 2, WHITE);
+                    ClearBackground(RAYWHITE);
+
+                    BeginMode3D(camera_1);
+
+                        DrawSphere({0, 0, 0}, 1.0f, RED);
+                        DrawGrid(10, 1.0f);
+
+                    EndMode3D();
+
+                    BeginShaderMode(raymarching_shader);
+                        
+                        DrawSphere({0, 0, 0}, 1.0f, RED);
+
+                    EndShaderMode();
 
                 EndDrawing();
 
     }
     
+    //Clean-up
+    UnloadShader(raymarching_shader);
+    CloseWindow();
 
 
     return 0;
