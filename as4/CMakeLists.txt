@@ -3,12 +3,16 @@ project(as4 C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 
+
 add_subdirectory(../raylib_multi_window_experimental ${CMAKE_BINARY_DIR}/raylib_multi_window_experimental_build) 
 
 include(../assets/includeable.cmake)
 
 add_executable(as4 src/as4.cpp)
-target_link_libraries(as4 PUBLIC raylib)
+
+# Link the libraries
+target_link_libraries(as4 PUBLIC raylib) 
+# target_link_libraries(as4 PUBLIC raytracer m)
 
 make_includeable(../assets/shaders/cubemap.fs generated/cubemap.fs)
 make_includeable(../assets/shaders/cubemap.vs generated/cubemap.vs)

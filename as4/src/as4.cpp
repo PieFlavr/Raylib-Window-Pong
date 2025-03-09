@@ -9,6 +9,16 @@
  * 
  */
 
+ // Raytracer includes
+//  #include "Raytracer/Raytracer.h"
+//  #include "Renderer/display.h"
+//  #include "Util/Array.h"
+//  #include "raymath.h"
+
+//Ray_Tracer includes
+
+
+// Multi Window Raylib includes
 #include "raylib.h"
 #include "raymath.h"
 #include "rlgl.h"
@@ -139,13 +149,6 @@ int main(){
         // Model Loading + Default Transforms
         // ===========================================================
 
-        Camera camera = Camera(
-            {0, 120, 500}, 
-            {0, 0, 0}, 
-            {0, 1, 0}, 
-            45
-        );
-
         // ===========================================================
         // Audio Initialization
         // ===========================================================
@@ -157,6 +160,7 @@ int main(){
         // ===========================================================
 
         bool active_game = true;
+        
     while (active_game){
 
         // ===========================================================
