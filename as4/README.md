@@ -33,7 +33,7 @@ sudo apt --fix-broken install # should fill any missing dependencies
 You can normally clone the repository, but doing so will incur some extra work to be done for fetching submodules. If you don't want to do that, use the following commands in your target directory...
 
 ```bash
-git clone --recurse-submodules https://github.com/PieFlavr/CS381
+git clone --recurse-submodules https://github.com/PieFlavr/CS381/tree/AS4_EXPERIMENTAL
 ```
 
 ### FETCHING SUBMODULEs
