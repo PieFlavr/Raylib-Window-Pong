@@ -3,7 +3,8 @@ project(as7 C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 # Modified so I don't have to execute my precious drive space
-add_subdirectory(../raylib_multi_window_experimental ${CMAKE_BINARY_DIR}/raylib_multi_window_experimental-build) 
+add_subdirectory(../raylib_multi_window_experimental ${CMAKE_BINARY_DIR}/raylib_multi_window_experimental_build) 
+add_subdirectory(../miniaudio ${CMAKE_BINARY_DIR}/miniaudio_build)
 
 include(../assets/includeable.cmake)
 
@@ -26,7 +27,7 @@ add_executable(as7
     ${DERIVATEDCO_SOURCES}
     ${ENTITYSKELETONS_SOURCES}
 )
-target_link_libraries(as7 PUBLIC raylib raylib_cpp raygui raylib::buffered)
+target_link_libraries(as7 PUBLIC raylib raygui raylib::buffered)
 
 make_includeable(../assets/shaders/cubemap.fs generated/cubemap.fs)
 make_includeable(../assets/shaders/cubemap.vs generated/cubemap.vs)
