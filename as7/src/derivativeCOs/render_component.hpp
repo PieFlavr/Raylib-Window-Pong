@@ -14,8 +14,6 @@
 #include "component.hpp"
 #include "transform_component.hpp"
 
-#include "raylib-cpp.hpp"
-
 #include "transforms.cpp"
 
 namespace CO{
@@ -26,7 +24,7 @@ namespace CO{
      */
     class RenderComponent : public Component {
         private:
-            std::shared_ptr<raylib::Model> model; // Model of the entity
+            std::shared_ptr<Model> model; // Model of the entity
             CO::TransformComponent transform; // Transform of the entity
             CO::TransformComponent baseTransform; // Base transform of the entity, i.e. permanent rotations and etc.
 
@@ -38,9 +36,9 @@ namespace CO{
             // CONSTRUCTOR/COPY LOGIC
             //=================================================================================================================
             RenderComponent() = delete;
-            RenderComponent(std::shared_ptr<raylib::Model> model) : model(model) {}
-            RenderComponent(std::shared_ptr<raylib::Model> model, CO::TransformComponent transform) : model(model), transform(transform) {}
-            RenderComponent(std::shared_ptr<raylib::Model> model, CO::TransformComponent transform, CO::TransformComponent baseTransform) : model(model), transform(transform), baseTransform(baseTransform) {}
+            RenderComponent(std::shared_ptr<Model> model) : model(model) {}
+            RenderComponent(std::shared_ptr<Model> model, CO::TransformComponent transform) : model(model), transform(transform) {}
+            RenderComponent(std::shared_ptr<Model> model, CO::TransformComponent transform, CO::TransformComponent baseTransform) : model(model), transform(transform), baseTransform(baseTransform) {}
             RenderComponent(const RenderComponent& other) = default;
             RenderComponent& operator=(const RenderComponent& other) = default;
             
@@ -58,12 +56,12 @@ namespace CO{
 
             virtual void Render() {
                 if (model) {
-                    Matrix backup = model->GetTransform(); // Backup the original transform matrix
+                    Matrix backup = model->transform; // Backup the original transform matrix
                     Matrix compoundTransform = MatrixMultiply(baseTransform.getTransformMatrix(), transform.getTransformMatrix()); // Combine the base and current transforms
-                    model->SetTransform(compoundTransform); // Set the model's transform matrix to the transform component's matrix
-                    model->Draw({});
+                    model->transform = compoundTransform; // Set the model's transform matrix to the transform component's matrix
+                    DrawModel(*model, {0, 0, 0}, 1.0f, WHITE); // Draw the model, transform already contains specific data.
                     if (boundingBoxEnabled) {
-                        model->GetTransformedBoundingBox().Draw(); // Draw the bounding box of the model
+                        DrawBoundingBox(GetModelBoundingBox(*model), WHITE); // Draw the bounding box of the model
                     }
                     if(arrowsEnabled){
                         Vector3 xArrowEnd = {2.0f, 0.0f, 0.0f};
@@ -77,7 +75,7 @@ namespace CO{
                         DrawLine3D(transform.getPosition(), yArrowEnd, GREEN);
                         DrawLine3D(transform.getPosition(), zArrowEnd, BLUE);
                     }
-                    model->SetTransform(backup); // Restore the original transform matrix
+                    model->transform = backup; // Restore the original transform matrix
                 }
             }
 
@@ -85,7 +83,7 @@ namespace CO{
             // ACCESSORs
             //=================================================================================================================
 
-            std::shared_ptr<raylib::Model> getModel() const { return model; }
+            std::shared_ptr<Model> getModel() const { return model; }
 
             CO::TransformComponent getCompoundTransform() const { return CO::TransformComponent(MatrixMultiply(baseTransform.getTransformMatrix(), transform.getTransformMatrix())); }
             Vector3 getPosition() const { return getCompoundTransform().getPosition(); }
@@ -107,11 +105,11 @@ namespace CO{
             
             BoundingBox getBoundingBox() const { return GetModelBoundingBox(*model); }
             BoundingBox getTransformedBoundingBox() const { 
-                Matrix originalTransform = model->GetTransform();
+                Matrix originalTransform = model->transform;
                 Matrix compoundTransform = MatrixMultiply(baseTransform.getTransformMatrix(), transform.getTransformMatrix());
-                model->SetTransform(compoundTransform);
-                BoundingBox transformedBoundingBox = model->GetTransformedBoundingBox();
-                model->SetTransform(originalTransform);
+                model->transform = compoundTransform;
+                BoundingBox transformedBoundingBox = GetModelBoundingBox(*model);
+                model->transform = originalTransform;
                 return transformedBoundingBox;
             }
 
@@ -119,7 +117,7 @@ namespace CO{
             // MUTATORs
             //=================================================================================================================
 
-            void setModel(std::shared_ptr<raylib::Model> model) { this->model = model; }
+            void setModel(std::shared_ptr<Model> model) { this->model = model; }
             void setTransform(CO::TransformComponent transform) { this->transform = transform; }
             void setBaseTransform(CO::TransformComponent baseTransform) { this->baseTransform = baseTransform; }
             

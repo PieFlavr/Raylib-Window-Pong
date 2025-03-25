@@ -33,7 +33,7 @@
 
 #define DEFAULT_TITLE "CS381 - Assignment 7"
 
-#include "skybox.hpp"
+//#include "skybox.hpp"
 
 // Base Components
 #include "component.hpp"
@@ -76,28 +76,28 @@ int main(){
         // ===========================================================
 
         std::string window_title = DEFAULT_TITLE;
-        raylib::Window window(400, 400, window_title); //Feature #2
+        InitWindow(400, 400, (window_title).c_str());
 
         // ===========================================================
         // Model Loading + Default Transforms
         // ===========================================================
 
-        std::shared_ptr<raylib::Model> cow = std::make_shared<raylib::Model>(LoadModel("../../custom_assets/as2/cow.glb"));
+        std::shared_ptr<Model> cow = std::make_shared<Model>(LoadModel("../../custom_assets/as2/cow.glb"));
 
-        std::shared_ptr<raylib::Model> sedan = std::make_shared<raylib::Model>(LoadModel("../../assets/Kenny Car Kit/sedan.glb"));
-        std::shared_ptr<raylib::Model> delivery = std::make_shared<raylib::Model>(LoadModel("../../assets/Kenny Car Kit/delivery.glb"));
-        std::shared_ptr<raylib::Model> taxi = std::make_shared<raylib::Model>(LoadModel("../../assets/Kenny Car Kit/taxi.glb"));
-        std::shared_ptr<raylib::Model> garbage_truck = std::make_shared<raylib::Model>(LoadModel("../../assets/Kenny Car Kit/garbage-truck.glb"));
-        std::shared_ptr<raylib::Model> police = std::make_shared<raylib::Model>(LoadModel("../../assets/Kenny Car Kit/police.glb"));
+        std::shared_ptr<Model> sedan = std::make_shared<Model>(LoadModel("../../assets/Kenny Car Kit/sedan.glb"));
+        std::shared_ptr<Model> delivery = std::make_shared<Model>(LoadModel("../../assets/Kenny Car Kit/delivery.glb"));
+        std::shared_ptr<Model> taxi = std::make_shared<Model>(LoadModel("../../assets/Kenny Car Kit/taxi.glb"));
+        std::shared_ptr<Model> garbage_truck = std::make_shared<Model>(LoadModel("../../assets/Kenny Car Kit/garbage-truck.glb"));
+        std::shared_ptr<Model> police = std::make_shared<Model>(LoadModel("../../assets/Kenny Car Kit/police.glb"));
 
-        std::shared_ptr<raylib::Model> grass = std::make_shared<raylib::Model>(raylib::Mesh::Plane(PLANE_WIDTH, PLANE_LENGTH, 100, 100).LoadModelFrom());
-        raylib::Texture grassTexture = raylib::Texture("../../assets/textures/grass.png");
+        std::shared_ptr<Model> grass = std::make_shared<Model>(LoadModelFromMesh(GenMeshPlane(PLANE_WIDTH, PLANE_LENGTH, 100, 100)));
+        Texture2D grassTexture = LoadTexture("../../assets/textures/grass.png");
         grass.get()->materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = grassTexture;
 
-        cs381::SkyBox sky("../../assets/textures/skybox.png");
+        //cs381::SkyBox sky("../../assets/textures/skybox.png");
 
-        //std::shared_ptr<raylib::Model> wheel = std::make_shared<raylib::Model>(LoadModel("../../assets/Kenny Car Kit/wheel-default.glb"));
-        std::shared_ptr<raylib::Model> rocket = std::make_shared<raylib::Model>(LoadModel("../../assets/Kenny Space Kit/rocketA.glb"));
+        //std::shared_ptr<Model> wheel = std::make_shared<Model>(LoadModel("../../assets/Kenny Car Kit/wheel-default.glb"));
+        std::shared_ptr<Model> rocket = std::make_shared<Model>(LoadModel("../../assets/Kenny Space Kit/rocketA.glb"));
         //cow.transform = MatrixMultiply(MatrixScale(30, 30, 30), MatrixRotateX(90 * DEG2RAD));
 
         // ===========================================================
@@ -134,7 +134,7 @@ int main(){
         entities[5]->getComponent<CO::OrientedKinematicsComponent>()->get().setEulerRotation({0, -90*DEG2RAD, 0});
         entities[5]->getComponent<CO::OrientedKinematicsBehavior>()->get().setTargetHeadings(0, -90*DEG2RAD);
 
-        entities[0]->addComponent<CO::CameraComponent, raylib::Camera>(raylib::Camera(
+        entities[0]->addComponent<CO::CameraComponent, Camera>(Camera(
             {0, 60, 200}, 
             {0, 0, 0}, 
             {0, 1, 0}, 
@@ -149,7 +149,7 @@ int main(){
         //This is the worst
         entities[0]->addComponent<CO::InputBehaviorA, CO::Entity*, std::vector<std::shared_ptr<CO::Entity>>*, int>(entities[0].get(), &entities, 0);
 
-    while (!window.ShouldClose()){
+    while (!WindowShouldClose()){
 
         // ===========================================================
         // Non-Delta Logic BLock
@@ -179,8 +179,8 @@ int main(){
             // Render Block 
             // ===========================================================
 
-            window.BeginDrawing();
-            window.ClearBackground(GRAY);
+            BeginDrawing();
+            ClearBackground(GRAY);
 
                 for(auto& entity : entities){
                     if(entity->hasComponent<CO::CameraComponent>()){
@@ -193,8 +193,8 @@ int main(){
                 // Background Draw
                 // ===========================================================
 
-                sky.Draw();
-                grass->Draw({});
+                //sky.Draw();
+                DrawModel(*grass, {0, 0, 0}, 1.0f, WHITE);
 
                 // ===========================================================
                 // Midground Draw
@@ -223,7 +223,7 @@ int main(){
 
                 
 
-            window.EndDrawing();
+            EndDrawing();
 
     }
     return 0;

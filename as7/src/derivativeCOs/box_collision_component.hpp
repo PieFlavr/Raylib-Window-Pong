@@ -12,7 +12,6 @@
 #pragma once
 
 #include "collision_component.hpp"
-#include "raylib-cpp.hpp"
 
 namespace CO{
     class BoxCollisionComponent : public CollisionComponent{

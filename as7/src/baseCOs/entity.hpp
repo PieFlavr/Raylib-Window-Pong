@@ -11,7 +11,6 @@
  */
 #pragma once
 
-#include "raylib-cpp.hpp"
 #include "component.hpp"
 
 #include <memory>

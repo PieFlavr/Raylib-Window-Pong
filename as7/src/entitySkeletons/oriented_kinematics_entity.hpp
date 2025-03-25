@@ -11,8 +11,6 @@
 
 #pragma once
 
-#include "raylib-cpp.hpp"
-
 #include "entity.hpp"
 #include "component.hpp"
 #include "behavior.hpp"
@@ -29,11 +27,11 @@ namespace CO{
     class OrientedKinematicEntity : public Entity {
         public:
             OrientedKinematicEntity() = default;
-            OrientedKinematicEntity(std::shared_ptr<raylib::Model> model, const Vector3& baseScale, const Vector3& baseRotation, const float& maxSpeed, const float& maxAcceleration, const float& turnSpeed){
+            OrientedKinematicEntity(std::shared_ptr<Model> model, const Vector3& baseScale, const Vector3& baseRotation, const float& maxSpeed, const float& maxAcceleration, const float& turnSpeed){
                 
-                addComponent<CO::OrientedKinematicsComponent, raylib::Vector3>(Vector3{0, 0, 0});
-                addComponent<CO::RenderComponent, std::shared_ptr<raylib::Model>>(model);
-                addComponent<CO::TransformComponent, raylib::Matrix>(MatrixIdentity());
+                addComponent<CO::OrientedKinematicsComponent, Vector3>(Vector3{0, 0, 0});
+                addComponent<CO::RenderComponent, std::shared_ptr<Model>>(model);
+                addComponent<CO::TransformComponent, Matrix>(MatrixIdentity());
                 addComponent<CO::BoxCollisionComponent>();
                 addComponent<CO::OrientedKinematicsBehavior, CO::Entity*>(std::make_shared<Entity>(*this).get(), turnSpeed, maxSpeed, maxAcceleration);
                 addComponent<CO::TransformBindBehavior, CO::Entity*>(std::make_shared<Entity>(*this).get()); //this had issues

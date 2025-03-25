@@ -17,7 +17,6 @@
 #include <memory>
 
 #include "component.hpp"
-#include "raylib-cpp.hpp"
 #include "BufferedRaylib.hpp"
 
 #include "oriented_kinematics_behavior.hpp"

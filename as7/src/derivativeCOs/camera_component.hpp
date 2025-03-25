@@ -11,20 +11,20 @@
 
 #pragma once
 
+#include <raymath.h>
 #include "component.hpp"
-#include "raylib-cpp.hpp"
 
 namespace CO{
     class CameraComponent : public Component {
         private:
-            raylib::Camera camera; // Camera of the entity
+            Camera camera; // Camera of the entity
 
         public:
             //=================================================================================================================
             // CONSTRUCTOR/COPY LOGIC
             //=================================================================================================================
             CameraComponent() = default;
-            CameraComponent(const raylib::Camera& camera) : camera(camera) {}
+            CameraComponent(const Camera& camera) : camera(camera) {}
             CameraComponent(const CameraComponent& other) : camera(other.camera) {}
             CameraComponent& operator=(const CameraComponent& other) {
                 if (this != &other) {
@@ -38,8 +38,8 @@ namespace CO{
             // RENDERING LOGIC
             //=================================================================================================================
 
-            void BeginCameraMode() { camera.BeginMode(); }
-            void EndCameraMode() { camera.EndMode(); }
+            void BeginCameraMode() { BeginMode3D(camera); }
+            void EndCameraMode() { EndMode3D(); }
 
             //=================================================================================================================
             // ITERATION LOGIC
@@ -50,7 +50,7 @@ namespace CO{
             //=================================================================================================================
             // ACCESSORs
             //=================================================================================================================
-            raylib::Camera getCamera() const { return camera; }
+            Camera getCamera() const { return camera; }
             Vector3 getPosition() const { return camera.position; }
             Vector3 getTarget() const { return camera.target; }
             Vector3 getUp() const { return camera.up; }
@@ -61,7 +61,7 @@ namespace CO{
             // MUTATORs
             //=================================================================================================================
 
-            void setCamera(const raylib::Camera& camera) { this->camera = camera; }
+            void setCamera(const Camera& camera) { this->camera = camera; }
             void setPosition(const Vector3& position) { camera.position = position; }
             void setTarget(const Vector3& target) { camera.target = target; }
             void setUp(const Vector3& up) { camera.up = up; }

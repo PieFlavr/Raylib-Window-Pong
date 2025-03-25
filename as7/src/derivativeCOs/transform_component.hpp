@@ -12,17 +12,16 @@
 #pragma once
 
 #include "component.hpp"
-#include "raylib-cpp.hpp"
 #include "raymath.h"
 
 namespace CO{
     class TransformComponent : public Component {
         protected:
-            raylib::Matrix transformMatrix = MatrixIdentity(); // Default to identity matrix
+            Matrix transformMatrix = MatrixIdentity(); // Default to identity matrix
 
         public: 
             TransformComponent() = default;
-            TransformComponent(const raylib::Matrix& transformMatrix) : transformMatrix(transformMatrix) {}
+            TransformComponent(const Matrix& transformMatrix) : transformMatrix(transformMatrix) {}
             TransformComponent(const TransformComponent& other) : transformMatrix(other.transformMatrix) {}
             TransformComponent& operator=(const TransformComponent& other) {
                 if (this != &other) {

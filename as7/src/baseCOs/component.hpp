@@ -13,8 +13,6 @@
 
 #pragma once
 
-#include "raylib-cpp.hpp"
-
 #include <memory>
 
 namespace CO{

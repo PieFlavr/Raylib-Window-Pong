@@ -14,7 +14,6 @@
 #include "component.hpp"
 #include "entity.hpp"
 
-#include "raylib-cpp.hpp"
 #include <any>
 
 namespace CO{

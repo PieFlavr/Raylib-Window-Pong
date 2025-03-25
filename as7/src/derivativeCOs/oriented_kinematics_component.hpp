@@ -15,8 +15,8 @@
 
 namespace CO{
     class OrientedKinematicsComponent : public KinematicsComponent {
-        raylib::Degree xzHeading = 0.0f; // Heading of the entity in the XY plane
-        raylib::Degree yzHeading = 0.0f; // Heading of the entity in the XZ/YZ plane
+        float xzHeading = 0.0f; // Heading of the entity in the XY plane
+        float yzHeading = 0.0f; // Heading of the entity in the XZ/YZ plane
         float head_speed = 0.0f; // Speed of the entity
         float head_acceleration = 0.0f; // Acceleration of the entity
 
@@ -26,10 +26,10 @@ namespace CO{
             // CONSTRUCTORS
             //=================================================================================================================
             OrientedKinematicsComponent() = default;
-            OrientedKinematicsComponent(const raylib::Vector3& position) : KinematicsComponent(position) {}
-            OrientedKinematicsComponent(const raylib::Vector3& position, 
+            OrientedKinematicsComponent(const Vector3& position) : KinematicsComponent(position) {}
+            OrientedKinematicsComponent(const Vector3& position, 
                                         const float& head_speed, const float& head_acceleration, 
-                                        const raylib::Degree& xzHeading, const raylib::Degree& yzHeading) :
+                                        const float& xzHeading, const float& yzHeading) :
                                         KinematicsComponent(position), head_speed(head_speed), head_acceleration(head_acceleration), xzHeading(xzHeading), yzHeading(yzHeading) {}
 
             OrientedKinematicsComponent(const OrientedKinematicsComponent& other) = default;
@@ -58,8 +58,8 @@ namespace CO{
             //=================================================================================================================
             // ACCESSORs
             //=================================================================================================================
-            raylib::Degree getXZHeading() const { return xzHeading; }
-            raylib::Degree getYZHeading() const { return yzHeading; }
+            float getXZHeading() const { return xzHeading; }
+            float getYZHeading() const { return yzHeading; }
             float getHeadSpeed() const { return head_speed; }
             float getHeadAcceleration() const { return head_acceleration; }
             Quaternion getQuaternionRotation() const { 
@@ -72,13 +72,13 @@ namespace CO{
             //=================================================================================================================
             // MUTATORs
             //=================================================================================================================
-            void setXZHeading(raylib::Degree xzHeading) { this->xzHeading = xzHeading; }
-            void setYZHeading(raylib::Degree yzHeading) { this->yzHeading = yzHeading; }
+            void setXZHeading(float xzHeading) { this->xzHeading = xzHeading; }
+            void setYZHeading(float yzHeading) { this->yzHeading = yzHeading; }
             void setEulerRotation(const Vector3& eulerRotation) { this->xzHeading = eulerRotation.x; this->yzHeading = eulerRotation.y; } // Set the Euler rotation based on heading
             void setHeadSpeed(float head_speed) { this->head_speed = head_speed; }
             void setHeadAcceleration(float head_acceleration) { this->head_acceleration = head_acceleration; }
 
-            void rotateXZHeading(raylib::Degree xzHeading) { this->xzHeading += xzHeading; }
-            void rotateYZHeading(raylib::Degree yzHeading) { this->yzHeading += yzHeading; }
+            void rotateXZHeading(float xzHeading) { this->xzHeading += xzHeading; }
+            void rotateYZHeading(float yzHeading) { this->yzHeading += yzHeading; }
         };
 }

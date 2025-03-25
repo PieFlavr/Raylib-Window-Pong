@@ -1,6 +1,6 @@
-# [submodule "raylib-cpp"]
-# 	path = raylib-cpp
-# 	url = https://github.com/joshuadahlunr/raylib-cpp
+[submodule "raylib-cpp"]
+	path = raylib-cpp
+	url = https://github.com/joshuadahlunr/raylib-cpp
 
 [submodule "raylib_multi_window_experimental"]
 	path = raylib_multi_window_experimental
