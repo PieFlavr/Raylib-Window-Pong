@@ -60,8 +60,39 @@ namespace CO{
                     Matrix compoundTransform = MatrixMultiply(baseTransform.getTransformMatrix(), transform.getTransformMatrix()); // Combine the base and current transforms
                     model->transform = compoundTransform; // Set the model's transform matrix to the transform component's matrix
                     DrawModel(*model, {0, 0, 0}, 1.0f, WHITE); // Draw the model, transform already contains specific data.
+
                     if (boundingBoxEnabled) {
-                        DrawBoundingBox(GetModelBoundingBox(*model), WHITE); // Draw the bounding box of the model
+                        //Absolute dog water but it works so I don't care
+                        //Also might have been better to look at josh's implement in raylib-cpp
+                        //But I alraedy did this so I'm not going to change it
+                        BoundingBox box = GetModelBoundingBox(*model);
+
+                        box.min = Vector3Transform(box.min, MatrixInvert(compoundTransform)); //Reverse the transformation
+                        box.max = Vector3Transform(box.max, MatrixInvert(compoundTransform));
+
+                        Vector3 boxCorners[8] = {
+                            {box.min.x, box.min.y, box.min.z},
+                            {box.min.x, box.min.y, box.max.z},
+                            {box.min.x, box.max.y, box.min.z},
+                            {box.min.x, box.max.y, box.max.z},
+                            {box.max.x, box.min.y, box.min.z},
+                            {box.max.x, box.min.y, box.max.z},
+                            {box.max.x, box.max.y, box.min.z},
+                            {box.max.x, box.max.y, box.max.z}
+                        };
+
+                        for(int i = 0; i < 8; i++){
+                            boxCorners[i] = Vector3Transform(boxCorners[i], compoundTransform);
+                        }
+
+                        BoundingBox transformedBox = {boxCorners[0], boxCorners[0]};
+
+                        for(int i = 1; i < 8; i++){
+                            transformedBox.min = Vector3Min(transformedBox.min, boxCorners[i]);
+                            transformedBox.max = Vector3Max(transformedBox.max, boxCorners[i]);
+                        }
+
+                        DrawBoundingBox(transformedBox, WHITE); // Draw the bounding box of the model
                     }
                     if(arrowsEnabled){
                         Vector3 xArrowEnd = {2.0f, 0.0f, 0.0f};

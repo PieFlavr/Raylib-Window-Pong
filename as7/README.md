@@ -94,35 +94,14 @@ All Kinematics is "smoothed" via acceleration and turning speed parameters uniqu
 
 The following base features have been implemented in the program...
 
-1) [X] Each Entity should be stored in a list-like structure and their behavior should be implemented as separate components stored in a list in each entity (max score 60% if violated).
-2) [X] Create a window titled “CS381 - Assignment 6” using Raylib.
-3) [X] Create a scene with five different types of cars and a rocket sitting on the ground behind each (all facing towards the left or right of the camera), a ground plane, and a skybox.
-4) [X] Every car should have different physics properties (maximum speed, acceleration, turning rate) (10 points each, 50 points total).
-5) [X] Similarly the rockets should have different physics properties from the cars, but all the rockets can use the same properties (5 points).
-6) [X] Implement a transform component to store transforms and a rendering component to draw meshes on the screen (should be able to toggle a bounding box on or off) (5 points).
-7) [X] Implement a physics component (or two, inheriting behavior from components could be useful for extra credit purposes) which implements basic kinematic physics (position + = velocity ∗ dt) (5 points) and 2D oriented physics based on a heading (5 points).
-8) [X] Create a selection management system, where only the selected entity has a bounding box drawn around it and pressing tab selects the next entity (5 points).
-9) [X] Implement an input component which uses BufferedRaylib (buffered input, 10 points) to control the selected entity (5 points total), please use incrementing, not continuous, values and each entity should continue to move even when not actively controlled or selected (max score 60% if violated).
-[X] Pressing W smoothly increases the selected entity’s velocity (easier to implement as a speed) in the direction it's facing (1 point).
-[X] Pressing S smoothly decreases the selected entity’s velocity in the direction it's facing (1 point).
-[X] Pressing A smoothly increases the selected entity’s heading (1 point)
-[X] Pressing D smoothly decreases the selected entity’s heading (1 point)
-[X] Pressing Space should smoothly reset the selected entity’s velocity to zero (1 point).
-
-10) [X] Your as7 folder in your Github repository includes a readme file that should:
-[X] Describe how to fetch your git submodules with commands that can be copied and pasted into a Linux terminal.
-[X] Describe how to compile your code with copy and pasteable commands.
-[X] Describe how to run your code and enumerate its controls.
-[X] If you have any extra credit be sure to mention it so we don't miss it!
-
-11) [X] Readme "Question": Please implement your assignment using CO.hpp Download CO.hpp(feel free to make some minor adjustments if you would like). This file should be thoroughly commented, I'm expecting at least one line of comment per line of code (10 points).
+1) liber nostrum
 
 ## EXTRA CREDIT FEATURE IMPLEMENTATIONs
 
 The following have been implemented in the program...
 
-1) [ ] Add an engine noise to the car, or wind howling in the background (+5 points).
-2) [X] Make the game third person, with a camera that follows the selected entity (+10 points).
-3) [X] Don't use CO.hpp instead implement your own version (this file should still be thoroughly commented) (+5 points)
-4) [ ] Stop rockets from being able to pass through the ground or other entities (hint: look at the methods on raylib bounding boxes) (+10 points)
-5) [X] Implement a scene hierarchy and add wheels that are children of their cars (+10 points)
+1) liber nostrum
+
+## KNOWN ISSUES (to-do-list)
+
+1) Skybox needs to be re-implemented without raylib-cpp.
