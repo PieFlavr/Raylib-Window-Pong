@@ -33,7 +33,9 @@ namespace CO{
             WindowBindBehavior(Entity* target) : Behavior(target) { // Constructor taking in a target entity
                 // Create a new transform component from the target entity's transform component
                 if(!checkRequirements()) throw std::runtime_error("WindowBindBehavior requires a WindowComponent"); // Check if the target entity has a window component
-                target->getComponent<CO::WindowRenderComponent>()->get().setWindowId(target->getComponent<CO::WindowComponent>()->get().getWindowId()); // Set the window render component's window ID to the window component's window ID
+                if(target->hasComponent<CO::WindowRenderComponent>()){
+                    target->getComponent<CO::WindowRenderComponent>()->get().setWindowId(target->getComponent<CO::WindowComponent>()->get().getWindowId()); 
+                } // Set the window render component's window ID to the window component's window ID
             }
 
             void Tick(const float& deltaTime) override {
@@ -51,7 +53,7 @@ namespace CO{
             void Update() override {}
 
             bool checkRequirements() override {
-                return target->hasComponent<CO::WindowComponent>() && target->hasComponent<CO::TransformComponent>() && target->hasComponent<CO::WindowRenderComponent>(); // Check if the target entity has a window component and a transform component 
+                return target->hasComponent<CO::WindowComponent>() && target->hasComponent<CO::TransformComponent>(); // Check if the target entity has a window component and a transform component 
                 // Check if the target entity has a window component and a transform component
             }
 

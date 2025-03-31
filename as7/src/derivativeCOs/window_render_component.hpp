@@ -22,7 +22,6 @@ namespace CO{
     class WindowRenderComponent : public RenderComponent {
         
         protected:
-            int defaultWindowId = 0; // Default window ID for the main window
             int windowId;
 
         public:
@@ -43,8 +42,6 @@ namespace CO{
 
             int getWindowId() const { return windowId; } // Get the ID of the window
             void setWindowId(int newWindowId) { windowId = newWindowId; } // Set the ID of the window
-            int getDefaultWindowId() const { return defaultWindowId; } // Get the ID of the default window
-            void setDefaultWindowId(int newDefaultWindowId) { defaultWindowId = newDefaultWindowId; } // Set the ID of the default window
 
             //=================================================================================================================
             // RENDERING LOGIC
@@ -52,7 +49,6 @@ namespace CO{
             virtual void Render() override {
                 SetActiveWindowContext(windowId); // Set the active window context to the specific window
                 RenderComponent::Render(); // Call the base class render function
-                SetActiveWindowContext(defaultWindowId); // Reset the active window context to the default window
             }
     };
 }
