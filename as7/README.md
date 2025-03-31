@@ -78,6 +78,10 @@ rm -rf ./*   # Deletes the contents of the build folder
 
 Additionally, if receivng a `DRIVER TIMOUT` or some sort of `DRIVER CRASH`, it is recommended to simply restart your computer to fix it along with the above.
 
+## APPLICATION INFORMATION
+
+The game itself is relatively simple, it is just a very rudimentary implementation of 'PONG' where the windows themselves are used as paddles and boxes (not just as viewports). it is very barebones, consisting of only the music and the mechanics as I did not have enough time to properly re-implement the features from AS4.
+
 ## APPLICATION CONTROLs
 
 Did not have the time to be able to properly re-implement everything, but at the very least the windows work and basic game works!
