@@ -82,6 +82,18 @@ Additionally, if receivng a `DRIVER TIMOUT` or some sort of `DRIVER CRASH`, it i
 
 All of the controls are enumerated in the menus/scoreboards. The following is simply an explicit listing of them, all of these can be found in the game.
 
+### IMPLEMENTED
+
+IN THE GAME ONLY...
+
+`[W]` and `[S]` moves the left paddle up and down respectively.
+
+`[UP]` and `[DOWN]` arrow keys move the right paddle up and down respectively.
+
+`[ESC]` at any point closes the game.
+
+### NOT-IMPLEMENTED
+
 IN THE START MENU ONLY...
 
 `[T]` in the starting menu shows the leaderboard.
@@ -92,17 +104,9 @@ IN THE MENU AND IN-GAME...
 
 `[MIDDLE_CLICK]` on the scoreboard window while enlarged let's you move it.
 
-IN THE GAME ONLY...
-
-`[W]` and `[S]` moves the left paddle up and down respectively.
-
-`[UP]` and `[DOWN]` arrow keys move the right paddle up and down respectively.
-
 IN THE START MENU AND GAME-OVER SCREEN...
 
 `[ENTER]` re/starts the main game.
-
-`[ESC]` at any point closes the game.
 
 ## FEATURE IMPLEMENTATIONs
 
@@ -111,13 +115,13 @@ The following base features have been implemented in the program...
 1) [X] Implemented using OOEC (0pts)
 2) [X] Multiple Entities (10pts)
 3) [X] Controls (20pts)
-4) [X] Raylib (20pts) (technically a fork but still raylib :p)
+4) [X] Raylib (1pts) (technically a fork but still raylib :p)
 5) [X] C++ (1pts)
 6) [X] Have a Window (10pts)
 7) [X] Two Different Components Interact (15pts)
 8) [X] Two Different Entities Interact (20pts)
 9) [X] Readme (5pts)
-10) [] Load and Use Something (8pts)
+10) [X] Load and Use Something (8pts)
 11) [X] Use At Least One Event (10pts)
 
 ## EXTRA CREDIT FEATURE IMPLEMENTATIONs
@@ -126,12 +130,12 @@ The following have been implemented in the program...
 
 1) [X] Free Points (+7pts)
 2) [X] Don't Use CO.hpp (+50pts)
-3) [] Efficient Component Type (+ a lot count later)
+3) [X] Efficient Component Type (+1pts per; total +24pts)
 4) [X] Scene Tree (+10pts)
 5) [] Spatial Audio (+10pts directional; +5pts spatial)
-6) [X] Extra Windows (+1pt per extra; total +4pts)
+6) [X] Extra Windows (+1pt per extra; total +4pts, not counting those in unused folder!)
 7) [] Graph Algorithms (+10pts)
 8) [X] Calculate Your Own DT (+2pts)
 9) [] Do Your Own Voice Acting (+10pts)
-10) [] Add Firelink Shrine (+1pts)
-11) [] Guess Your Grade (+5pts)
+10) [X] Add Firelink Shrine (+1pts)
+11) [X] Guess Your Grade (+5pts) (198pts (w/o bonus) + 5pts = 203pts (w/ bonus guess))
