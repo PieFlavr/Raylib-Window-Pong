@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include "raylib.h"
+
 #include "component.hpp"
 #include "transform_component.hpp"
 
@@ -23,7 +25,7 @@ namespace CO{
      * 
      */
     class RenderComponent : public Component {
-        private:
+        protected:
             std::shared_ptr<Model> model; // Model of the entity
             CO::TransformComponent transform; // Transform of the entity
             CO::TransformComponent baseTransform; // Base transform of the entity, i.e. permanent rotations and etc.
@@ -174,4 +176,4 @@ namespace CO{
             void quaternionRotateBase(Quaternion rotation) { baseTransform.quaternionRotate(rotation); }
             void eulerRotateBase(Vector3 rotation) { baseTransform.eulerRotate(rotation); }
     };
-} // namespace cs381
+} // namespace CO
