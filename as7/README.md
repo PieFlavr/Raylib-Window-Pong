@@ -16,7 +16,7 @@ Additionally, all instructions are made with the following assumptions:
 * The user already has most dependencies installed.
 * The user has (by default) cloned the repository normally.
 
-## INSTRUCTIONs [FEATURE \#11 (4 pts)]
+## INSTRUCTIONs
 
 ### [OPTIONAL] DEPENDENCIES
 
@@ -80,27 +80,65 @@ Additionally, if receivng a `DRIVER TIMOUT` or some sort of `DRIVER CRASH`, it i
 
 ## APPLICATION CONTROLs
 
-All Kinematics is "smoothed" via acceleration and turning speed parameters unique to each entity. All entities "accelerate" to their target speeds and/or headings appropriately.
+All of the controls are enumerated in the menus/scoreboards. The following is simply an explicit listing of them, all of these can be found in the game.
 
-`[UP_ARROW]` and `[DOWN_ARROW]` increments the entity's target heading up/down respectively.
+IN THE START MENU ONLY...
 
-`[A]` and `[D]` increments the entity's target heading left/right respectively.
+`[T]` in the starting menu shows the leaderboard.
 
-`[W]` and `[S]` increments the car's target speed up/down respectively.
+IN THE MENU AND IN-GAME...
 
-`[SPACE]` sets the car's target speed to zero.
+`[SPACE]` holds the scoreboard window and enlarges it.
+
+`[MIDDLE_CLICK]` on the scoreboard window while enlarged let's you move it.
+
+IN THE GAME ONLY...
+
+`[W]` and `[S]` moves the left paddle up and down respectively.
+
+`[UP]` and `[DOWN]` arrow keys move the right paddle up and down respectively.
+
+IN THE START MENU AND GAME-OVER SCREEN...
+
+`[ENTER]` re/starts the main game.
+
+`[ESC]` at any point closes the game.
+
+IN THE AME OVER SCREEN...
+
+`[SHIFT]` to submit your typed name
 
 ## FEATURE IMPLEMENTATIONs
 
 The following base features have been implemented in the program...
 
-1) liber nostrum
+1) [X] Implemented using OOEC (0pts)
+2) [X] Multiple Entities (10pts)
+3) [X] Controls (20pts)
+4) [] Raylib (20pts) (technically a fork but still raylib :p)
+5) [X] C++ (1pts)
+6) [X] Have a Window (10pts)
+7) [] Two Different Components Interact (15pts)
+8) [] Two Different Entities Interact (20pts)
+9) [X] Readme (5pts)
+10) [] Load and Use Something (8pts)
+11) [] Use At Least One Event (10pts)
 
 ## EXTRA CREDIT FEATURE IMPLEMENTATIONs
 
 The following have been implemented in the program...
 
-1) liber nostrum
+1) [X] Free Points (+7pts)
+2) [X] Don't Use CO.hpp (+50pts)
+3) [] Efficient Component Type (+ a lot count later)
+4) [] Scene Tree (+10pts)
+5) [] Spatial Audio (+10pts directional; +5pts spatial)
+6) [] Extra Windows (+1pt per extra; total +4pts)
+7) [] Graph Algorithms (+10pts)
+8) [] Calculate Your Own DT (+2pts)
+9) [] Do Your Own Voice Acting (+10pts)
+10) [] Add Firelink Shrine (+1pts)
+11) [] Guess Your Grade (+5pts)
 
 ## KNOWN ISSUES (to-do-list)
 
