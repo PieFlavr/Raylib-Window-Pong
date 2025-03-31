@@ -61,20 +61,28 @@
 #include "follow_camera_behavior.hpp"
 #include "kinematics_controller_behavior.hpp"
 #include "window_bind_behavior.hpp"
+#include "box_boundary_behavior.hpp"
+#include "box_reflection_behavior.hpp"
+#include "box_collision_bind_behavior.hpp"
+
 
 // Entity Skeletons
 //#include "oriented_kinematics_entity.hpp"
 
-std::shared_ptr<CO::Entity> make_kinematic_window_entity(std::string title, Vector2 pos, Vector2 dim){
+std::shared_ptr<CO::Entity> make_kinematic_window_entity(std::string title, Vector2 pos, Vector2 dim, Vector2 boundaryDim, std::shared_ptr<std::vector<std::shared_ptr<CO::Entity>>> collisionEntities = nullptr) {
     auto entity = std::make_shared<CO::Entity>();
     entity->addComponent<CO::WindowComponent, Vector2, Vector2, std::string>(pos, dim, title);
     entity->addComponent<CO::KinematicsComponent, Vector3>({pos.x, pos.y, 0});
+    entity->addComponent<CO::BoxCollisionComponent, Rectangle>(Rectangle{pos.x, pos.y, dim.x, dim.y});
 
     entity->addComponent<CO::TransformComponent, Matrix>(MatrixIdentity());
     entity->getComponent<CO::TransformComponent>()->get().setPosition({pos.x, pos.y, 0});
     entity->getComponent<CO::TransformComponent>()->get().setScale({dim.x, dim.y, 0});
 
+    entity->addComponent<CO::BoxBoundaryBehavior, CO::Entity*, Rectangle>(entity.get(), {0, 0, boundaryDim.x, boundaryDim.y});
+    entity->addComponent<CO::BoxReflectionBehavior, CO::Entity*, std::shared_ptr<std::vector<std::shared_ptr<CO::Entity>>>>(entity.get(), collisionEntities);
     entity->addComponent<CO::KinematicsControllerBehavior, CO::Entity*>(entity.get());
+    entity->addComponent<CO::BoxCollisionBindBehavior, CO::Entity*>(entity.get());
     entity->addComponent<CO::WindowBindBehavior, CO::Entity*>(entity.get());
 
     return entity;
@@ -85,11 +93,12 @@ std::shared_ptr<CO::Entity> make_kinematic_window_entity(std::string title, Vect
 // ===========================================================
 
 int main(){
-
     // ===========================================================
     // Initialization
     // ===========================================================
-
+        InitWindow(0, 0, "quick fix"); // Initialize the window with a default size
+        Vector2 screenDim = {static_cast<float>(GetMonitorWidth(0)), static_cast<float>(GetMonitorHeight(0))}; // Get the screen dimensions
+        CloseWindow(); // Close the default window
         // ===========================================================
         // Important Variables
         // ===========================================================
@@ -108,15 +117,18 @@ int main(){
         // Component + Entity Initialization
         // ===========================================================
         std::vector<std::shared_ptr<CO::Entity>> entities;
+        std::vector<std::shared_ptr<CO::Entity>> system_entities;
         std::vector<std::shared_ptr<CO::Entity>> controllable_entities;
         std::vector<std::shared_ptr<CO::Entity>> collision_layer_1;
         std::vector<std::shared_ptr<CO::Entity>> collision_layer_2;
 
-        entities.push_back(make_kinematic_window_entity("Main Window", {0, 0}, {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT}));
-        entities.push_back(make_kinematic_window_entity("Scoreboard Window", {50, 0}, {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT}));
-        entities.push_back(make_kinematic_window_entity("Left Paddle Window", {0, 50}, {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT}));
-        entities.push_back(make_kinematic_window_entity("Right Paddle Window", {50, 50}, {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT}));
-
+        entities.push_back(make_kinematic_window_entity("Main Window", {100, 100}, {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT}, {screenDim.x, screenDim.y}, 
+            std::make_shared<std::vector<std::shared_ptr<CO::Entity>>>(collision_layer_1)));
+        entities.push_back(make_kinematic_window_entity("Left Paddle", {50, 10}, {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT}, {screenDim.x, screenDim.y},
+            std::make_shared<std::vector<std::shared_ptr<CO::Entity>>>(collision_layer_1)));
+        entities.push_back(make_kinematic_window_entity("Right Paddle", {10, 50}, {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT}, {screenDim.x, screenDim.y},
+            std::make_shared<std::vector<std::shared_ptr<CO::Entity>>>(collision_layer_1)));
+        
         entities[0]->getComponent<CO::KinematicsComponent>()->get().setVelocity({5, 5, 0});
         // Initial Transformations
         for(int i = 0; i < entities.size(); i++){
