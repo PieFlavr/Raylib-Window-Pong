@@ -115,14 +115,14 @@ The following base features have been implemented in the program...
 1) [X] Implemented using OOEC (0pts)
 2) [X] Multiple Entities (10pts)
 3) [X] Controls (20pts)
-4) [] Raylib (20pts) (technically a fork but still raylib :p)
+4) [X] Raylib (20pts) (technically a fork but still raylib :p)
 5) [X] C++ (1pts)
 6) [X] Have a Window (10pts)
-7) [] Two Different Components Interact (15pts)
-8) [] Two Different Entities Interact (20pts)
+7) [X] Two Different Components Interact (15pts)
+8) [X] Two Different Entities Interact (20pts)
 9) [X] Readme (5pts)
 10) [] Load and Use Something (8pts)
-11) [] Use At Least One Event (10pts)
+11) [X] Use At Least One Event (10pts)
 
 ## EXTRA CREDIT FEATURE IMPLEMENTATIONs
 

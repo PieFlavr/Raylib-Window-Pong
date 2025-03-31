@@ -30,6 +30,9 @@
 #define DEFAULT_WINDOW_WIDTH 50
 #define DEFAULT_WINDOW_HEIGHT 50
 
+#define SCOREBOARD_WIDTH 600
+#define SCOREBOARD_HEIGHT 600
+
 #define PADDLE_WIDTH 100
 #define PADDLE_HEIGHT 300
 
@@ -62,11 +65,12 @@
 //#include "transform_bind_behavior.hpp"
 //#include "oriented_kinematics_behavior.hpp"
 #include "follow_camera_behavior.hpp"
-#include "kinematics_controller_behavior.hpp"
 #include "window_bind_behavior.hpp"
 #include "box_boundary_behavior.hpp"
 #include "box_reflection_behavior.hpp"
 #include "box_collision_bind_behavior.hpp"
+#include "as7_input_controller_behavior.hpp"
+#include "kinematics_controller_behavior.hpp"
 
 
 // Entity Skeletons
@@ -86,7 +90,6 @@ std::shared_ptr<CO::Entity> make_kinematic_window_entity(std::string title, Vect
     if(isMainWindow){
         entity->addComponent<CO::BoxReflectionBehavior, CO::Entity*, std::shared_ptr<std::vector<std::shared_ptr<CO::Entity>>>, Rectangle>(entity.get(), collisionEntities, {0, 0, boundaryDim.x, boundaryDim.y});
     }
-
     entity->addComponent<CO::KinematicsControllerBehavior, CO::Entity*>(entity.get());
     entity->addComponent<CO::BoxBoundaryBehavior, CO::Entity*, Rectangle>(entity.get(), {0, 0, boundaryDim.x, boundaryDim.y});
     entity->addComponent<CO::BoxCollisionBindBehavior, CO::Entity*>(entity.get());
@@ -125,35 +128,39 @@ int main(){
         // ===========================================================
         std::vector<std::shared_ptr<CO::Entity>> entities;
         auto system_entities = std::make_shared<std::vector<std::shared_ptr<CO::Entity>>>();
-        auto controllable_entities = std::make_shared<std::vector<std::shared_ptr<CO::Entity>>>();
         auto collision_layer_1 = std::make_shared<std::vector<std::shared_ptr<CO::Entity>>>();
-        auto collision_layer_2 = std::make_shared<std::vector<std::shared_ptr<CO::Entity>>>();
 
-        entities.push_back(make_kinematic_window_entity("Main Window", {600, 600}, {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT}, {screenDim.x, screenDim.y}, 
-            collision_layer_1, true));
+        entities.push_back(make_kinematic_window_entity("Scoreboard", {(screenDim.x - SCOREBOARD_WIDTH)/2, (screenDim.y - SCOREBOARD_HEIGHT)/2}, {SCOREBOARD_WIDTH, SCOREBOARD_HEIGHT}, {screenDim.x, screenDim.y}));
         entities.push_back(make_kinematic_window_entity("Left Paddle", {PADDLE_WIDTH, PADDLE_WIDTH}, {PADDLE_WIDTH, PADDLE_HEIGHT}, {screenDim.x, screenDim.y},
             collision_layer_1));
         entities.push_back(make_kinematic_window_entity("Right Paddle", {screenDim.x - (PADDLE_WIDTH + PADDLE_WIDTH), PADDLE_WIDTH}, {PADDLE_WIDTH, PADDLE_HEIGHT}, {screenDim.x, screenDim.y},
             collision_layer_1));
+        entities.push_back(make_kinematic_window_entity("Ball", {screenDim.x/2 - DEFAULT_WINDOW_WIDTH/2, screenDim.y/2 - DEFAULT_WINDOW_HEIGHT/2}, {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT}, {screenDim.x, screenDim.y}, 
+            collision_layer_1, true));
         
-        entities[0]->getComponent<CO::KinematicsComponent>()->get().setVelocity({5, 5, 0});
+        std::vector<int> window_ids;
+
+        for(auto& entity : entities){
+            if(entity->hasComponent<CO::WindowComponent>()){
+                window_ids.push_back(entity->getComponent<CO::WindowComponent>()->get().getWindowId()); // Get the ID of the window
+            }
+        }
+        entities.push_back(std::make_shared<CO::Entity>()); 
+        entities[4]->addComponent<CO::AS7InputControllerBehavior, CO::Entity*, std::shared_ptr<CO::Entity>, std::shared_ptr<CO::Entity>, std::shared_ptr<CO::Entity>, std::vector<int>>(
+            entities[4].get(), entities[1], entities[2], entities[0], window_ids); // Add the input controller behavior to the entity
+
+        entities[3]->getComponent<CO::KinematicsComponent>()->get().setVelocity({5, 5, 0});
         // Initial Transformations
-        collision_layer_1->push_back(entities[0]);
         collision_layer_1->push_back(entities[1]);
         collision_layer_1->push_back(entities[2]);
+        collision_layer_1->push_back(entities[3]);
+        system_entities->push_back(entities[4]);
 
     while (!WindowShouldClose()){
 
         // ===========================================================
         // Non-Delta Logic BLock
         // ===========================================================
-            // std::cout << std::endl;
-            // std::cout << "Entity 0 Kinematics Position:" << entities[0]->getComponent<CO::KinematicsComponent>()->get().getPosition().x << ", " << entities[0]->getComponent<CO::KinematicsComponent>()->get().getPosition().y << std::endl;
-            // std::cout << "Entity 0 Kinematics Velocity:" << entities[0]->getComponent<CO::KinematicsComponent>()->get().getVelocity().x << ", " << entities[0]->getComponent<CO::KinematicsComponent>()->get().getVelocity().y << std::endl;
-            // std::cout << "Entity 0 Transform Position:" << entities[0]->getComponent<CO::TransformComponent>()->get().getPosition().x << ", " << entities[0]->getComponent<CO::TransformComponent>()->get().getPosition().y << std::endl;
-            // std::cout << "Entity 0 Transform Scale:" << entities[0]->getComponent<CO::TransformComponent>()->get().getScale().x << ", " << entities[0]->getComponent<CO::TransformComponent>()->get().getScale().y << std::endl;
-            // std::cout << "Entity 0 Box Collision Position:" << entities[0]->getComponent<CO::BoxCollisionComponent>()->get().get2DRectangle().x << ", " << entities[0]->getComponent<CO::BoxCollisionComponent>()->get().get2DRectangle().y << std::endl;
-            // std::cout << "Entity 0 Box Collision Size:" << entities[0]->getComponent<CO::BoxCollisionComponent>()->get().get2DRectangle().width << ", " << entities[0]->getComponent<CO::BoxCollisionComponent>()->get().get2DRectangle().height << std::endl;
 
         // ===========================================================
         // Delta Logic Block
@@ -162,10 +169,8 @@ int main(){
             
             double logicFrameTime = current_time - previous_time;
             logicFrameTime = (logicFrameTime < 0.0f) ? 0.0f : logicFrameTime; // Clamp the logic frame time to a minimum of 0.0f
+            // Some really goofy clock skew issues go on on my pc, so this is a goofy workaround
             double logicDelta = logicFrameTime * LOGIC_FPS;
-
-            // std::cout << "Delta Time: " << logicDelta << std::endl;
-            // std::cout << "Delta Frame Time: " << logicFrameTime << std::endl;
 
             previous_time = current_time;
 
