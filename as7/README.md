@@ -104,10 +104,6 @@ IN THE START MENU AND GAME-OVER SCREEN...
 
 `[ESC]` at any point closes the game.
 
-IN THE AME OVER SCREEN...
-
-`[SHIFT]` to submit your typed name
-
 ## FEATURE IMPLEMENTATIONs
 
 The following base features have been implemented in the program...
@@ -133,13 +129,9 @@ The following have been implemented in the program...
 3) [] Efficient Component Type (+ a lot count later)
 4) [X] Scene Tree (+10pts)
 5) [] Spatial Audio (+10pts directional; +5pts spatial)
-6) [] Extra Windows (+1pt per extra; total +4pts)
+6) [X] Extra Windows (+1pt per extra; total +4pts)
 7) [] Graph Algorithms (+10pts)
-8) [] Calculate Your Own DT (+2pts)
+8) [X] Calculate Your Own DT (+2pts)
 9) [] Do Your Own Voice Acting (+10pts)
 10) [] Add Firelink Shrine (+1pts)
 11) [] Guess Your Grade (+5pts)
-
-## KNOWN ISSUES (to-do-list)
-
-1) Skybox needs to be re-implemented without raylib-cpp.
