@@ -33,7 +33,7 @@ sudo apt --fix-broken install # should fill any missing dependencies
 You can normally clone the repository, but doing so will incur some extra work to be done for fetching submodules. If you don't want to do that, use the following commands in your target directory...
 
 ```bash
-git clone --recurse-submodules https://github.com/PieFlavr/CS381
+git clone --recurse-submodules https://github.com/PieFlavr/CS381/tree/EXPERIMENTAL 
 ```
 
 ### FETCHING SUBMODULEs
@@ -80,6 +80,7 @@ Additionally, if receivng a `DRIVER TIMOUT` or some sort of `DRIVER CRASH`, it i
 
 ## APPLICATION CONTROLs
 
+Did not have the time to be able to properly re-implement everything, but at the very least the windows work and basic game works!
 All of the controls are enumerated in the menus/scoreboards. The following is simply an explicit listing of them, all of these can be found in the game.
 
 ### IMPLEMENTED
@@ -90,7 +91,7 @@ IN THE GAME ONLY...
 
 `[UP]` and `[DOWN]` arrow keys move the right paddle up and down respectively.
 
-`[ESC]` at any point closes the game.
+`[ESC]` at any point closes the game. (might require multipel presses due to lag)
 
 ### NOT-IMPLEMENTED
 
@@ -130,12 +131,14 @@ The following have been implemented in the program...
 
 1) [X] Free Points (+7pts)
 2) [X] Don't Use CO.hpp (+50pts)
-3) [X] Efficient Component Type (+1pts per; total +24pts)
-4) [X] Scene Tree (+10pts)
+3) [X] Efficient Component Type (+1pts per; total +24pts, not counting those in unused folder!)
+4) [] Scene Tree (+10pts) (implemented but not used in final)
 5) [] Spatial Audio (+10pts directional; +5pts spatial)
-6) [X] Extra Windows (+1pt per extra; total +4pts, not counting those in unused folder!)
+6) [X] Extra Windows (+1pt per extra; total +4pts)
 7) [] Graph Algorithms (+10pts)
 8) [X] Calculate Your Own DT (+2pts)
 9) [] Do Your Own Voice Acting (+10pts)
 10) [] Add Firelink Shrine (+1pts) (there is an attempt, but i have a hard time getting models + textures to load proper on multi-windows fork -_-)
-11) [X] Guess Your Grade (+5pts) (197pts (w/o bonus) + 5pts = 202pts (w/ bonus guess))
+11) [X] Guess Your Grade (+5pts) (187pts (w/o bonus) + 5pts = 192pts (w/ bonus guess))
+
+^^^ (100pts (non-ec) + 87pts (ec) ==> 187pts + 5pts (w/ bonus) =  192pts)
