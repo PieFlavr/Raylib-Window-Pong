@@ -131,7 +131,7 @@ The following have been implemented in the program...
 1) [X] Free Points (+7pts)
 2) [X] Don't Use CO.hpp (+50pts)
 3) [] Efficient Component Type (+ a lot count later)
-4) [] Scene Tree (+10pts)
+4) [X] Scene Tree (+10pts)
 5) [] Spatial Audio (+10pts directional; +5pts spatial)
 6) [] Extra Windows (+1pt per extra; total +4pts)
 7) [] Graph Algorithms (+10pts)
