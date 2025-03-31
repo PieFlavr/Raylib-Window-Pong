@@ -18,7 +18,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src/entitySkeletons)
 
 # Collect all source files
 file(GLOB BASECO_SOURCES "${CMAKE_SOURCE_DIR}/src/baseCOs/*.cpp")
-file(GLOB DERIVATEDCO_SOURCES "${CMAKE_SOURCE_DIR}/src/derivateCOs/*.cpp")
+file(GLOB DERIVATEDCO_SOURCES "${CMAKE_SOURCE_DIR}/src/derivativeCOs/*.cpp")
 file(GLOB ENTITYSKELETONS_SOURCES "${CMAKE_SOURCE_DIR}/src/entitySkeletons/*.cpp")
 
 # Add executable and link all necessary source files
