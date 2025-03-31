@@ -54,9 +54,10 @@ namespace CO{
 
                         // std::cout << "Target Position: " << targetPosition.x << ", " << targetPosition.y << std::endl; // Print the target position
                         // std::cout << "World Boundary: " << worldBoundary.x << ", " << worldBoundary.y << ", " << worldBoundary.width << ", " << worldBoundary.height << std::endl; // Print the world boundary
+                        // std::cout << "Target Rect: " << targetRect.x << ", " << targetRect.y << ", " << targetRect.width << ", " << targetRect.height << std::endl; // Print the target rectangle
 
-                        targetPosition.x = std::fmax(worldBoundary.x, std::fmin(targetPosition.x, worldBoundary.x + worldBoundary.width)); // Clamp the x position to the world boundary
-                        targetPosition.y = std::fmax(worldBoundary.y, std::fmin(targetPosition.y, worldBoundary.y + worldBoundary.height)); // Clamp the y position to the world boundary
+                        targetPosition.x = std::fmax(worldBoundary.x, std::fmin(targetPosition.x, worldBoundary.x + worldBoundary.width - targetRect.width)); // Clamp the x position to the world boundary
+                        targetPosition.y = std::fmax(worldBoundary.y, std::fmin(targetPosition.y, worldBoundary.y + worldBoundary.height - targetRect.height)); // Clamp the y position to the world boundary
                         
                         // std::cout << "Clamped Position: " << targetPosition.x << ", " << targetPosition.y << std::endl; // Print the clamped position
 

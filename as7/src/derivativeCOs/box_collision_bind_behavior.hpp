@@ -35,7 +35,7 @@ namespace CO {
                         CO::TransformComponent& transform = target->getComponent<CO::TransformComponent>()->get(); // Get the transform component of the target entity
 
                         boxCollision.setLocus(transform.getPosition()); // Set the collision locus to the transform position
-                        boxCollision.setBox(BoundingBox{transform.getPosition().x, transform.getPosition().y, 0, transform.getScale().x, transform.getScale().y, 0}); // Set the box dimensions based on the transform position and scale
+                        boxCollision.setBox(BoundingBox{0, 0, 0, transform.getScale().x, transform.getScale().y, 0}); // Set the box collision to the transform scale
                     }
                 }
             } // Tick function to be called every frame
