@@ -27,8 +27,11 @@
 #define INITIAL_FONT_SIZE 50
 #define INITIAL_FONT_SPACING
 
-#define DEFAULT_WINDOW_WIDTH 400
-#define DEFAULT_WINDOW_HEIGHT 400
+#define DEFAULT_WINDOW_WIDTH 50
+#define DEFAULT_WINDOW_HEIGHT 50
+
+#define PADDLE_WIDTH 100
+#define PADDLE_HEIGHT 300
 
 #define DEFAULT_TITLE "CS381 - Assignment 7"
 
@@ -69,7 +72,8 @@
 // Entity Skeletons
 //#include "oriented_kinematics_entity.hpp"
 
-std::shared_ptr<CO::Entity> make_kinematic_window_entity(std::string title, Vector2 pos, Vector2 dim, Vector2 boundaryDim, std::shared_ptr<std::vector<std::shared_ptr<CO::Entity>>> collisionEntities = nullptr) {
+std::shared_ptr<CO::Entity> make_kinematic_window_entity(std::string title, Vector2 pos, Vector2 dim, Vector2 boundaryDim, 
+    std::shared_ptr<std::vector<std::shared_ptr<CO::Entity>>> collisionEntities = nullptr, bool isMainWindow = false) {
     auto entity = std::make_shared<CO::Entity>();
     entity->addComponent<CO::WindowComponent, Vector2, Vector2, std::string>(pos, dim, title);
     entity->addComponent<CO::KinematicsComponent, Vector3>({pos.x, pos.y, 0});
@@ -79,9 +83,12 @@ std::shared_ptr<CO::Entity> make_kinematic_window_entity(std::string title, Vect
     entity->getComponent<CO::TransformComponent>()->get().setPosition({pos.x, pos.y, 0});
     entity->getComponent<CO::TransformComponent>()->get().setScale({dim.x, dim.y, 0});
 
-    entity->addComponent<CO::BoxBoundaryBehavior, CO::Entity*, Rectangle>(entity.get(), {0, 0, boundaryDim.x, boundaryDim.y});
-    entity->addComponent<CO::BoxReflectionBehavior, CO::Entity*, std::shared_ptr<std::vector<std::shared_ptr<CO::Entity>>>>(entity.get(), collisionEntities);
+    if(isMainWindow){
+        entity->addComponent<CO::BoxReflectionBehavior, CO::Entity*, std::shared_ptr<std::vector<std::shared_ptr<CO::Entity>>>, Rectangle>(entity.get(), collisionEntities, {0, 0, boundaryDim.x, boundaryDim.y});
+    }
+
     entity->addComponent<CO::KinematicsControllerBehavior, CO::Entity*>(entity.get());
+    entity->addComponent<CO::BoxBoundaryBehavior, CO::Entity*, Rectangle>(entity.get(), {0, 0, boundaryDim.x, boundaryDim.y});
     entity->addComponent<CO::BoxCollisionBindBehavior, CO::Entity*>(entity.get());
     entity->addComponent<CO::WindowBindBehavior, CO::Entity*>(entity.get());
 
@@ -117,29 +124,36 @@ int main(){
         // Component + Entity Initialization
         // ===========================================================
         std::vector<std::shared_ptr<CO::Entity>> entities;
-        std::vector<std::shared_ptr<CO::Entity>> system_entities;
-        std::vector<std::shared_ptr<CO::Entity>> controllable_entities;
-        std::vector<std::shared_ptr<CO::Entity>> collision_layer_1;
-        std::vector<std::shared_ptr<CO::Entity>> collision_layer_2;
+        auto system_entities = std::make_shared<std::vector<std::shared_ptr<CO::Entity>>>();
+        auto controllable_entities = std::make_shared<std::vector<std::shared_ptr<CO::Entity>>>();
+        auto collision_layer_1 = std::make_shared<std::vector<std::shared_ptr<CO::Entity>>>();
+        auto collision_layer_2 = std::make_shared<std::vector<std::shared_ptr<CO::Entity>>>();
 
-        entities.push_back(make_kinematic_window_entity("Main Window", {100, 100}, {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT}, {screenDim.x, screenDim.y}, 
-            std::make_shared<std::vector<std::shared_ptr<CO::Entity>>>(collision_layer_1)));
-        entities.push_back(make_kinematic_window_entity("Left Paddle", {50, 10}, {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT}, {screenDim.x, screenDim.y},
-            std::make_shared<std::vector<std::shared_ptr<CO::Entity>>>(collision_layer_1)));
-        entities.push_back(make_kinematic_window_entity("Right Paddle", {10, 50}, {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT}, {screenDim.x, screenDim.y},
-            std::make_shared<std::vector<std::shared_ptr<CO::Entity>>>(collision_layer_1)));
+        entities.push_back(make_kinematic_window_entity("Main Window", {600, 600}, {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT}, {screenDim.x, screenDim.y}, 
+            collision_layer_1, true));
+        entities.push_back(make_kinematic_window_entity("Left Paddle", {PADDLE_WIDTH, PADDLE_WIDTH}, {PADDLE_WIDTH, PADDLE_HEIGHT}, {screenDim.x, screenDim.y},
+            collision_layer_1));
+        entities.push_back(make_kinematic_window_entity("Right Paddle", {screenDim.x - (PADDLE_WIDTH + PADDLE_WIDTH), PADDLE_WIDTH}, {PADDLE_WIDTH, PADDLE_HEIGHT}, {screenDim.x, screenDim.y},
+            collision_layer_1));
         
         entities[0]->getComponent<CO::KinematicsComponent>()->get().setVelocity({5, 5, 0});
         // Initial Transformations
-        for(int i = 0; i < entities.size(); i++){
-
-        }
+        collision_layer_1->push_back(entities[0]);
+        collision_layer_1->push_back(entities[1]);
+        collision_layer_1->push_back(entities[2]);
 
     while (!WindowShouldClose()){
 
         // ===========================================================
         // Non-Delta Logic BLock
         // ===========================================================
+            // std::cout << std::endl;
+            // std::cout << "Entity 0 Kinematics Position:" << entities[0]->getComponent<CO::KinematicsComponent>()->get().getPosition().x << ", " << entities[0]->getComponent<CO::KinematicsComponent>()->get().getPosition().y << std::endl;
+            // std::cout << "Entity 0 Kinematics Velocity:" << entities[0]->getComponent<CO::KinematicsComponent>()->get().getVelocity().x << ", " << entities[0]->getComponent<CO::KinematicsComponent>()->get().getVelocity().y << std::endl;
+            // std::cout << "Entity 0 Transform Position:" << entities[0]->getComponent<CO::TransformComponent>()->get().getPosition().x << ", " << entities[0]->getComponent<CO::TransformComponent>()->get().getPosition().y << std::endl;
+            // std::cout << "Entity 0 Transform Scale:" << entities[0]->getComponent<CO::TransformComponent>()->get().getScale().x << ", " << entities[0]->getComponent<CO::TransformComponent>()->get().getScale().y << std::endl;
+            // std::cout << "Entity 0 Box Collision Position:" << entities[0]->getComponent<CO::BoxCollisionComponent>()->get().get2DRectangle().x << ", " << entities[0]->getComponent<CO::BoxCollisionComponent>()->get().get2DRectangle().y << std::endl;
+            // std::cout << "Entity 0 Box Collision Size:" << entities[0]->getComponent<CO::BoxCollisionComponent>()->get().get2DRectangle().width << ", " << entities[0]->getComponent<CO::BoxCollisionComponent>()->get().get2DRectangle().height << std::endl;
 
         // ===========================================================
         // Delta Logic Block
@@ -147,6 +161,7 @@ int main(){
             current_time = std::chrono::high_resolution_clock::now().time_since_epoch().count() / 1e9;
             
             double logicFrameTime = current_time - previous_time;
+            logicFrameTime = (logicFrameTime < 0.0f) ? 0.0f : logicFrameTime; // Clamp the logic frame time to a minimum of 0.0f
             double logicDelta = logicFrameTime * LOGIC_FPS;
 
             // std::cout << "Delta Time: " << logicDelta << std::endl;
