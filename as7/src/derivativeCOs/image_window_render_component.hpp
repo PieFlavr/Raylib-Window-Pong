@@ -28,6 +28,7 @@ namespace CO{
             void Render() override { 
                 SetActiveWindowContext(windowId); // Set the active window context to the specific window
                 ImageRenderComponent::Render(); // Call the base class render function
+                DrawText("Firelink Shrine Should Be here -_- \n But its not... (╯°□°）╯︵ ┻━┻", position.x, position.y, 20, WHITE); // Draw text on the window
             }
     };
 }

@@ -35,6 +35,6 @@ namespace CO{
 
             std::unique_ptr<Component> clone() const override { return std::make_unique<ImageRenderComponent>(*this); } // Clone function
 
-            virtual void Render() { DrawTexture(*image, position.x, position.y, WHITE); } // Render function to draw the image at the specified position and size
+            virtual void Render() { DrawTexture(*image, 200, 200, WHITE); } // Render function to draw the image at the specified position and size
     };
 }

@@ -137,5 +137,5 @@ The following have been implemented in the program...
 7) [] Graph Algorithms (+10pts)
 8) [X] Calculate Your Own DT (+2pts)
 9) [] Do Your Own Voice Acting (+10pts)
-10) [X] Add Firelink Shrine (+1pts)
-11) [X] Guess Your Grade (+5pts) (198pts (w/o bonus) + 5pts = 203pts (w/ bonus guess))
+10) [] Add Firelink Shrine (+1pts) (there is an attempt, but i have a hard time getting models + textures to load proper on multi-windows fork -_-)
+11) [X] Guess Your Grade (+5pts) (197pts (w/o bonus) + 5pts = 202pts (w/ bonus guess))

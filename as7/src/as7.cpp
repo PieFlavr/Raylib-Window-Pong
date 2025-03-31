@@ -112,10 +112,12 @@ int main(){
     // ===========================================================
         InitWindow(0, 0, "quick fix"); // Initialize the window with a default size
         Vector2 screenDim = {static_cast<float>(GetMonitorWidth(0)), static_cast<float>(GetMonitorHeight(0))}; // Get the screen dimensions
-        
+        CloseWindow(); // Close the default window
+
         enum {MENU, PLAYING, GAME_OVER}; // Define the game states
         int game_state = MENU; // Initialize the game state to MENU
 
+        bool closeWindow = false;
         // ===========================================================
         // Important Variables
         // ===========================================================
@@ -126,16 +128,14 @@ int main(){
         // Model Loading + Default Transforms
         // ===========================================================
 
-        std::shared_ptr<Image> firelink = std::make_shared<Image>(LoadImage("../../custom_assets/as7/firelink_shrine.png"));
-        ImageResize(firelink.get(), SCOREBOARD_WIDTH, SCOREBOARD_HEIGHT); // Resize the image to fit the window dimensions
-        std::shared_ptr<Texture2D> firelink_texture = std::make_shared<Texture2D>(LoadTextureFromImage(*firelink.get()));
-
         // ===========================================================
         // Audio Initialization
         // ===========================================================
 
-
-        CloseWindow(); // Close the default window
+        InitAudioDevice(); // Initialize the audio device
+        Music music = LoadMusicStream("../../custom_assets/as4/cats_on_mars.mp3"); // Load the music stream
+        PlayMusicStream(music); // Play the music stream
+        
         /// ^^^ so opengl doesn't freak the hell out
 
         // ===========================================================
@@ -146,6 +146,13 @@ int main(){
         auto collision_layer_1 = std::make_shared<std::vector<std::shared_ptr<CO::Entity>>>();
 
         entities.push_back(make_kinematic_window_entity("Scoreboard", {(screenDim.x - SCOREBOARD_WIDTH)/2, (screenDim.y - SCOREBOARD_HEIGHT)/2}, {SCOREBOARD_WIDTH, SCOREBOARD_HEIGHT}, {screenDim.x, screenDim.y}));
+        
+        SetActiveWindowContext(entities[0]->getComponent<CO::WindowComponent>()->get().getWindowId()); // Set the active window context to the scoreboard window
+        std::shared_ptr<Texture2D> firelink_texture = std::make_shared<Texture2D>(LoadTexture("../../custom_assets/firelink.png")); // Load the texture
+        firelink_texture->width = SCOREBOARD_WIDTH; // Set the width of the texture
+        firelink_texture->height = SCOREBOARD_HEIGHT; // Set the height of the texture
+        // ^^^ goofy open gl context stuff
+        
         entities.push_back(make_kinematic_window_entity("Left Paddle", {PADDLE_WIDTH, PADDLE_WIDTH}, {PADDLE_WIDTH, PADDLE_HEIGHT}, {screenDim.x, screenDim.y},
             collision_layer_1));
         entities.push_back(make_kinematic_window_entity("Right Paddle", {screenDim.x - (PADDLE_WIDTH + PADDLE_WIDTH), PADDLE_WIDTH}, {PADDLE_WIDTH, PADDLE_HEIGHT}, {screenDim.x, screenDim.y},
@@ -184,12 +191,12 @@ int main(){
             entities[0]->getComponent<CO::WindowComponent>()->get().getWindowId(), firelink_texture, {0, 0}, {SCOREBOARD_WIDTH, SCOREBOARD_HEIGHT}
         );
 
-    while (!WindowShouldClose()){
+    while (!closeWindow){
 
         // ===========================================================
         // Non-Delta Logic BLock
         // ===========================================================
-
+            UpdateMusicStream(music); // Update the music stream
         // ===========================================================
         // Delta Logic Block
         // ===========================================================
@@ -218,62 +225,66 @@ int main(){
             // ===========================================================
             // Render Block 
             // ===========================================================
-            
+            for(auto& entity : entities){
+                if(entity->hasComponent<CO::WindowComponent>()){
+                    SetActiveWindowContext(entity->getComponent<CO::WindowComponent>()->get().getWindowId()); // Set the active window context to the specific window
+                    ClearBackground(BLACK); // Clear the background of the window
+                    closeWindow = closeWindow || WindowShouldClose(); // Check if the window should close
 
-                BeginDrawing();
+                    BeginDrawing();
 
-                for(auto& entity : entities){
-                    if(entity->hasComponent<CO::CameraComponent>()){
-                        entity->getComponent<CO::CameraComponent>()->get().BeginCameraMode();
+                    for(auto& entity : entities){
+                        if(entity->hasComponent<CO::CameraComponent>()){
+                            entity->getComponent<CO::CameraComponent>()->get().BeginCameraMode();
+                        }
                     }
-                }
 
 
-                // ===========================================================
-                // Background Draw
-                // ===========================================================
+                    // ===========================================================
+                    // Background Draw
+                    // ===========================================================
 
 
 
-                // ===========================================================
-                // Midground Draw
-                // ===========================================================
+                    // ===========================================================
+                    // Midground Draw
+                    // ===========================================================
 
-                for(auto& entity : entities){
-                    if(entity->hasComponent<CO::RenderComponent>()){
-                        entity->getComponent<CO::RenderComponent>()->get().Render();
+                    for(auto& entity : entities){
+                        if(entity->hasComponent<CO::RenderComponent>()){
+                            entity->getComponent<CO::RenderComponent>()->get().Render();
+                        }
                     }
-                }
 
-                // ===========================================================
-                // Foreground Draw
-                // ===========================================================
+                    // ===========================================================
+                    // Foreground Draw
+                    // ===========================================================
 
-                for(auto& entity : entities){
-                    if(entity->hasComponent<CO::ImageWindowRenderComponent>()){
-                        entity->getComponent<CO::ImageWindowRenderComponent>()->get().Render();
+                    for(auto& entity : entities){
+                        if(entity->hasComponent<CO::ImageWindowRenderComponent>()){
+                            entity->getComponent<CO::ImageWindowRenderComponent>()->get().Render();
+                        }
                     }
-                }
-                
-                // Coordinate axes draw
-                // DrawLine3D({0, 0, 0}, {30, 0, 0}, RED);
-                // DrawLine3D({0, 0, 0}, {0, 30, 0}, GREEN);
-                // DrawLine3D({0, 0, 0}, {0, 0, 30}, BLUE);
+                    
+                    // Coordinate axes draw
+                    // DrawLine3D({0, 0, 0}, {30, 0, 0}, RED);
+                    // DrawLine3D({0, 0, 0}, {0, 30, 0}, GREEN);
+                    // DrawLine3D({0, 0, 0}, {0, 0, 30}, BLUE);
 
-                for(auto& entity : entities){
-                    if(entity->hasComponent<CO::CameraComponent>()){
-                        entity->getComponent<CO::CameraComponent>()->get().EndCameraMode();
+                    for(auto& entity : entities){
+                        if(entity->hasComponent<CO::CameraComponent>()){
+                            entity->getComponent<CO::CameraComponent>()->get().EndCameraMode();
+                        }
                     }
+
+                    
+
+                    EndDrawing();
                 }
-
-                
-
-                EndDrawing();
-
+            }
             
 
     }
-    UnloadImage(*firelink.get()); // Unload the image
     UnloadTexture(*firelink_texture.get()); // Unload the texture
     for(auto& entity : entities){
         if(entity->hasComponent<CO::WindowComponent>()){
