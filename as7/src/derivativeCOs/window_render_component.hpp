@@ -22,7 +22,7 @@ namespace CO{
     class WindowRenderComponent : public RenderComponent {
         
         protected:
-            int defaultWindowId;
+            int defaultWindowId = 0; // Default window ID for the main window
             int windowId;
 
         public:
@@ -36,6 +36,15 @@ namespace CO{
             WindowRenderComponent(int windowId, std::shared_ptr<Model> model, CO::TransformComponent transform, CO::TransformComponent baseTransform) : RenderComponent(model, transform, baseTransform), windowId(windowId) {}
             WindowRenderComponent(const WindowRenderComponent& other) = default;
             WindowRenderComponent& operator=(const WindowRenderComponent& other) = default;
+
+            //=================================================================================================================
+            // GETTERS/SETTERS
+            //=================================================================================================================
+
+            int getWindowId() const { return windowId; } // Get the ID of the window
+            void setWindowId(int newWindowId) { windowId = newWindowId; } // Set the ID of the window
+            int getDefaultWindowId() const { return defaultWindowId; } // Get the ID of the default window
+            void setDefaultWindowId(int newDefaultWindowId) { defaultWindowId = newDefaultWindowId; } // Set the ID of the default window
 
             //=================================================================================================================
             // RENDERING LOGIC
