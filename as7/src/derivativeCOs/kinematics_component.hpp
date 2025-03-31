@@ -41,6 +41,7 @@ namespace CO{
             }
 
             void Update() override {} // No update logic for this component
+            std::unique_ptr<Component> clone() const override { return std::make_unique<KinematicsComponent>(*this); } // Clone the component
 
             //=================================================================================================================
             // CONSTRUCTORS
