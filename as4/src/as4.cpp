@@ -274,42 +274,42 @@ int main(){
         // ===========================================================
         #pragma region Audio Initialization
 
-        // Initialize the audio device for playback
-        InitAudioDevice();
-        SetMasterVolume(0.5f); // Set the master volume to 50%
+            // Initialize the audio device for playback
+            InitAudioDevice();
+            SetMasterVolume(0.5f); // Set the master volume to 50%
 
-        // Load music streams for different game states
-        Music game_state_0_music = LoadMusicStream("../../custom_assets/as4/lucky_star.mp3"); // Menu music, from https://youtu.be/1hbHgZDB95o?si=YvHRP71iqUQcIBFy 
-        Music game_state_1_music = LoadMusicStream("../../custom_assets/as4/cats_on_mars.mp3"); // Gameplay music, from https://youtu.be/97xfV6yXcrk?si=uDQGLkleoicX_xSb 
-        Music game_state_3_music = LoadMusicStream("../../custom_assets/as4/determination.mp3"); // Game over music, from https://youtu.be/W1i4mTyidOc?si=mzxLFXQke-5vfmj2 
-        PlayMusicStream(game_state_0_music); // Start playing the menu music
+            // Load music streams for different game states
+            Music game_state_0_music = LoadMusicStream("../../custom_assets/as4/lucky_star.mp3"); // Menu music, from https://youtu.be/1hbHgZDB95o?si=YvHRP71iqUQcIBFy 
+            Music game_state_1_music = LoadMusicStream("../../custom_assets/as4/cats_on_mars.mp3"); // Gameplay music, from https://youtu.be/97xfV6yXcrk?si=uDQGLkleoicX_xSb 
+            Music game_state_3_music = LoadMusicStream("../../custom_assets/as4/determination.mp3"); // Game over music, from https://youtu.be/W1i4mTyidOc?si=mzxLFXQke-5vfmj2 
+            PlayMusicStream(game_state_0_music); // Start playing the menu music
 
-        // Configure the audio capture device
-        ma_device_config device_config = ma_device_config_init(ma_device_type_capture);
-        device_config.capture.format = ma_format_f32; // Set the audio format to 32-bit float
-        device_config.capture.channels = 1; // Use a single audio channel (mono)
-        device_config.sampleRate = 44100; // Set the sample rate to 44.1 kHz
-        device_config.dataCallback = data_callback; // Callback function for audio data processing
+            // Configure the audio capture device
+            ma_device_config device_config = ma_device_config_init(ma_device_type_capture);
+            device_config.capture.format = ma_format_f32; // Set the audio format to 32-bit float
+            device_config.capture.channels = 1; // Use a single audio channel (mono)
+            device_config.sampleRate = 44100; // Set the sample rate to 44.1 kHz
+            device_config.dataCallback = data_callback; // Callback function for audio data processing
 
-        // Initialize a string to store the visualizer's bar encoding
-        std::string bar_encoding = "";
+            // Initialize a string to store the visualizer's bar encoding
+            std::string bar_encoding = "";
 
-        // Declare the audio capture device
-        ma_device device;
+            // Declare the audio capture device
+            ma_device device;
 
-        // Initialize the audio capture device
-        if(ma_device_init(NULL, &device_config, &device) != MA_SUCCESS){
-            std::cout << "Output audio device falied to initialized!" << std::endl; // Error message if initialization fails
-            return -1;
-        }
-        // Start the audio capture device
-        if (ma_device_start(&device) != MA_SUCCESS) {
-            std::cout << "Capture audio device failed to initialize!" << std::endl; // Error message if starting the device fails
-            return -1;
-        }
+            // Initialize the audio capture device
+            if(ma_device_init(NULL, &device_config, &device) != MA_SUCCESS){
+                std::cout << "Output audio device falied to initialized!" << std::endl; // Error message if initialization fails
+                return -1;
+            }
+            // Start the audio capture device
+            if (ma_device_start(&device) != MA_SUCCESS) {
+                std::cout << "Capture audio device failed to initialize!" << std::endl; // Error message if starting the device fails
+                return -1;
+            }
 
-        // Initialize the visualizer accumulator for timing
-        float visualizer_accumulator = 0.0f;
+            // Initialize the visualizer accumulator for timing
+            float visualizer_accumulator = 0.0f;
 
         #pragma endregion
 
@@ -320,32 +320,44 @@ int main(){
 
             int game_state = 0; // 0 - Menu | 1 - Playing | 2 - ??? | 3 - Game Over
 
+            // Drag coefficient for window movement
             float drag = 0.8f;
+
+            // Gravity affecting window movement
             float gravity = GRAVITY;
+
+            // Time scale for game speed adjustments
             float time_scale = 1.0f;
-            
+
+            // Left paddle dimensions and initial position
             Vector2 left_paddle_size = {PADDLE_WIDTH, PADDLE_HEIGHT};
             Vector2 left_paddle_pos = {50, (screenHeight/2) - (PADDLE_HEIGHT/2)};
 
+            // Right paddle dimensions and initial position
             Vector2 right_paddle_size = {PADDLE_WIDTH, PADDLE_HEIGHT};
             Vector2 right_paddle_pos = {screenWidth - 50 - PADDLE_WIDTH, (screenHeight/2) - (PADDLE_HEIGHT/2)};
 
+            // Ball position, velocity, and radius
             Vector2 ball_pos = {screenWidth/2, screenHeight/2};
             Vector2 ball_velocity = {BALL_SPEED, BALL_SPEED};
             float ball_radius = BALL_RADIUS;
 
+            // Main window velocity and position
             Vector2 main_window_velocity = {WINDOW_VELOCITY, WINDOW_VELOCITY};
             Vector2 main_window_pos = GetWindowPosition();
 
+            // Scoreboard window velocity, dimensions, and position
             Vector2 scoreboard_window_velocity = {0.0f, 0.0f};
             Vector2 scoreboard_window_dim = {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH/aspect_ratio};
             Vector2 scoreboard_window_dim_default = {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH/aspect_ratio};
             Vector2 scoreboard_window_coords = GetWindowPosition();
 
+            // Left paddle window position, velocity, and dimensions
             Vector2 left_paddle_window_pos = {10, (screenHeight/2) - (PADDLE_HEIGHT/2)};
             Vector2 left_paddle_window_velocity = {0.0f, 0.0f};
             Vector2 left_paddle_window_dim = {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH};
 
+            // Right paddle window position, velocity, and dimensions
             Vector2 right_paddle_window_pos = {screenWidth - 10 - PADDLE_WIDTH - DEFAULT_WINDOW_WIDTH, (screenHeight/2) - (PADDLE_HEIGHT/2)};
             Vector2 right_paddle_window_velocity = {0.0f, 0.0f};
             Vector2 right_paddle_window_dim = {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH};
