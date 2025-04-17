@@ -9,7 +9,7 @@ This is a repository containing a personal fork of an assignment from a CS381 cl
 This project is likely structured slightly differently than similar projects. The following are key important details:
 
 * There is a deliberate pre-existing empty (with exception of .gitkeep) `build` folder in each assignment folder.
-* All assets folders and submodules such as `raylib-cpp` exist in the main directory (there are no copies per assignment directory).
+* All assets folders and submodules such as `raylib_multi_window_experimental` exist in the main directory.
 * The ENTIRE repository must be cloned to work.
 * While there are redundancies for if the bash commands are run from the `MAIN` repository, you should generally run them in the 'as4' folder.
 * All testing of commands were done in WSL on Windows 11 on different devices and with fresh repository clones.
@@ -83,6 +83,8 @@ rm -rf ./*   # Deletes the contents of the build folder
 ```
 
 Additionally, if receivng a `DRIVER TIMOUT` or some sort of `DRIVER CRASH`, it is recommended to simply restart your computer to fix it along with the above.
+
+Furthermore, if that happens, it seems to be associated with the use of multiple monitors. So beware!
 
 ## APPLICATION INFORMATION
 
