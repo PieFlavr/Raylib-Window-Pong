@@ -355,7 +355,7 @@ int main(){
 
                         float angle = (rand() % 4) * 90.0f + 45.0f;
                         angle *= DEG2RAD;
-                        ball_pos = {(float)screenWidth/2, (float)screenHeight/2};
+                        ball_pos = {static_cast<float>(screenWidth)/2.0f, static_cast<float>(screenHeight)/2.0f};
                         ball_velocity = {BALL_SPEED * cos(angle), BALL_SPEED * sin(angle)};
 
                         main_window_velocity.x = (rand() % 2 == 0 ? 1 : -1) * WINDOW_VELOCITY;
@@ -487,7 +487,7 @@ int main(){
                     ball_pos.y += ball_velocity.y * logicDelta;
 
                     Vector2 ball_collision = CheckCollisionBoundary({ball_pos.x, ball_pos.y, ball_radius, ball_radius}, 
-                        {0, 0, screenWidth, screenHeight}, ball_velocity);
+                        {0, 0, static_cast<float>(screenWidth), static_cast<float>(screenHeight)}, ball_velocity);
 
                     if(ball_collision.x < 0.0f){ //Side Missed
                         timer -= 10.0f;
@@ -509,8 +509,8 @@ int main(){
                     ball_velocity.y *= ball_collision.y;
                     ball_velocity.x *= ball_collision.x;
 
-                    ball_pos.x = std::fmax(0, std::fmin(screenWidth - ball_radius, ball_pos.x));
-                    ball_pos.y = std::fmax(0, std::fmin(screenHeight - ball_radius, ball_pos.y));
+                    ball_pos.x = std::fmax(0, std::fmin(static_cast<float>(screenWidth) - ball_radius, ball_pos.x));
+                    ball_pos.y = std::fmax(0, std::fmin(static_cast<float>(screenHeight) - ball_radius, ball_pos.y));
                 }
                 #pragma endregion
 
@@ -556,7 +556,7 @@ int main(){
                 SetActiveWindowContext(scoreboard_window);
 
                 Vector2 scoreboard_window_collision = CheckCollisionBoundary({scoreboard_window_coords.x, scoreboard_window_coords.y, scoreboard_window_dim.x, scoreboard_window_dim.y}, 
-                {0, 0, screenWidth, screenHeight}, scoreboard_window_velocity);
+                {0, 0, static_cast<float>(screenWidth), static_cast<float>(screenHeight)}, scoreboard_window_velocity);
 
                 Vector2 mouse_pos = GetMousePosition();
                 Vector2 mouse_delta = GetMouseDelta();
@@ -584,8 +584,8 @@ int main(){
             
                     }
 
-                    scoreboard_window_coords.x = std::fmax(0, std::fmin(screenWidth - scoreboard_window_dim.x, scoreboard_window_coords.x));
-                    scoreboard_window_coords.y = std::fmax(0, std::fmin(screenHeight - scoreboard_window_dim.y, scoreboard_window_coords.y));
+                    scoreboard_window_coords.x = std::fmax(0, std::fmin(static_cast<float>(screenWidth) - scoreboard_window_dim.x, scoreboard_window_coords.x));
+                    scoreboard_window_coords.y = std::fmax(0, std::fmin(static_cast<float>(screenHeight) - scoreboard_window_dim.y, scoreboard_window_coords.y));
 
                 } else {
                     scoreboard_window_coords.x = scoreboard_window_coords.x + (scoreboard_window_velocity.x * logicDelta);
@@ -617,8 +617,8 @@ int main(){
                     scoreboard_window_coords.x -= (scoreboard_window_dim.x - old_scoreboard_window_dim.x)/2; //Shirnk compensation
                     scoreboard_window_coords.y -= (scoreboard_window_dim.y - old_scoreboard_window_dim.y)/2;
 
-                    scoreboard_window_coords.x = std::fmax(0, std::fmin(screenWidth - scoreboard_window_dim.x, scoreboard_window_coords.x));
-                    scoreboard_window_coords.y = std::fmax(0, std::fmin(screenHeight - scoreboard_window_dim.y, scoreboard_window_coords.y));
+                    scoreboard_window_coords.x = std::fmax(0, std::fmin(static_cast<float>(screenWidth) - scoreboard_window_dim.x, scoreboard_window_coords.x));
+                    scoreboard_window_coords.y = std::fmax(0, std::fmin(static_cast<float>(screenHeight) - scoreboard_window_dim.y, scoreboard_window_coords.y));
                 }
 
                 SetWindowPosition((int)scoreboard_window_coords.x, (int)scoreboard_window_coords.y);
