@@ -1,11 +1,9 @@
 /**
  * @file as4.cpp
  * @author Lucas Pinto
- * @brief I'm not gonna lie, I'm not sure what I'm doing anymore.
- *        This is cursed to an unimaginable extent, and I'm not sure if I'm proud of it or not.
- *        The way this is coded is an afront to nature itself.
- *        I guess this is what happens when you can't use lists/obejcts and try to do a goofy thing.
- *      I'm sorry. (¬_¬")
+ * @brief A pong game within a pong game where the player controls a paddle to hit a ball while the windows themselves also bounce around the screen.
+ *       Created for Assignment 4 of CS 381, and modified for public release. Coded in "ad hoc" or strictly no architecture, with workarounds to 
+ *      still reasonably implement the game logic.
  * @version 0.1
  * @date 2025-03-08
  * 
@@ -121,48 +119,59 @@ int main(){
         // ===========================================================
         #pragma region File Loading + Reading
         
+        // Open the leaderboard file in read/write mode
         std::fstream leaderboard("leaderboard.txt");
-        if(!leaderboard.is_open()){
+        if(!leaderboard.is_open()){ // Check if the file failed to open
+            // If the file doesn't exist, create a new leaderboard file
             std::ofstream new_leaderboard("leaderboard.txt");
-            if(!new_leaderboard.is_open()){
-                std::cout << "Error creating leaderboard file!" << std::endl;
-                return -1;
+            if(!new_leaderboard.is_open()){ // Check if the new file creation failed
+            std::cout << "Error creating leaderboard file!" << std::endl;
+            return -1; // Exit with an error code
             } else {
-                std::cout << "Leaderboard file created successfully." << std::endl;
-                new_leaderboard.close();
+            std::cout << "Leaderboard file created successfully." << std::endl;
+            new_leaderboard.close(); // Close the newly created file
             }
-                leaderboard.open("leaderboard.txt");
+            // Reopen the leaderboard file after creating it
+            leaderboard.open("leaderboard.txt");
         } else {
             std::cout << "Leaderboard file opened successfully." << std::endl;
         }
 
+        // Initialize variables to store the top 5 leaderboard entries
         std::string rank_1, rank_2, rank_3, rank_4, rank_5;
         std::string line; 
+        // Read the leaderboard file line by line
         while(std::getline(leaderboard, line)){
+            // Assign each line to the appropriate rank variable
             if(rank_1.empty()){
-                rank_1 = line;
+            rank_1 = line;
             } else if(rank_2.empty()){
-                rank_2 = line;
+            rank_2 = line;
             } else if(rank_3.empty()){
-                rank_3 = line;
+            rank_3 = line;
             } else if(rank_4.empty()){
-                rank_4 = line;
+            rank_4 = line;
             } else if(rank_5.empty()){
-                rank_5 = line;
+            rank_5 = line;
             }
         }
+        // Extract the names and times from the leaderboard entries
+        // Each entry is expected to be in the format: "name time"
 
+        // Extract the names (substring before the space)
         std::string rank_1_name = rank_1.substr(0, rank_1.find(" "));
         std::string rank_2_name = rank_2.substr(0, rank_2.find(" "));
         std::string rank_3_name = rank_3.substr(0, rank_3.find(" "));
         std::string rank_4_name = rank_4.substr(0, rank_4.find(" "));
         std::string rank_5_name = rank_5.substr(0, rank_5.find(" "));
 
+        // Extract the times (substring after the space and convert to double)
         double rank_1_time = std::stod(rank_1.substr(rank_1.find(" ") + 1));
         double rank_2_time = std::stod(rank_2.substr(rank_2.find(" ") + 1));
         double rank_3_time = std::stod(rank_3.substr(rank_3.find(" ") + 1));
         double rank_4_time = std::stod(rank_4.substr(rank_4.find(" ") + 1));
         double rank_5_time = std::stod(rank_5.substr(rank_5.find(" ") + 1));
+
         #pragma endregion
 
         // ===========================================================
