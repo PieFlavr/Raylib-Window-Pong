@@ -1,6 +1,6 @@
 # RAYLIB WINDOW PONG README
 
-This is a repository containing a personal fork of an assignment from a CS381 class. This uses an experimental fork of raylib which allows for management of multiple windows. As a challenge and for extra credit in the class, at base this is coded without ANY objects/structs/components or similar, with every coded "Ad Hoc". 
+This is a repository containing a personal fork of an assignment from a CS381 class. This uses an experimental fork of raylib which allows for management of multiple windows. As a challenge and for extra credit in the class, at base this is coded without ANY objects/structs/components or similar, with every coded "Ad Hoc" withou any real architecture or structure. As an added challenge, I did my best to try and avoid functions (with some exception) and use primarily macros for what would have been delegated to "object-oriented" behavior.
 
 ## PREFACE
 
