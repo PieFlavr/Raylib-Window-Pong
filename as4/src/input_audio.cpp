@@ -1,3 +1,13 @@
+/**
+ * @file input_audio.cpp
+ * @author Lucas Pinto
+ * @brief For managing the input audio and calculating the loudness of the audio input.
+ * @version 0.1
+ * @date 2025-04-16
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef INPUT_AUDIO_CPP
 #define INPUT_AUDIO_CPP
 
