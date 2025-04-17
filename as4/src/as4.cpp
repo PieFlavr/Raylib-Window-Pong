@@ -121,10 +121,17 @@ int main(){
         // ===========================================================
         #pragma region File Loading + Reading
         
-        std::fstream leaderboard("../leaderboard.txt");
+        std::fstream leaderboard("leaderboard.txt");
         if(!leaderboard.is_open()){
-            std::cout << "Error opening/creating leaderboard file!" << std::endl;
-            return -1;
+            std::ofstream new_leaderboard("leaderboard.txt");
+            if(!new_leaderboard.is_open()){
+                std::cout << "Error creating leaderboard file!" << std::endl;
+                return -1;
+            } else {
+                std::cout << "Leaderboard file created successfully." << std::endl;
+                new_leaderboard.close();
+            }
+                leaderboard.open("leaderboard.txt");
         } else {
             std::cout << "Leaderboard file opened successfully." << std::endl;
         }
