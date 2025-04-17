@@ -368,22 +368,28 @@ int main(){
         // Miscallaneous Initialization/Variables
         // ===========================================================
         #pragma region Miscallaneous Initialization/Variables
-            bool active_game = true;
+            
+            // Global meta-game variables
+            bool active_game = true; 
             double total_time = 0.0f;
             double timer = 30.0f;
 
-            Vector3 camera_base_target = {0, 0, 0};
+            // Default camera settings
+            Vector3 camera_base_target = {0, 0, 0}; 
             Vector3 camera_base_position = {10, 10, 10};
             float camera_base_fov = 45.0f;
 
+            // Calculated camera properties for later use in "mimicking" multiple viewports
             Vector3 forward = Vector3Normalize(Vector3Subtract(camera.target, camera.position));  
             Vector3 right = Vector3Normalize(Vector3CrossProduct(forward, camera.up));  
             Vector3 up = camera.up; 
 
+            // Calculated screen variables for boundary calculations
             Vector2 screen_dim = {GetMonitorWidth(0), GetMonitorHeight(0)};
             Vector2 screen_center = {screen_dim.x/2, screen_dim.y/2};
 
             SetTargetFPS(DRAW_FPS);
+
         #pragma endregion
 
     while (active_game){
