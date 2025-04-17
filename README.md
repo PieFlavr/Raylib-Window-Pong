@@ -124,13 +124,12 @@ IN THE GAME OVER SCREEN...
 
 `[SHIFT]` to submit your typed name
 
-## EXTRA CREDIT FEATURE IMPLEMENTATIONs
+### ASSET USE
 
-The following have been implemented in the program...
+The following music tracks were used to create this project...
 
-1) Multiplayer (Left/Right Player Paddles)
-2) Audio Input (Yelling Accelerator using Miniaudio (the lib. under raudio) to do it)
-3) Terminal ASCII Art (Audio Input Visualizer)
-4) Funny Name (see README title)
-5) Manual Cleanup (literally using a random Raylib fork so have to, not the CPP wrapper (￣へ￣))
-6) Leaderboard Implementation (persists + lets you type name)
+Lucky Star: https://youtu.be/1hbHgZDB95o?si=YvHRP71iqUQcIBFy 
+
+Cats on Mars: https://youtu.be/97xfV6yXcrk?si=uDQGLkleoicX_xSb 
+
+Determination: https://youtu.be/W1i4mTyidOc?si=mzxLFXQke-5vfmj2 
