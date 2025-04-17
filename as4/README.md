@@ -16,7 +16,7 @@ Additionally, all instructions are made with the following assumptions:
 * The user already has most dependencies installed.
 * The user has (by default) cloned the repository normally.
 
-## INSTRUCTIONs [FEATURE \#11 (4 pts)]
+## INSTRUCTIONs
 
 ### [OPTIONAL] DEPENDENCIES
 
@@ -88,20 +88,6 @@ Surprisingly, works on multi-monitor steups! Can't do fancier mouse stuff though
 
 After the game ends, if you get a high enough score, you can enter your name to admit it to the leaderboard! And after that, you can play again. At any time, you can just press `[ESC]` to exit the game entirely.
 
-### COMPLAINING
-
-The raymarching shaders may or may not work, its hard testing on WSL on a such a short time-frame but it is what it is. When it does, it should look pretty cool! Same with the music, still haven't figured out why I'm getting buffering issues on my devices but from what I could hear it's probably cool.
-
-Audio input was surprisingly fine, and wasn't too bad to work with to measure loudness. The Terminal ASCII art (audio visualizer) was also pretty easy! Even though at some point it started spitting out memory corruption demons because I was mis-indexing the 1D encoding (no arrays/lists/structs/objects challenge), it was fine.
-
-The worst part of this is most definetely getting the god-forsaken Raylib fork to work, and subsequently managing all the windows to get it as close as possible to what I want (i.e. multiple viewports). Ended up having to do some napkin math since for some reason Raylib doesn't let you mess with the projection matrix directly so I couldn't do the easy math and had to opt for ridiculous camera teleportation and such.
-
-At some point I tried using an external raytracing project as well (based on raylib), and it just absolutely gonked out with this setup. Crazy "fPIC", "shared/static library" and absolutely ridiculous include errors. I just gave up after a while and decided to learn GLSL to try and get a basic raymarching implement done. (Not "raytracing" but close enough :p)
-
-The other worst part of that whole ordeal was managing multiple windows, because they weren't object-like and instead just acted as a context switch, and not even an entirely great one at that because some random properties persist along the way that mess everything up if you don't specifically account for it. The most cursed, and I say the MOST cursed part of this whole project was discovering the fact I could use MACROS in combination with SCOPE OPERATORs (do-while) to bootleg "object-oriented" behaviors. I have never seen anything this cursed in my time on this earth, and I could not believe I was capable of such a crime against humanity.
-
-tl;dr I don't think I should be allowed to code again after this.
-
 ### APPLICATION CONTROLs
 
 All of the controls are enumerated in the menus/scoreboards. The following is simply an explicit listing of them, all of these can be found in the game. 
@@ -141,6 +127,4 @@ The following have been implemented in the program...
 3) Terminal ASCII Art (Audio Input Visualizer)
 4) Funny Name (see README title)
 5) Manual Cleanup (literally using a random Raylib fork so have to, not the CPP wrapper ￣へ￣)
-6) ~~[maybe???] Custom Shaders (Raymarching that sometimes works, sometimes doesn't have no idea why)~~
-^^^ i just gave up this thing is out of my scope with the time i got
-7) Leaderboard Implementation (persists + lets you type name)
+6) Leaderboard Implementation (persists + lets you type name)
