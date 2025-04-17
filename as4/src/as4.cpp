@@ -1,6 +1,6 @@
 /**
  * @file as4.cpp
- * @author your name (you@domain.com)
+ * @author Lucas Pinto
  * @brief I'm not gonna lie, I'm not sure what I'm doing anymore.
  *        This is cursed to an unimaginable extent, and I'm not sure if I'm proud of it or not.
  *        The way this is coded is an afront to nature itself.
@@ -77,6 +77,7 @@ concept Transformer = requires(T t, Matrix m) {
 // ===========================================================
 // Transformation Lambdas
 // ===========================================================
+#pragma region Transformation Lambdas
 /**
  * @brief Arbitrary translation function that translates on each axis accordingly using a vector.
  * 
@@ -119,11 +120,12 @@ auto combine = [](auto... transformers) {
         return median_transform;
     };
 };
+#pragma endregion
 
 // ===========================================================
 // Draw Model Functions
 // ===========================================================
-
+#pragma region Draw Model Functions
 /**
  * @brief Draws a model with a transformation applied to it.
  * 
@@ -151,6 +153,7 @@ void DrawUnboundedModel(Model& model, Transformer auto transformer)
     DrawModel(model, {0, 0, 0}, 1.0f, WHITE);
     model.transform = backup;   
 }
+#pragma endregion
 
 // ===========================================================
 // Main Function
@@ -165,6 +168,8 @@ int main(){
         // ===========================================================
         // File Loading + Reading
         // ===========================================================
+        #pragma region File Loading + Reading
+        
         std::fstream leaderboard("../leaderboard.txt");
         if(!leaderboard.is_open()){
             std::cout << "Error opening/creating leaderboard file!" << std::endl;
@@ -200,11 +205,13 @@ int main(){
         double rank_3_time = std::stod(rank_3.substr(rank_3.find(" ") + 1));
         double rank_4_time = std::stod(rank_4.substr(rank_4.find(" ") + 1));
         double rank_5_time = std::stod(rank_5.substr(rank_5.find(" ") + 1));
+        #pragma endregion
 
         // ===========================================================
         // Window Initialization
         // ===========================================================
-
+        #pragma region Window Initialization
+        
         std::string window_title = "MY HATRED FOR THIS CODE IS IMMEASURABLE, AND MY DAY IS RUINED (the game)";
 
         //unsigned int window_flags_generic = FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MINIMIZABLE | FLAG_WINDOW_MAXIMIZABLE | FLAG_WINDOW_CLOSEABLE | FLAG_WINDOW_UNDECORATED;
@@ -238,12 +245,13 @@ int main(){
         SetActiveWindowContext(right_paddle_window);
         SetTargetFPS(DRAW_FPS);
         SetWindowPosition(screenWidth/2, screenHeight/2);
-
+        #pragma endregion
 
         // ===========================================================
         // Model Loading + Default Transforms
         // ===========================================================
-
+        #pragma region Model Loading + Default Transforms
+        
         Model cube = LoadModelFromMesh(GenMeshCube(1.0f, 1.0f, 1.0f));   
         Model cow = LoadModel("../../custom_assets/as2/Cow.glb");
         Texture2D cow_texture = LoadTexture("../../custom_assets/as2/cow_color_1.png");
@@ -255,13 +263,16 @@ int main(){
         camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };           // Y-axis is up
         camera.fovy = 45.0f;                                  // Field of view (in degrees)
 
+        #pragma endregion
+
         // ===========================================================
         // Shader + Other Loading
         // ===========================================================
+        #pragma region Shader + Other Loading
 
         SetActiveWindowContext(window_main);
 
-        // Gave up doesn't want to work
+        // Gave up doesn't want to work consistently... maybe later!
         Shader raymarching_shader = LoadShader(NULL, "../../custom_assets/as4/raytracing_shader.fs");
         RenderTexture2D targetTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
 
@@ -270,11 +281,13 @@ int main(){
         } else {
             printf("Raytracing shader loaded successfully.\n");
         }
+        #pragma endregion
 
         // ===========================================================
         // Audio Initialization
         // ===========================================================
-        
+        #pragma region Audio Initialization
+
         InitAudioDevice();
         SetMasterVolume(0.5f);
 
@@ -304,9 +317,12 @@ int main(){
 
         float visualizer_accumulator = 0.0f;
 
+        #pragma endregion
+
         // ===========================================================
         // Game "Objects" and Variables
         // ===========================================================
+        #pragma region Game Variables
 
             int game_state = 0; // 0 - Menu | 1 - Playing | 2 - ??? | 3 - Game Over
 
@@ -340,10 +356,12 @@ int main(){
             Vector2 right_paddle_window_velocity = {0.0f, 0.0f};
             Vector2 right_paddle_window_dim = {DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH};
 
+        #pragma endregion
+
         // ===========================================================
         // Miscallaneous Initialization/Variables
         // ===========================================================
-
+        #pragma region Miscallaneous Initialization/Variables
             bool active_game = true;
             double total_time = 0.0f;
             double timer = 30.0f;
@@ -360,12 +378,14 @@ int main(){
             Vector2 screen_center = {screen_dim.x/2, screen_dim.y/2};
 
             SetTargetFPS(DRAW_FPS);
+        #pragma endregion
 
     while (active_game){
 
         // ===========================================================
         // Non-Delta Logic BLock
         // ===========================================================
+        #pragma region Non-Delta Logic Block
             // Check for either scoreboard or main window
             SetActiveWindowContext(window_main);
             active_game = !WindowShouldClose();
@@ -376,6 +396,7 @@ int main(){
             // ===========================================================
             // General Game State
             // ===========================================================
+            #pragma region General Game State
 
                 if(game_state == 0){
                     if(IsKeyPressed(KEY_ENTER)){
@@ -418,9 +439,12 @@ int main(){
                    }
                 }
 
+                #pragma endregion
+
             // ===========================================================
             // Audio Block
             // ===========================================================
+            #pragma region Audio Block
 
                 if(game_state == 0){//https://youtu.be/1hbHgZDB95o?si=ceS8gfdORZbHu4tL
                     UpdateMusicStream(game_state_0_music);
@@ -445,33 +469,41 @@ int main(){
                     }
                 }
 
-            
-                
-
+            #pragma endregion
+        #pragma endregion
+        
         // ===========================================================
         // Delta Logic Block
         // ===========================================================
+            #pragma region Delta Logic Block
 
-            double logicFrameTime = GetFrameTime();
-            float logicDelta = logicFrameTime  * (float)LOGIC_FPS;
-            
+                double logicFrameTime = GetFrameTime();
+                float logicDelta = logicFrameTime  * (float)LOGIC_FPS;
+                
+            // ===========================================================
+            // Time Scale Logic
+            // ===========================================================
+                #pragma region Time Scale Logic
 
-            if(game_state == 1){
-                if(LOUD > 0.05f){
-                    time_scale = lerp(time_scale, 1.0f/LOUD, 0.1f);
+                if(game_state == 1){
+                    if(LOUD > 0.05f){
+                        time_scale = lerp(time_scale, 1.0f/LOUD, 0.1f);
+                    } else {
+                        time_scale = lerp(time_scale, 1.0f, 0.1f);
+                    }
+                } else if (game_state == 3){
+                    time_scale = lerp(time_scale, 0.3f, 0.5f);
                 } else {
                     time_scale = lerp(time_scale, 1.0f, 0.1f);
                 }
-            } else if (game_state == 3){
-                time_scale = lerp(time_scale, 0.3f, 0.5f);
-            } else {
-                time_scale = lerp(time_scale, 1.0f, 0.1f);
-            }
-            logicDelta = logicDelta * time_scale;
+                logicDelta = logicDelta * time_scale;
 
+                #pragma endregion
+            
             // ===========================================================
             // Pong Controls
             // ===========================================================
+                #pragma region Pong Controls
 
                 if(game_state == 1){
                     if(IsKeyDown(KEY_W)){
@@ -492,10 +524,13 @@ int main(){
                 left_paddle_pos.y = std::fmax(0, std::fmin(screenHeight - left_paddle_size.y, left_paddle_pos.y));
                 right_paddle_pos.y = std::fmax(0, std::fmin(screenHeight - right_paddle_size.y, right_paddle_pos.y));
 
+            #pragma endregion
+            
             // ===========================================================
             // Pong Logic
             // ===========================================================
-                
+                #pragma region Pong Logic
+
                 if(game_state == 1){
                     ball_pos.x += ball_velocity.x * logicDelta;
                     ball_pos.y += ball_velocity.y * logicDelta;
@@ -526,46 +561,48 @@ int main(){
                     ball_pos.x = std::fmax(0, std::fmin(screenWidth - ball_radius, ball_pos.x));
                     ball_pos.y = std::fmax(0, std::fmin(screenHeight - ball_radius, ball_pos.y));
                 }
-                
+                #pragma endregion
 
             // ===========================================================  
             // Main Window Iteration Logic
             // ===========================================================
+                #pragma region Main Window Iteration Logic
+                    SetActiveWindowContext(window_main);
 
-            SetActiveWindowContext(window_main);
+                    if(game_state == 1){
+                        main_window_pos.x = main_window_pos.x + (main_window_velocity.x * logicDelta);
+                        main_window_pos.y = main_window_pos.y + (main_window_velocity.y * logicDelta);
 
-                if(game_state == 1){
-                    main_window_pos.x = main_window_pos.x + (main_window_velocity.x * logicDelta);
-                    main_window_pos.y = main_window_pos.y + (main_window_velocity.y * logicDelta);
+                        //My hatred for this code is immeasurable
+                        //And my day is ruined
 
-                    //My hatred for this code is immeasurable
-                    //And my day is ruined
+                        Vector2 main_window_collision = CheckCollisionBoundary({main_window_pos.x, main_window_pos.y, main_window_dim.x, main_window_dim.y}, 
+                            {0, 0, screenWidth, screenHeight}, main_window_velocity);
 
-                    Vector2 main_window_collision = CheckCollisionBoundary({main_window_pos.x, main_window_pos.y, main_window_dim.x, main_window_dim.y}, 
-                        {0, 0, screenWidth, screenHeight}, main_window_velocity);
+                        main_window_velocity.x *= main_window_collision.x;
+                        main_window_velocity.y *= main_window_collision.y;
 
-                    main_window_velocity.x *= main_window_collision.x;
-                    main_window_velocity.y *= main_window_collision.y;
+                        main_window_pos.x = std::fmax(0, std::fmin(screenWidth - main_window_dim.x, main_window_pos.x));
+                        main_window_pos.y = std::fmax(0, std::fmin(screenHeight - main_window_dim.y, main_window_pos.y));
+                    } else if (game_state == 1 || game_state == 3){
+                        do{
+                            DO_WINDOW_GRAVITY(main_window_pos, main_window_velocity, main_window_dim);
 
-                    main_window_pos.x = std::fmax(0, std::fmin(screenWidth - main_window_dim.x, main_window_pos.x));
-                    main_window_pos.y = std::fmax(0, std::fmin(screenHeight - main_window_dim.y, main_window_pos.y));
-                } else if (game_state == 1 || game_state == 3){
-                    do{
-                        DO_WINDOW_GRAVITY(main_window_pos, main_window_velocity, main_window_dim);
-
-                        main_window_pos = window_pos;
-                        main_window_dim = window_dim;
-                        main_window_velocity = window_velocity;
-                    } while(0);
-                }
-                SetWindowPosition((int)main_window_pos.x, (int)main_window_pos.y);  
-                SetWindowSize(main_window_dim.x, main_window_dim.y);
+                            main_window_pos = window_pos;
+                            main_window_dim = window_dim;
+                            main_window_velocity = window_velocity;
+                        } while(0);
+                    }
+                    SetWindowPosition((int)main_window_pos.x, (int)main_window_pos.y);  
+                    SetWindowSize(main_window_dim.x, main_window_dim.y);
+                #pragma endregion
 
             // ===========================================================
             // Scoreboard Window Iteration Logic
             // ===========================================================
+                #pragma region Scoreboard Window Iteration Logic
 
-            SetActiveWindowContext(scoreboard_window);
+                SetActiveWindowContext(scoreboard_window);
 
                 Vector2 scoreboard_window_collision = CheckCollisionBoundary({scoreboard_window_coords.x, scoreboard_window_coords.y, scoreboard_window_dim.x, scoreboard_window_dim.y}, 
                 {0, 0, screenWidth, screenHeight}, scoreboard_window_velocity);
@@ -636,9 +673,13 @@ int main(){
                 SetWindowPosition((int)scoreboard_window_coords.x, (int)scoreboard_window_coords.y);
                 SetWindowSize(scoreboard_window_dim.x, scoreboard_window_dim.y);
 
+                #pragma endregion
+
             // ===========================================================  
             // Paddle Windows Iteration Logic
             // ===========================================================
+                #pragma region Paddle Windows Iteration Logic
+
                 SetActiveWindowContext(left_paddle_window);
 
                 if(game_state == 1){
@@ -674,37 +715,45 @@ int main(){
 
                 SetWindowPosition((int)right_paddle_window_pos.x, (int)right_paddle_window_pos.y);
 
+                #pragma endregion
+
+            #pragma endregion
+        
         // ===========================================================
         // Draw Block
         // ==========================================================
-            
+           #pragma region Draw Block 
             // ===========================================================
             // Draw Logics
             // ===========================================================
+            #pragma region Draw Logics
 
-            SetActiveWindowContext(window_main);
+                SetActiveWindowContext(window_main);
 
-            UpdateCamera(&camera, CAMERA_PERSPECTIVE);
-            
-            Matrix view_matrix = MatrixLookAt(camera.position, camera.target, camera.up);
-            float camera_distance = Vector3Distance(camera.position, camera.target);
-            int diameter_width = 2 * tan(camera.fovy * DEG2RAD * 0.5) * camera_distance;
+                UpdateCamera(&camera, CAMERA_PERSPECTIVE);
+                
+                Matrix view_matrix = MatrixLookAt(camera.position, camera.target, camera.up);
+                float camera_distance = Vector3Distance(camera.position, camera.target);
+                int diameter_width = 2 * tan(camera.fovy * DEG2RAD * 0.5) * camera_distance;
 
-            SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "cameraPos"), &camera.position, SHADER_UNIFORM_VEC3);
-            SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenWidth"), &screenWidth, SHADER_UNIFORM_INT);
-            SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenHeight"), &screenHeight, SHADER_UNIFORM_INT);  
-            SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "view"), view_matrix);
-            SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "projection"), MatrixPerspective(camera.fovy, (double)GetScreenWidth()/(double)GetScreenHeight(), 0.1, 1000.0));
+                SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "cameraPos"), &camera.position, SHADER_UNIFORM_VEC3);
+                SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenWidth"), &screenWidth, SHADER_UNIFORM_INT);
+                SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenHeight"), &screenHeight, SHADER_UNIFORM_INT);  
+                SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "view"), view_matrix);
+                SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "projection"), MatrixPerspective(camera.fovy, (double)GetScreenWidth()/(double)GetScreenHeight(), 0.1, 1000.0));
 
+            #pragma endregion
 
             // ===========================================================
             // Render Block 
             // ===========================================================
+            #pragma region Render Block
 
                 // ===========================================================
                 // Window MAIN Draw
                 // ===========================================================
-        
+                    #pragma region Window MAIN Draw
+
                         SetActiveWindowContext(window_main);
 
                         do{ //WHO THE HELL NNEEDS OBJECTS WHEN YOU HAVE MACROOSS AND SCOPE OPERATORS SBABYYYYYYYYYYYYYYYYY (╯°□°）╯︵ ┻━┻
@@ -723,11 +772,12 @@ int main(){
                         EndDrawing();
                     
                      RESET_CAMERA;
+                    #pragma endregion
 
                     // ===========================================================
                     // Left Paddle Window Draw
                     // ===========================================================
-                    
+                    #pragma region  Left Paddle Window Draw
                         SetActiveWindowContext(left_paddle_window);
 
                         do{ //WHO THE HELL NNEEDS OBJECTS WHEN YOU HAVE MACROOSS AND SCOPE OPERATORS SBABYYYYYYYYYYYYYYYYY (╯°□°）╯︵ ┻━┻
@@ -744,12 +794,15 @@ int main(){
                             GAME_DRAW_LOGIC(left_paddle_window, left_paddle_window);
                         EndDrawing();
                     
-                    RESET_CAMERA;
+                        RESET_CAMERA;
+
+                        #pragma endregion
 
                     // ===========================================================
                     // Right Paddle Window Draw
                     // ===========================================================
-                    
+                    #pragma region Right Paddle Window Draw
+
                     SetActiveWindowContext(right_paddle_window);
 
                     do{ //WHO THE HELL NNEEDS OBJECTS WHEN YOU HAVE MACROOSS AND SCOPE OPERATORS SBABYYYYYYYYYYYYYYYYY (╯°□°）╯︵ ┻━┻
@@ -766,12 +819,15 @@ int main(){
                         GAME_DRAW_LOGIC(right_paddle_window, right_paddle_window);
                     EndDrawing();
                 
-                RESET_CAMERA;
+                    RESET_CAMERA;
+
+                    #pragma endregion
 
                 // ===========================================================
                 // Scoreboard Draw
                 // ===========================================================
-                
+                    #pragma region Scoreboard Draw
+
                     SetActiveWindowContext(scoreboard_window);
                     
                     BeginDrawing();
@@ -924,8 +980,17 @@ int main(){
                         }
 
                     EndDrawing();
+
+                    #pragma endregion
+            #pragma endregion
     }
-    
+
+    // ===========================================================
+    // Clean-up
+    // ===========================================================
+        
+    #pragma region Clean-up
+        
     //Clean-up
     ma_device_uninit(&device);
 
@@ -947,6 +1012,8 @@ int main(){
 
     SetActiveWindowContext(right_paddle_window);
     CloseWindow();
+
+    #pragma endregion   
 
 
     return 0;
