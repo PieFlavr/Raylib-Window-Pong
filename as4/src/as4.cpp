@@ -274,33 +274,41 @@ int main(){
         // ===========================================================
         #pragma region Audio Initialization
 
+        // Initialize the audio device for playback
         InitAudioDevice();
-        SetMasterVolume(0.5f);
+        SetMasterVolume(0.5f); // Set the master volume to 50%
 
-        Music game_state_0_music = LoadMusicStream("../../custom_assets/as4/lucky_star.mp3");
-        Music game_state_1_music = LoadMusicStream("../../custom_assets/as4/cats_on_mars.mp3");
-        Music game_state_3_music = LoadMusicStream("../../custom_assets/as4/determination.mp3");
-        PlayMusicStream(game_state_0_music);
+        // Load music streams for different game states
+        Music game_state_0_music = LoadMusicStream("../../custom_assets/as4/lucky_star.mp3"); // Menu music, from https://youtu.be/1hbHgZDB95o?si=YvHRP71iqUQcIBFy 
+        Music game_state_1_music = LoadMusicStream("../../custom_assets/as4/cats_on_mars.mp3"); // Gameplay music, from https://youtu.be/97xfV6yXcrk?si=uDQGLkleoicX_xSb 
+        Music game_state_3_music = LoadMusicStream("../../custom_assets/as4/determination.mp3"); // Game over music, from https://youtu.be/W1i4mTyidOc?si=mzxLFXQke-5vfmj2 
+        PlayMusicStream(game_state_0_music); // Start playing the menu music
 
+        // Configure the audio capture device
         ma_device_config device_config = ma_device_config_init(ma_device_type_capture);
-        device_config.capture.format = ma_format_f32;
-        device_config.capture.channels = 1;
-        device_config.sampleRate = 44100;
-        device_config.dataCallback = data_callback; // I don't know anymore i'm reaching actual voodoo territory
+        device_config.capture.format = ma_format_f32; // Set the audio format to 32-bit float
+        device_config.capture.channels = 1; // Use a single audio channel (mono)
+        device_config.sampleRate = 44100; // Set the sample rate to 44.1 kHz
+        device_config.dataCallback = data_callback; // Callback function for audio data processing
 
+        // Initialize a string to store the visualizer's bar encoding
         std::string bar_encoding = "";
 
+        // Declare the audio capture device
         ma_device device;
 
+        // Initialize the audio capture device
         if(ma_device_init(NULL, &device_config, &device) != MA_SUCCESS){
-            std::cout << "I hate audio" << std::endl;
+            std::cout << "I hate audio" << std::endl; // Error message if initialization fails
             return -1;
         }
+        // Start the audio capture device
         if (ma_device_start(&device) != MA_SUCCESS) {
-            std::cout << "I ASDDDDDDD" << std::endl;
+            std::cout << "I ASDDDDDDD" << std::endl; // Error message if starting the device fails
             return -1;
         }
 
+        // Initialize the visualizer accumulator for timing
         float visualizer_accumulator = 0.0f;
 
         #pragma endregion
