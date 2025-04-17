@@ -398,9 +398,11 @@ int main(){
         // Non-Delta Logic BLock
         // ===========================================================
         #pragma region Non-Delta Logic Block
-            // Check for either scoreboard or main window
+           
+            // Check for either scoreboard window or main window to be closed
             SetActiveWindowContext(window_main);
             active_game = !WindowShouldClose();
+
             SetActiveWindowContext(scoreboard_window);
             active_game = active_game || !WindowShouldClose();
             
@@ -410,43 +412,48 @@ int main(){
             // ===========================================================
             #pragma region General Game State
 
-                if(game_state == 0){
+                if(game_state == 0){ // Menu State
                     if(IsKeyPressed(KEY_ENTER)){
-                        game_state = 1;
+                        game_state = 1; // Transition to Playing State
 
+                        // Initialize ball position and velocity with a random angle
                         float angle = (rand() % 4) * 90.0f + 45.0f;
                         angle *= DEG2RAD;
                         ball_pos = {static_cast<float>(screenWidth)/2.0f, static_cast<float>(screenHeight)/2.0f};
                         ball_velocity = {BALL_SPEED * cos(angle), BALL_SPEED * sin(angle)};
 
+                        // Initialize main window velocity with random direction
                         main_window_velocity.x = (rand() % 2 == 0 ? 1 : -1) * WINDOW_VELOCITY;
                         main_window_velocity.y = (rand() % 2 == 0 ? 1 : -1) * WINDOW_VELOCITY;
 
+                        // Switch music from menu to gameplay
                         StopMusicStream(game_state_0_music);
                         PlayMusicStream(game_state_1_music);
                     }
-                    // Menu State
                 } else if(game_state == 1){ // Playing State
-                    gravity = -GRAVITY;
-                    timer -= GetFrameTime(); 
-                    total_time += GetFrameTime();
+                    gravity = -GRAVITY; // Reverse gravity
+                    timer -= GetFrameTime(); // Decrease timer
+                    total_time += GetFrameTime(); // Increment total survival time
 
-                    if(timer <= 0){
+                    if(timer <= 0){ // Transition to Game Over State
                         timer = 0;
                         game_state = 3;
 
+                        // Switch music from gameplay to game over
                         StopMusicStream(game_state_1_music);
                         PlayMusicStream(game_state_3_music);
                     }
-                } else if(game_state == 2){
-                    // ??? State
-                } else if(game_state == 3){// Game Over State
-                   gravity = GRAVITY*0.5f;
-                   if(IsKeyPressed(KEY_ENTER)){
+                } else if(game_state == 2){ 
+                    // ??? State (placeholder for potential future logic)
+                } else if(game_state == 3){ // Game Over State
+                   gravity = GRAVITY*0.5f; // Reduced gravity
+                   if(IsKeyPressed(KEY_ENTER)){ // Restart game
                        game_state = 0;
-                        timer = 30.0f;
-                        total_time = 0.0f;
-                        PlayMusicStream(game_state_0_music);
+                        timer = 30.0f; // Reset timer
+                        total_time = 0.0f; // Reset survival time
+
+                        // Switch music from game over to menu
+                        PlayMusicStream(game_state_0_music); 
                         StopMusicStream(game_state_3_music);
                    }
                 }
@@ -466,23 +473,27 @@ int main(){
                     UpdateMusicStream(game_state_3_music);
                 }
 
-                float LOUD = calculate_loud();
+                float LOUD = calculate_loud(); // Calculate the loudness of the audio input
                 
-                if(game_state != 3){ //Game Over, no visualizer
+                if(game_state != 3){ // Skip visualizer logic during Game Over state
 
-                    visualizer_accumulator += GetFrameTime();
+                    visualizer_accumulator += GetFrameTime(); // Accumulate time for visualizer updates
                     if(visualizer_accumulator >= (1.0f/((float)LOGIC_FPS * VISUALIZER_SPEED_SCALE))){
-
+                        
+                        // Generate and append encoded string for the visualizer
                         bar_encoding += generateEncodedString(LOUD, 0.0f, 0.1f, AUDIO_NUM_LINES); 
+                        
+                        // Trim the encoded string to fit within the visualizer's dimensions
                         if(bar_encoding.size() > AUDIO_LINE_LENGTH*AUDIO_NUM_LINES){
                             bar_encoding = bar_encoding.substr(bar_encoding.size() - AUDIO_LINE_LENGTH*AUDIO_NUM_LINES);
-                            renderEncodedString(bar_encoding, AUDIO_LINE_LENGTH, AUDIO_NUM_LINES);
+                            renderEncodedString(bar_encoding, AUDIO_LINE_LENGTH, AUDIO_NUM_LINES); // Render the visualizer
                         }
                     }
                 }
 
             #pragma endregion
-        #pragma endregion
+        
+            #pragma endregion
         
         // ===========================================================
         // Delta Logic Block
@@ -498,16 +509,20 @@ int main(){
                 #pragma region Time Scale Logic
 
                 if(game_state == 1){
+                    // Adjust time scale dynamically based on audio loudness during gameplay
                     if(LOUD > 0.05f){
                         time_scale = lerp(time_scale, 1.0f/LOUD, 0.1f);
                     } else {
                         time_scale = lerp(time_scale, 1.0f, 0.1f);
                     }
                 } else if (game_state == 3){
+                    // Slow down time scale during the Game Over state
                     time_scale = lerp(time_scale, 0.3f, 0.5f);
                 } else {
+                    // Reset time scale to normal for other states
                     time_scale = lerp(time_scale, 1.0f, 0.1f);
                 }
+                // Apply the adjusted time scale to the logic delta
                 logicDelta = logicDelta * time_scale;
 
                 #pragma endregion
@@ -517,7 +532,8 @@ int main(){
             // ===========================================================
                 #pragma region Pong Controls
 
-                if(game_state == 1){
+                if(game_state == 1){ // Check if the game is in the "Playing" state
+                    // Player 1 controls (W/S keys for the left paddle)
                     if(IsKeyDown(KEY_W)){
                         left_paddle_pos.y -= PADDLE_SPEED * logicDelta;
                     }
@@ -525,6 +541,7 @@ int main(){
                         left_paddle_pos.y += PADDLE_SPEED * logicDelta;
                     }
     
+                    // Player 2 controls (UP/DOWN keys for the right paddle)
                     if(IsKeyDown(KEY_UP)){
                         right_paddle_pos.y -= PADDLE_SPEED * logicDelta;
                     }
@@ -533,6 +550,7 @@ int main(){
                     }
                 }
 
+                // Ensure paddles stay within screen boundaries
                 left_paddle_pos.y = std::fmax(0, std::fmin(screenHeight - left_paddle_size.y, left_paddle_pos.y));
                 right_paddle_pos.y = std::fmax(0, std::fmin(screenHeight - right_paddle_size.y, right_paddle_pos.y));
 
@@ -544,32 +562,38 @@ int main(){
                 #pragma region Pong Logic
 
                 if(game_state == 1){
+                    // Update ball position based on velocity and delta time
                     ball_pos.x += ball_velocity.x * logicDelta;
                     ball_pos.y += ball_velocity.y * logicDelta;
 
+                    // Check for collision with screen boundaries
                     Vector2 ball_collision = CheckCollisionBoundary({ball_pos.x, ball_pos.y, ball_radius, ball_radius}, 
                         {0, 0, static_cast<float>(screenWidth), static_cast<float>(screenHeight)}, ball_velocity);
 
-                    if(ball_collision.x < 0.0f){ //Side Missed
-                        timer -= 10.0f;
+                    if(ball_collision.x < 0.0f){ // Ball missed on the side
+                        timer -= 10.0f; // Penalize timer
                     }
 
+                    // Reflect ball velocity on boundary collision
                     ball_velocity.y *= ball_collision.y;
                     ball_velocity.x *= ball_collision.x;
 
-                        ball_collision = CheckCollisionBoxPro({ball_pos.x, ball_pos.y, ball_radius, ball_radius}, 
-                            {left_paddle_pos.x, left_paddle_pos.y, left_paddle_size.x, left_paddle_size.y}, ball_velocity);
+                    // Check for collision with paddles
+                    ball_collision = CheckCollisionBoxPro({ball_pos.x, ball_pos.y, ball_radius, ball_radius}, 
+                        {left_paddle_pos.x, left_paddle_pos.y, left_paddle_size.x, left_paddle_size.y}, ball_velocity);
 
-                        ball_collision = Vector2Multiply(ball_collision, CheckCollisionBoxPro({ball_pos.x, ball_pos.y, ball_radius, ball_radius}, 
-                            {right_paddle_pos.x, right_paddle_pos.y, right_paddle_size.x, right_paddle_size.y}, ball_velocity));
+                    ball_collision = Vector2Multiply(ball_collision, CheckCollisionBoxPro({ball_pos.x, ball_pos.y, ball_radius, ball_radius}, 
+                        {right_paddle_pos.x, right_paddle_pos.y, right_paddle_size.x, right_paddle_size.y}, ball_velocity));
 
-                    if(ball_collision.y <= 0.0f){ //Timer Extended!
-                        timer += 3.0f; 
+                    if(ball_collision.y <= 0.0f){ // Ball hit a paddle
+                        timer += 3.0f; // Reward timer
                     }
 
+                    // Reflect ball velocity on paddle collision
                     ball_velocity.y *= ball_collision.y;
                     ball_velocity.x *= ball_collision.x;
 
+                    // Clamp ball position within screen boundaries
                     ball_pos.x = std::fmax(0, std::fmin(static_cast<float>(screenWidth) - ball_radius, ball_pos.x));
                     ball_pos.y = std::fmax(0, std::fmin(static_cast<float>(screenHeight) - ball_radius, ball_pos.y));
                 }
@@ -579,24 +603,26 @@ int main(){
             // Main Window Iteration Logic
             // ===========================================================
                 #pragma region Main Window Iteration Logic
+
                     SetActiveWindowContext(window_main);
 
                     if(game_state == 1){
+                        // Update main window position based on velocity and delta time
                         main_window_pos.x = main_window_pos.x + (main_window_velocity.x * logicDelta);
                         main_window_pos.y = main_window_pos.y + (main_window_velocity.y * logicDelta);
 
-                        //My hatred for this code is immeasurable
-                        //And my day is ruined
-
+                        // Check for collisions with screen boundaries and adjust velocity
                         Vector2 main_window_collision = CheckCollisionBoundary({main_window_pos.x, main_window_pos.y, main_window_dim.x, main_window_dim.y}, 
                             {0, 0, screenWidth, screenHeight}, main_window_velocity);
 
                         main_window_velocity.x *= main_window_collision.x;
                         main_window_velocity.y *= main_window_collision.y;
 
+                        // Clamp main window position within screen boundaries
                         main_window_pos.x = std::fmax(0, std::fmin(screenWidth - main_window_dim.x, main_window_pos.x));
                         main_window_pos.y = std::fmax(0, std::fmin(screenHeight - main_window_dim.y, main_window_pos.y));
                     } else if (game_state == 1 || game_state == 3){
+                        // Apply gravity and drag to the main window
                         do{
                             DO_WINDOW_GRAVITY(main_window_pos, main_window_velocity, main_window_dim);
 
@@ -605,8 +631,10 @@ int main(){
                             main_window_velocity = window_velocity;
                         } while(0);
                     }
+                    // Update main window position and size
                     SetWindowPosition((int)main_window_pos.x, (int)main_window_pos.y);  
                     SetWindowSize(main_window_dim.x, main_window_dim.y);
+
                 #pragma endregion
 
             // ===========================================================
@@ -614,76 +642,81 @@ int main(){
             // ===========================================================
                 #pragma region Scoreboard Window Iteration Logic
 
-                SetActiveWindowContext(scoreboard_window);
+                    SetActiveWindowContext(scoreboard_window);
 
-                Vector2 scoreboard_window_collision = CheckCollisionBoundary({scoreboard_window_coords.x, scoreboard_window_coords.y, scoreboard_window_dim.x, scoreboard_window_dim.y}, 
-                {0, 0, static_cast<float>(screenWidth), static_cast<float>(screenHeight)}, scoreboard_window_velocity);
+                    // Check for collisions with screen boundaries and adjust velocity
+                    Vector2 scoreboard_window_collision = CheckCollisionBoundary({scoreboard_window_coords.x, scoreboard_window_coords.y, scoreboard_window_dim.x, scoreboard_window_dim.y}, 
+                    {0, 0, static_cast<float>(screenWidth), static_cast<float>(screenHeight)}, scoreboard_window_velocity);
 
-                Vector2 mouse_pos = GetMousePosition();
-                Vector2 mouse_delta = GetMouseDelta();
-                float mouse_delta_absolute = Vector2Length(mouse_delta);
-                
-                float default_multiplier = 1.3f;
-                if(game_state == 0 || game_state == 3){
-                    default_multiplier = 3.0f;
-                }
-
-                Vector2 old_scoreboard_window_dim = scoreboard_window_dim; //For shrinking to the center as opposed to the corner.
-                Vector2 old_scoreboard_window_velocity = {scoreboard_window_velocity.x, scoreboard_window_velocity.y};
-
-                if(IsKeyDown(KEY_SPACE)){
-                    scoreboard_window_dim.x = lerp(scoreboard_window_dim.x, scoreboard_window_dim_default.x * default_multiplier, 0.1f);
-                    scoreboard_window_dim.y = lerp(scoreboard_window_dim.y, scoreboard_window_dim_default.y * default_multiplier, 0.1f);
-
-                    scoreboard_window_coords.x -= (scoreboard_window_dim.x - old_scoreboard_window_dim.x)/2; //Shirnk compensation
-                    scoreboard_window_coords.y -= (scoreboard_window_dim.y - old_scoreboard_window_dim.y)/2;
-
-
-                    if(IsMouseButtonDown(MOUSE_MIDDLE_BUTTON)){
-                        scoreboard_window_coords.x = lerp(scoreboard_window_coords.x, scoreboard_window_coords.x + mouse_pos.x - scoreboard_window_dim.x/2, 0.5f);
-                        scoreboard_window_coords.y = lerp(scoreboard_window_coords.y, scoreboard_window_coords.y + mouse_pos.y - scoreboard_window_dim.y/2, 0.5f);
-            
+                    Vector2 mouse_pos = GetMousePosition();
+                    Vector2 mouse_delta = GetMouseDelta();
+                    float mouse_delta_absolute = Vector2Length(mouse_delta);
+                    
+                    float default_multiplier = 1.3f; // Default size multiplier for scoreboard
+                    if(game_state == 0 || game_state == 3){
+                        default_multiplier = 3.0f; // Larger multiplier for menu or game over states
                     }
 
-                    scoreboard_window_coords.x = std::fmax(0, std::fmin(static_cast<float>(screenWidth) - scoreboard_window_dim.x, scoreboard_window_coords.x));
-                    scoreboard_window_coords.y = std::fmax(0, std::fmin(static_cast<float>(screenHeight) - scoreboard_window_dim.y, scoreboard_window_coords.y));
+                    Vector2 old_scoreboard_window_dim = scoreboard_window_dim; // For shrinking to the center as opposed to the corner
+                    Vector2 old_scoreboard_window_velocity = {scoreboard_window_velocity.x, scoreboard_window_velocity.y};
 
-                } else {
-                    scoreboard_window_coords.x = scoreboard_window_coords.x + (scoreboard_window_velocity.x * logicDelta);
-                    scoreboard_window_coords.y = scoreboard_window_coords.y + (scoreboard_window_velocity.y * logicDelta); 
+                    if(IsKeyDown(KEY_SPACE)){ // Expand and move scoreboard when SPACE is held
+                        scoreboard_window_dim.x = lerp(scoreboard_window_dim.x, scoreboard_window_dim_default.x * default_multiplier, 0.1f);
+                        scoreboard_window_dim.y = lerp(scoreboard_window_dim.y, scoreboard_window_dim_default.y * default_multiplier, 0.1f);
 
-                    scoreboard_window_velocity.x *= scoreboard_window_collision.x;
-                    scoreboard_window_velocity.y *= scoreboard_window_collision.y; 
-                
-                    scoreboard_window_velocity.y += gravity * logicDelta;
-                    scoreboard_window_velocity = Vector2Multiply(scoreboard_window_velocity, {pow(drag, logicDelta), pow(drag, logicDelta)});
+                        scoreboard_window_coords.x -= (scoreboard_window_dim.x - old_scoreboard_window_dim.x)/2; // Center compensation
+                        scoreboard_window_coords.y -= (scoreboard_window_dim.y - old_scoreboard_window_dim.y)/2;
 
-                    if(Vector2Length(scoreboard_window_velocity) < 5.0f && 
-                        (old_scoreboard_window_velocity.x/fabs(old_scoreboard_window_velocity.x) != scoreboard_window_velocity.x/fabs(scoreboard_window_velocity.x))){
-                        scoreboard_window_velocity.x = 0.0f;
-                        scoreboard_window_velocity.y = 0.0f;
-                    }
-
-                    if(scoreboard_window_velocity.x == 0.0f && scoreboard_window_velocity.y == 0.0f){
-                        if(gravity > 0){
-                            scoreboard_window_coords.y = lerp(scoreboard_window_coords.y, screenHeight - scoreboard_window_dim.y, 0.1f);
-                        } else {
-                            scoreboard_window_coords.y = lerp(scoreboard_window_coords.y, 0, 0.1f);
+                        if(IsMouseButtonDown(MOUSE_MIDDLE_BUTTON)){ // Move scoreboard with mouse
+                            scoreboard_window_coords.x = lerp(scoreboard_window_coords.x, scoreboard_window_coords.x + mouse_pos.x - scoreboard_window_dim.x/2, 0.5f);
+                            scoreboard_window_coords.y = lerp(scoreboard_window_coords.y, scoreboard_window_coords.y + mouse_pos.y - scoreboard_window_dim.y/2, 0.5f);
                         }
+
+                        // Clamp scoreboard position within screen boundaries
+                        scoreboard_window_coords.x = std::fmax(0, std::fmin(static_cast<float>(screenWidth) - scoreboard_window_dim.x, scoreboard_window_coords.x));
+                        scoreboard_window_coords.y = std::fmax(0, std::fmin(static_cast<float>(screenHeight) - scoreboard_window_dim.y, scoreboard_window_coords.y));
+
+                    } else { // Normal scoreboard behavior
+                        scoreboard_window_coords.x = scoreboard_window_coords.x + (scoreboard_window_velocity.x * logicDelta);
+                        scoreboard_window_coords.y = scoreboard_window_coords.y + (scoreboard_window_velocity.y * logicDelta); 
+
+                        scoreboard_window_velocity.x *= scoreboard_window_collision.x; // Reflect velocity on collision
+                        scoreboard_window_velocity.y *= scoreboard_window_collision.y; 
+                    
+                        scoreboard_window_velocity.y += gravity * logicDelta; // Apply gravity
+                        scoreboard_window_velocity = Vector2Multiply(scoreboard_window_velocity, {pow(drag, logicDelta), pow(drag, logicDelta)}); // Apply drag
+
+                        // Stop movement if velocity is below threshold
+                        if(Vector2Length(scoreboard_window_velocity) < 5.0f && 
+                            (old_scoreboard_window_velocity.x/fabs(old_scoreboard_window_velocity.x) != scoreboard_window_velocity.x/fabs(scoreboard_window_velocity.x))){
+                            scoreboard_window_velocity.x = 0.0f;
+                            scoreboard_window_velocity.y = 0.0f;
+                        }
+
+                        // Snap to top or bottom if velocity is zero
+                        if(scoreboard_window_velocity.x == 0.0f && scoreboard_window_velocity.y == 0.0f){
+                            if(gravity > 0){
+                                scoreboard_window_coords.y = lerp(scoreboard_window_coords.y, screenHeight - scoreboard_window_dim.y, 0.1f);
+                            } else {
+                                scoreboard_window_coords.y = lerp(scoreboard_window_coords.y, 0, 0.1f);
+                            }
+                        }
+
+                        // Gradually shrink scoreboard back to default size
+                        scoreboard_window_dim.x = lerp(scoreboard_window_dim.x, scoreboard_window_dim_default.x, 0.1f);
+                        scoreboard_window_dim.y = lerp(scoreboard_window_dim.y, scoreboard_window_dim_default.y, 0.1f);
+
+                        scoreboard_window_coords.x -= (scoreboard_window_dim.x - old_scoreboard_window_dim.x)/2; // Center compensation
+                        scoreboard_window_coords.y -= (scoreboard_window_dim.y - old_scoreboard_window_dim.y)/2;
+
+                        // Clamp scoreboard position within screen boundaries
+                        scoreboard_window_coords.x = std::fmax(0, std::fmin(static_cast<float>(screenWidth) - scoreboard_window_dim.x, scoreboard_window_coords.x));
+                        scoreboard_window_coords.y = std::fmax(0, std::fmin(static_cast<float>(screenHeight) - scoreboard_window_dim.y, scoreboard_window_coords.y));
                     }
 
-                    scoreboard_window_dim.x = lerp(scoreboard_window_dim.x, scoreboard_window_dim_default.x, 0.1f);
-                    scoreboard_window_dim.y = lerp(scoreboard_window_dim.y, scoreboard_window_dim_default.y, 0.1f);
-
-                    scoreboard_window_coords.x -= (scoreboard_window_dim.x - old_scoreboard_window_dim.x)/2; //Shirnk compensation
-                    scoreboard_window_coords.y -= (scoreboard_window_dim.y - old_scoreboard_window_dim.y)/2;
-
-                    scoreboard_window_coords.x = std::fmax(0, std::fmin(static_cast<float>(screenWidth) - scoreboard_window_dim.x, scoreboard_window_coords.x));
-                    scoreboard_window_coords.y = std::fmax(0, std::fmin(static_cast<float>(screenHeight) - scoreboard_window_dim.y, scoreboard_window_coords.y));
-                }
-
-                SetWindowPosition((int)scoreboard_window_coords.x, (int)scoreboard_window_coords.y);
-                SetWindowSize(scoreboard_window_dim.x, scoreboard_window_dim.y);
+                    // Update scoreboard window position and size
+                    SetWindowPosition((int)scoreboard_window_coords.x, (int)scoreboard_window_coords.y);
+                    SetWindowSize(scoreboard_window_dim.x, scoreboard_window_dim.y);
 
                 #pragma endregion
 
@@ -735,15 +768,19 @@ int main(){
         // Draw Block
         // ==========================================================
            #pragma region Draw Block 
-            // ===========================================================
+            
+           // ===========================================================
             // Draw Logics
             // ===========================================================
             #pragma region Draw Logics
 
+                // Set the active window context to the main window
                 SetActiveWindowContext(window_main);
 
+                // Update the camera's perspective view
                 UpdateCamera(&camera, CAMERA_PERSPECTIVE);
                 
+                // Calculate proprties needed for camera adjustment for mimicking viewport effect
                 Matrix view_matrix = MatrixLookAt(camera.position, camera.target, camera.up);
                 float camera_distance = Vector3Distance(camera.position, camera.target);
                 int diameter_width = 2 * tan(camera.fovy * DEG2RAD * 0.5) * camera_distance;
@@ -766,33 +803,34 @@ int main(){
                 // ===========================================================
                     #pragma region Window MAIN Draw
 
-                        SetActiveWindowContext(window_main);
+                        SetActiveWindowContext(window_main); // Set the active window context to the main window
 
-                        do{ //Macros and scope operators are awesome
-                            GET_WINDOW_INFO;
+                        do{ // Macros and scope operators are used for modular window operations
+                            GET_WINDOW_INFO; // Retrieve window information
 
-                            GET_NORMALIZED_WINDOW_INFO;
+                            GET_NORMALIZED_WINDOW_INFO; // Normalize window information
 
-                            UPDATE_CAMERA;
+                            UPDATE_CAMERA; // Update the camera settings
                         } while (0);
                         
-                        BeginDrawing();
-                            ClearBackground(RAYWHITE);
-                            DRAW_3D_SCENE;
+                        BeginDrawing(); // Begin the drawing process
+                            ClearBackground(RAYWHITE); // Clear the background with a white color
+                            DRAW_3D_SCENE; // Draw the 3D scene
 
-                            GAME_DRAW_LOGIC(window_main, window_main);
-                        EndDrawing();
+                            GAME_DRAW_LOGIC(window_main, window_main); // Execute game-specific drawing logic for the main window
+                        EndDrawing(); // End the drawing process
                     
-                     RESET_CAMERA;
+                        RESET_CAMERA; // Reset the camera to its default state
+
                     #pragma endregion
 
                     // ===========================================================
                     // Left Paddle Window Draw
                     // ===========================================================
                     #pragma region  Left Paddle Window Draw
-                        SetActiveWindowContext(left_paddle_window);
+                        SetActiveWindowContext(left_paddle_window); // Set the active window context to the left paddle window
 
-                        do{ //WHO THE HELL NNEEDS OBJECTS WHEN YOU HAVE MACROOSS AND SCOPE OPERATORS SBABYYYYYYYYYYYYYYYYY (╯°□°）╯︵ ┻━┻
+                        do{ // Retrieve and normalize window information, then update the camera
                             GET_WINDOW_INFO;
 
                             GET_NORMALIZED_WINDOW_INFO;
@@ -800,38 +838,38 @@ int main(){
                             UPDATE_CAMERA;
                         } while (0);
                         
-                        BeginDrawing();
-                            ClearBackground(RAYWHITE);
-                            DRAW_3D_SCENE;
-                            GAME_DRAW_LOGIC(left_paddle_window, left_paddle_window);
-                        EndDrawing();
+                        BeginDrawing(); // Begin drawing for the left paddle window
+                            ClearBackground(RAYWHITE); // Clear the background with white color
+                            DRAW_3D_SCENE; // Draw the 3D scene
+                            GAME_DRAW_LOGIC(left_paddle_window, left_paddle_window); // Execute game-specific drawing logic for the left paddle window
+                        EndDrawing(); // End the drawing process
                     
-                        RESET_CAMERA;
+                        RESET_CAMERA; // Reset the camera to its default state
 
-                        #pragma endregion
+                    #pragma endregion
 
                     // ===========================================================
                     // Right Paddle Window Draw
                     // ===========================================================
                     #pragma region Right Paddle Window Draw
 
-                    SetActiveWindowContext(right_paddle_window);
+                        SetActiveWindowContext(right_paddle_window); // Set the active window context to the right paddle window
 
-                    do{ //WHO THE HELL NNEEDS OBJECTS WHEN YOU HAVE MACROOSS AND SCOPE OPERATORS SBABYYYYYYYYYYYYYYYYY (╯°□°）╯︵ ┻━┻
-                        GET_WINDOW_INFO;
+                        do{ // Retrieve and normalize window information, then update the camera
+                            GET_WINDOW_INFO;
 
-                        GET_NORMALIZED_WINDOW_INFO;
+                            GET_NORMALIZED_WINDOW_INFO;
 
-                        UPDATE_CAMERA;
-                    } while (0);
+                            UPDATE_CAMERA;
+                        } while (0);
+                        
+                        BeginDrawing(); // Begin drawing for the right paddle window
+                            ClearBackground(RAYWHITE); // Clear the background with white color
+                            DRAW_3D_SCENE; // Draw the 3D scene
+                            GAME_DRAW_LOGIC(right_paddle_window, right_paddle_window); // Execute game-specific drawing logic for the right paddle window
+                        EndDrawing(); // End the drawing process
                     
-                    BeginDrawing();
-                        ClearBackground(RAYWHITE);
-                        DRAW_3D_SCENE;
-                        GAME_DRAW_LOGIC(right_paddle_window, right_paddle_window);
-                    EndDrawing();
-                
-                    RESET_CAMERA;
+                        RESET_CAMERA; // Reset the camera to its default state
 
                     #pragma endregion
 
@@ -840,160 +878,166 @@ int main(){
                 // ===========================================================
                     #pragma region Scoreboard Draw
 
-                    SetActiveWindowContext(scoreboard_window);
-                    
-                    BeginDrawing();
-                        ClearBackground(RAYWHITE);
-                        // BeginShaderMode(raymarching_shader);
-                            DRAW_3D_SCENE;
-                        // EndShaderMode();
-
-                        do{ //Visualize Main Window Area
-                            SetActiveWindowContext(window_main);
-                            GET_WINDOW_INFO;
-                            
-                            SetActiveWindowContext(scoreboard_window);
-                            DRAW_VIEWPORT_VIEW;
-                        } while (0);
-
-                        do{ //Visualize Left Paddle Area
-                            SetActiveWindowContext(left_paddle_window);
-                            GET_WINDOW_INFO;
-                            
-                            SetActiveWindowContext(scoreboard_window);
-                            DRAW_VIEWPORT_VIEW;
-                        } while (0);
-
-                        do{ //Visualize Right Paddle Area
-                            SetActiveWindowContext(right_paddle_window);
-                            GET_WINDOW_INFO;
-                            
-                            SetActiveWindowContext(scoreboard_window);
-                            DRAW_VIEWPORT_VIEW;
-                        } while (0);
-
-                        do{ //Visualize Scoreboard Area
-                            SetActiveWindowContext(scoreboard_window);
-                            GET_WINDOW_INFO;
-                            
-                            SetActiveWindowContext(scoreboard_window);
-                            DRAW_VIEWPORT_VIEW;
-                        } while (0);
-
                         SetActiveWindowContext(scoreboard_window);
-                            GET_WINDOW_INFO;
                         
-                        if(game_state == 0){
-                            if(IsKeyDown(KEY_SPACE)){
-                                DrawText("Hold [SPACE] to Expand Scoreboard", 10, window_dim.y-80, 20, BLACK);
-                                DrawText("Hold [SPACE] and [Middle Mouse Button] to Move Scoreboard", 10, window_dim.y-50, 20, BLACK);
+                        BeginDrawing();
+                            ClearBackground(RAYWHITE);
+                            // BeginShaderMode(raymarching_shader);
+                                DRAW_3D_SCENE;
+                            // EndShaderMode();
 
-                                if(IsKeyDown(KEY_T)){
-                                    DrawText("Leaderboard", 10, 200, 50, BLACK);
-                                    DrawText(std::format("1. {} - {:.2f}", rank_1_name, rank_1_time).c_str(), 10, 250, 20, BLACK);
-                                    DrawText(std::format("2. {} - {:.2f}", rank_2_name, rank_2_time).c_str(), 10, 270, 20, BLACK);
-                                    DrawText(std::format("3. {} - {:.2f}", rank_3_name, rank_3_time).c_str(), 10, 290, 20, BLACK);
-                                    DrawText(std::format("4. {} - {:.2f}", rank_4_name, rank_4_time).c_str(), 10, 310, 20, BLACK);
-                                    DrawText(std::format("5. {} - {:.2f}", rank_5_name, rank_5_time).c_str(), 10, 330, 20, BLACK);
-                                }
+                            do{ //Visualize Main Window Area
+                                SetActiveWindowContext(window_main);
+                                GET_WINDOW_INFO;
                                 
-                                DrawText("Player 1: Press [W] and [S] to Move Left Paddle", 10, 10, 20, BLACK);
-                                DrawText("Player 2: Press [UP] and [DOWN] to Move Right Paddle", 10, 30, 20, BLACK);
-                                DrawText("Yell to Accelerate the Game(check your terminal for visualizer)", 10, 50, 20, BLACK);
-                                DrawText("Press [T] to Show Leaderboard", 10, 70, 20, BLACK);
-                                DrawText("Press [ESC] to Quit", 10, 90, 20, BLACK); 
+                                SetActiveWindowContext(scoreboard_window);
+                                DRAW_VIEWPORT_VIEW;
+                            } while (0);
 
-                                DrawText("Press [ENTER] to Start Game", 10, 110, 20, BLACK);
-                            } else {
-                                DrawText("Hold [SPACE] to Hold Scoreboard", 10, 50, 20, BLACK);
-                                DrawText("Hold [SPACE] and [Middle Mouse Button] \n to Move Scoreboard", 10, 10, 20, BLACK);
+                            do{ //Visualize Left Paddle Area
+                                SetActiveWindowContext(left_paddle_window);
+                                GET_WINDOW_INFO;
+                                
+                                SetActiveWindowContext(scoreboard_window);
+                                DRAW_VIEWPORT_VIEW;
+                            } while (0);
+
+                            do{ //Visualize Right Paddle Area
+                                SetActiveWindowContext(right_paddle_window);
+                                GET_WINDOW_INFO;
+                                
+                                SetActiveWindowContext(scoreboard_window);
+                                DRAW_VIEWPORT_VIEW;
+                            } while (0);
+
+                            do{ //Visualize Scoreboard Area
+                                SetActiveWindowContext(scoreboard_window);
+                                GET_WINDOW_INFO;
+                                
+                                SetActiveWindowContext(scoreboard_window);
+                                DRAW_VIEWPORT_VIEW;
+                            } while (0);
+
+                            SetActiveWindowContext(scoreboard_window);
+                                GET_WINDOW_INFO;
+                            
+                            if(game_state == 0){ // Menu state logic
+                                if(IsKeyDown(KEY_SPACE)){ // Expand scoreboard when SPACE is held
+                                    DrawText("Hold [SPACE] to Expand Scoreboard", 10, window_dim.y-80, 20, BLACK);
+                                    DrawText("Hold [SPACE] and [Middle Mouse Button] to Move Scoreboard", 10, window_dim.y-50, 20, BLACK);
+
+                                    if(IsKeyDown(KEY_T)){ // Show leaderboard when T is pressed
+                                        DrawText("Leaderboard", 10, 200, 50, BLACK);
+                                        DrawText(std::format("1. {} - {:.2f}", rank_1_name, rank_1_time).c_str(), 10, 250, 20, BLACK);
+                                        DrawText(std::format("2. {} - {:.2f}", rank_2_name, rank_2_time).c_str(), 10, 270, 20, BLACK);
+                                        DrawText(std::format("3. {} - {:.2f}", rank_3_name, rank_3_time).c_str(), 10, 290, 20, BLACK);
+                                        DrawText(std::format("4. {} - {:.2f}", rank_4_name, rank_4_time).c_str(), 10, 310, 20, BLACK);
+                                        DrawText(std::format("5. {} - {:.2f}", rank_5_name, rank_5_time).c_str(), 10, 330, 20, BLACK);
+                                    }
+                                    
+                                    // Display controls and instructions
+                                    DrawText("Player 1: Press [W] and [S] to Move Left Paddle", 10, 10, 20, BLACK);
+                                    DrawText("Player 2: Press [UP] and [DOWN] to Move Right Paddle", 10, 30, 20, BLACK);
+                                    DrawText("Yell to Accelerate the Game(check your terminal for visualizer)", 10, 50, 20, BLACK);
+                                    DrawText("Press [T] to Show Leaderboard", 10, 70, 20, BLACK);
+                                    DrawText("Press [ESC] to Quit", 10, 90, 20, BLACK); 
+
+                                    DrawText("Press [ENTER] to Start Game", 10, 110, 20, BLACK);
+                                } else { // Default scoreboard instructions
+                                    DrawText("Hold [SPACE] to Hold Scoreboard", 10, 50, 20, BLACK);
+                                    DrawText("Hold [SPACE] and [Middle Mouse Button] \n to Move Scoreboard", 10, 10, 20, BLACK);
+                                }
                             }
-                        }
 
-                        if(game_state == 1){
-                            DrawText("Hold [SPACE] to Hold Scoreboard", 10, window_dim.y-80, 20, BLACK);
-                            DrawText("Hold [SPACE] and [Middle Mouse Button] \nto Move Scoreboard", 10, window_dim.y-50, 20, BLACK);
+                            if(game_state == 1){
+                                // Display instructions for holding and moving the scoreboard
+                                DrawText("Hold [SPACE] to Hold Scoreboard", 10, window_dim.y-80, 20, BLACK);
+                                DrawText("Hold [SPACE] and [Middle Mouse Button] \nto Move Scoreboard", 10, window_dim.y-50, 20, BLACK);
 
-                            DrawText(std::format("Time Left: {:.2f}", timer).c_str(), 10, 30, 20, BLACK);
-                            DrawText(std::format("Total Time Survived: {:.2f}", total_time).c_str(), 10, 50, 20, BLACK);
-                        }
-                    
-                        if(game_state == 3){
-                            DrawText("GAME OVER!", 10, 70, 20, BLACK);
-                            if(total_time >= rank_5_time){
-                                DrawText("You made it to the leaderboard!", 10, 90, 20, BLACK);
-                                DrawText("Enter your name: ", 10, 110, 20, BLACK);
-                                DrawText("Press [SHIFT] to Submit", 10, 130, 20, BLACK);
-                                static char player_name[20] = "\0";
-                                static int letter_count = 0;
+                                // Display the remaining time and total survival time
+                                DrawText(std::format("Time Left: {:.2f}", timer).c_str(), 10, 30, 20, BLACK);
+                                DrawText(std::format("Total Time Survived: {:.2f}", total_time).c_str(), 10, 50, 20, BLACK);
+                            }
+                        
+                            if(game_state == 3){
+                                DrawText("GAME OVER!", 10, 70, 20, BLACK); // Display game over message
+                                if(total_time >= rank_5_time){ // Check if player qualifies for leaderboard
+                                    DrawText("You made it to the leaderboard!", 10, 90, 20, BLACK);
+                                    DrawText("Enter your name: ", 10, 110, 20, BLACK);
+                                    DrawText("Press [SHIFT] to Submit", 10, 130, 20, BLACK);
+                                    static char player_name[20] = "\0"; // Buffer for player name
+                                    static int letter_count = 0; // Track number of letters entered
 
-                                int key = GetCharPressed();
+                                    int key = GetCharPressed(); // Get character input
 
-                                while (key > 0) {
-                                    if ((key >= 32) && (key <= 125) && (letter_count < 20)) {
-                                        player_name[letter_count] = (char)key;
-                                        player_name[letter_count + 1] = '\0';
-                                        letter_count++;
+                                    while (key > 0) { // Process valid character input
+                                        if ((key >= 32) && (key <= 125) && (letter_count < 20)) {
+                                            player_name[letter_count] = (char)key;
+                                            player_name[letter_count + 1] = '\0';
+                                            letter_count++;
+                                        }
+
+                                        key = GetCharPressed(); // Check for more input
                                     }
 
-                                    key = GetCharPressed();
-                                }
-
-                                if (IsKeyPressed(KEY_BACKSPACE)) {
-                                    letter_count--;
-                                    if (letter_count < 0) letter_count = 0;
-                                    player_name[letter_count] = '\0';
-                                }
-
-                                DrawText(player_name, 200, 110, 20, BLACK);
-
-                                if ((IsKeyPressed(KEY_RIGHT_SHIFT) || IsKeyPressed(KEY_LEFT_SHIFT)) && letter_count > 0) {
-                                    std::ofstream leaderboard_out("../leaderboard.txt");
-
-                                    if (total_time >= rank_1_time) {
-                                        rank_5 = rank_4;
-                                        rank_4 = rank_3;
-                                        rank_3 = rank_2;
-                                        rank_2 = rank_1;
-                                        rank_1 = std::format("{} {:.2f}", player_name, total_time);
-                                    } else if (total_time >= rank_2_time) {
-                                        rank_5 = rank_4;
-                                        rank_4 = rank_3;
-                                        rank_3 = rank_2;
-                                        rank_2 = std::format("{} {:.2f}", player_name, total_time);
-                                    } else if (total_time >= rank_3_time) {
-                                        rank_5 = rank_4;
-                                        rank_4 = rank_3;
-                                        rank_3 = std::format("{} {:.2f}", player_name, total_time);
-                                    } else if (total_time >= rank_4_time) {
-                                        rank_5 = rank_4;
-                                        rank_4 = std::format("{} {:.2f}", player_name, total_time);
-                                    } else {
-                                        rank_5 = std::format("{} {:.2f}", player_name, total_time);
+                                    if (IsKeyPressed(KEY_BACKSPACE)) { // Handle backspace
+                                        letter_count--;
+                                        if (letter_count < 0) letter_count = 0;
+                                        player_name[letter_count] = '\0';
                                     }
 
-                                    leaderboard_out << rank_1 << std::endl;
-                                    leaderboard_out << rank_2 << std::endl;
-                                    leaderboard_out << rank_3 << std::endl;
-                                    leaderboard_out << rank_4 << std::endl;
-                                    leaderboard_out << rank_5 << std::endl;
+                                    DrawText(player_name, 200, 110, 20, BLACK); // Display entered name
 
-                                    leaderboard_out.close();
-                                    game_state = 0;
-                                    timer = 30.0f;
-                                    total_time = 0.0f;
-                                    letter_count = 0;
-                                    player_name[0] = '\0';
+                                    if ((IsKeyPressed(KEY_RIGHT_SHIFT) || IsKeyPressed(KEY_LEFT_SHIFT)) && letter_count > 0) {
+                                        std::ofstream leaderboard_out("../leaderboard.txt"); // Open leaderboard file for writing
+
+                                        // Update leaderboard based on player's score
+                                        if (total_time >= rank_1_time) {
+                                            rank_5 = rank_4;
+                                            rank_4 = rank_3;
+                                            rank_3 = rank_2;
+                                            rank_2 = rank_1;
+                                            rank_1 = std::format("{} {:.2f}", player_name, total_time);
+                                        } else if (total_time >= rank_2_time) {
+                                            rank_5 = rank_4;
+                                            rank_4 = rank_3;
+                                            rank_3 = rank_2;
+                                            rank_2 = std::format("{} {:.2f}", player_name, total_time);
+                                        } else if (total_time >= rank_3_time) {
+                                            rank_5 = rank_4;
+                                            rank_4 = rank_3;
+                                            rank_3 = std::format("{} {:.2f}", player_name, total_time);
+                                        } else if (total_time >= rank_4_time) {
+                                            rank_5 = rank_4;
+                                            rank_4 = std::format("{} {:.2f}", player_name, total_time);
+                                        } else {
+                                            rank_5 = std::format("{} {:.2f}", player_name, total_time);
+                                        }
+
+                                        // Write updated leaderboard to file
+                                        leaderboard_out << rank_1 << std::endl;
+                                        leaderboard_out << rank_2 << std::endl;
+                                        leaderboard_out << rank_3 << std::endl;
+                                        leaderboard_out << rank_4 << std::endl;
+                                        leaderboard_out << rank_5 << std::endl;
+
+                                        leaderboard_out.close(); // Close file
+                                        game_state = 0; // Reset game state
+                                        timer = 30.0f; // Reset timer
+                                        total_time = 0.0f; // Reset total time
+                                        letter_count = 0; // Reset name input
+                                        player_name[0] = '\0';
+                                    }
+                                } else {
+                                    DrawText("You didn't make it to the leaderboard :P", 10, 90, 20, BLACK); // Message if player doesn't qualify
+                                    DrawText("Press [ENTER] to Restart", 10, 110, 20, BLACK); // Prompt to restart
                                 }
-                            } else {
-                                DrawText("You didn't make it to the leaderboard :P", 10, 90, 20, BLACK);
-                                DrawText("Press [ENTER] to Restart", 10, 110, 20, BLACK);
                             }
-                        }
 
-                    EndDrawing();
+                        EndDrawing();
 
-                    #pragma endregion
+                        #pragma endregion
+
             #pragma endregion
     }
 
