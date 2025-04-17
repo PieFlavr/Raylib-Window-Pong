@@ -181,37 +181,47 @@ int main(){
         
         std::string window_title = DEFAULT_TITLE;
 
-        //unsigned int window_flags_generic = FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MINIMIZABLE | FLAG_WINDOW_MAXIMIZABLE | FLAG_WINDOW_CLOSEABLE | FLAG_WINDOW_UNDECORATED;
+        // Initialize main window flags
         unsigned int window_main_flags = 0;
 
+        // Set dimensions for the main window
         Vector2 main_window_dim = {MAIN_WINDOW_WIDTH, MAIN_WINDOW_WIDTH};
 
+        // Initialize the main window
         int window_main = InitWindowPro(main_window_dim.x, main_window_dim.y, window_title.c_str(), window_main_flags);
 
+        // Get screen dimensions
         int screenWidth = GetMonitorWidth(0);
         int screenHeight = GetMonitorHeight(0);
 
+        // Calculate aspect ratio for the scoreboard window
         float aspect_ratio = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
 
+        // Initialize additional windows
         int scoreboard_window = InitWindowPro(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH/aspect_ratio, "Scoreboard", window_main_flags);
         int left_paddle_window = InitWindowPro(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH, "Left Paddle View", window_main_flags);
         int right_paddle_window = InitWindowPro(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH, "Right Paddle View", window_main_flags);
 
+        // Set active context and configure main window
         SetActiveWindowContext(window_main);
         SetTargetFPS(DRAW_FPS);
         SetWindowPosition(screenWidth/2, screenHeight/2);
 
+        // Set active context and configure scoreboard window
         SetActiveWindowContext(scoreboard_window);
         SetTargetFPS(DRAW_FPS);
         SetWindowPosition(screenWidth/2, screenHeight/2);
 
+        // Set active context and configure left paddle window
         SetActiveWindowContext(left_paddle_window);
         SetTargetFPS(DRAW_FPS);
         SetWindowPosition(screenWidth/2, screenHeight/2);
 
+        // Set active context and configure right paddle window
         SetActiveWindowContext(right_paddle_window);
         SetTargetFPS(DRAW_FPS);
         SetWindowPosition(screenWidth/2, screenHeight/2);
+        
         #pragma endregion
 
         // ===========================================================
@@ -219,16 +229,24 @@ int main(){
         // ===========================================================
         #pragma region Model Loading + Default Transforms
         
+        // Load a cube model from a generated mesh
         Model cube = LoadModelFromMesh(GenMeshCube(1.0f, 1.0f, 1.0f));   
+
+        // Load a cow model from a GLB file
         Model cow = LoadModel("../../custom_assets/as2/Cow.glb");
+
+        // Load a texture for the cow model
         Texture2D cow_texture = LoadTexture("../../custom_assets/as2/cow_color_1.png");
+
+        // Assign the loaded texture to the cow model's material
         cow.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = cow_texture;
 
+        // Initialize the 3D camera
         Camera3D camera = { 0 };
         camera.position = (Vector3){ 10.0f, 10.0f, 10.0f };  // Camera position
         camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };       // Looking at the origin
         camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };           // Y-axis is up
-        camera.fovy = 45.0f;                                  // Field of view (in degrees)
+        camera.fovy = 45.0f;                                 // Field of view (in degrees)
 
         #pragma endregion
 
@@ -240,14 +258,15 @@ int main(){
         SetActiveWindowContext(window_main);
 
         // Gave up doesn't want to work consistently... maybe later!
-        Shader raymarching_shader = LoadShader(NULL, "../../custom_assets/as4/raytracing_shader.fs");
-        RenderTexture2D targetTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+        // Shader raymarching_shader = LoadShader(NULL, "../../custom_assets/as4/raytracing_shader.fs");
+        // RenderTexture2D targetTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
 
-        if (raymarching_shader.id == 0) {
-            printf("Error loading raytracing shader!\n");
-        } else {
-            printf("Raytracing shader loaded successfully.\n");
-        }
+        // if (raymarching_shader.id == 0) {
+        //     printf("Error loading raytracing shader!\n");
+        // } else {
+        //     printf("Raytracing shader loaded successfully.\n");
+        // }
+
         #pragma endregion
 
         // ===========================================================
@@ -703,11 +722,11 @@ int main(){
                 float camera_distance = Vector3Distance(camera.position, camera.target);
                 int diameter_width = 2 * tan(camera.fovy * DEG2RAD * 0.5) * camera_distance;
 
-                SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "cameraPos"), &camera.position, SHADER_UNIFORM_VEC3);
-                SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenWidth"), &screenWidth, SHADER_UNIFORM_INT);
-                SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenHeight"), &screenHeight, SHADER_UNIFORM_INT);  
-                SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "view"), view_matrix);
-                SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "projection"), MatrixPerspective(camera.fovy, (double)GetScreenWidth()/(double)GetScreenHeight(), 0.1, 1000.0));
+                // SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "cameraPos"), &camera.position, SHADER_UNIFORM_VEC3);
+                // SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenWidth"), &screenWidth, SHADER_UNIFORM_INT);
+                // SetShaderValue(raymarching_shader, GetShaderLocation(raymarching_shader, "screenHeight"), &screenHeight, SHADER_UNIFORM_INT);  
+                // SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "view"), view_matrix);
+                // SetShaderValueMatrix(raymarching_shader, GetShaderLocation(raymarching_shader, "projection"), MatrixPerspective(camera.fovy, (double)GetScreenWidth()/(double)GetScreenHeight(), 0.1, 1000.0));
 
             #pragma endregion
 
@@ -799,9 +818,9 @@ int main(){
                     
                     BeginDrawing();
                         ClearBackground(RAYWHITE);
-                        BeginShaderMode(raymarching_shader);
+                        // BeginShaderMode(raymarching_shader);
                             DRAW_3D_SCENE;
-                        EndShaderMode();
+                        // EndShaderMode();
 
                         do{ //Visualize Main Window Area
                             SetActiveWindowContext(window_main);
@@ -966,7 +985,7 @@ int main(){
     UnloadModel(cow);
     UnloadModel(cube);
 
-    UnloadShader(raymarching_shader);
+    // UnloadShader(raymarching_shader);
 
     SetActiveWindowContext(window_main);
     CloseWindow();
