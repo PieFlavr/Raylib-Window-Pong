@@ -25,7 +25,7 @@
 
 #define GET_WINDOW_INFO\   
         Vector2 window_pos = {GetWindowPosition().x, GetWindowPosition().y};\
-        Vector2 window_dim = {GetScreenWidth(), GetScreenHeight()};\
+        Vector2 window_dim = {static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight())};\
         Vector2 window_center = Vector2Add(window_pos,Vector2Multiply(window_dim, {0.5, 0.5}));\
         Vector2 window_offset = Vector2Subtract(window_center, screen_center);\
 
@@ -72,7 +72,7 @@
         Vector2 window_dim = _window_dim;\
 \
         Vector2 window_collision = CheckCollisionBoundary({window_pos.x, window_pos.y, window_dim.x, window_dim.y}, \
-            {0, 0, screenWidth, screenHeight}, window_velocity);\
+            {0, 0, static_cast<float>(screenWidth), static_cast<float>(screenHeight)}, window_velocity);\
 \
         window_pos.x += (window_velocity.x * logicDelta);\
         window_pos.y += (window_velocity.y * logicDelta);\
@@ -97,7 +97,7 @@
             }\
         }\
 \
-        window_pos.x = std::fmax(0, std::fmin(screenWidth - window_dim.x, window_pos.x));\
-        window_pos.y = std::fmax(0, std::fmin(screenHeight - window_dim.y, window_pos.y));\
+        window_pos.x = std::fmax(0, std::fmin(static_cast<float>(screenWidth) - window_dim.x, window_pos.x));\
+        window_pos.y = std::fmax(0, std::fmin(static_cast<float>(screenHeight) - window_dim.y, window_pos.y));\
 
 #endif // DRAW_MACROS_H

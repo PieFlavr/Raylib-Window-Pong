@@ -53,7 +53,7 @@
 #define AUDIO_NUM_LINES 8
 #define VISUALIZER_SPEED_SCALE 100.0f
 
-#define DEFAULT_TITLE "CS381 - Assignment 4"
+#define DEFAULT_TITLE "Raylib Window Pong"
 
 // DEFAULT GAME SETTINGs
 #define PADDLE_HEIGHT 300
@@ -163,7 +163,7 @@ int main(){
         // ===========================================================
         #pragma region Window Initialization
         
-        std::string window_title = "MY HATRED FOR THIS CODE IS IMMEASURABLE, AND MY DAY IS RUINED (the game)";
+        std::string window_title = DEFAULT_TITLE;
 
         //unsigned int window_flags_generic = FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MINIMIZABLE | FLAG_WINDOW_MAXIMIZABLE | FLAG_WINDOW_CLOSEABLE | FLAG_WINDOW_UNDECORATED;
         unsigned int window_main_flags = 0;
@@ -175,7 +175,7 @@ int main(){
         int screenWidth = GetMonitorWidth(0);
         int screenHeight = GetMonitorHeight(0);
 
-        float aspect_ratio = (double)screenWidth / (double)screenHeight;
+        float aspect_ratio = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
 
         int scoreboard_window = InitWindowPro(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH/aspect_ratio, "Scoreboard", window_main_flags);
         int left_paddle_window = InitWindowPro(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_WIDTH, "Left Paddle View", window_main_flags);
@@ -707,7 +707,7 @@ int main(){
 
                         SetActiveWindowContext(window_main);
 
-                        do{ //WHO THE HELL NNEEDS OBJECTS WHEN YOU HAVE MACROOSS AND SCOPE OPERATORS SBABYYYYYYYYYYYYYYYYY (╯°□°）╯︵ ┻━┻
+                        do{ //Macros and scope operators are awesome
                             GET_WINDOW_INFO;
 
                             GET_NORMALIZED_WINDOW_INFO;

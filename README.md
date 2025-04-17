@@ -69,6 +69,8 @@ To run the code after compilation, simply run the `as4` executable from the `../
 ./as4   # Runs program executable
 ```
 
+Or on the Windows build, just run the .exe file.
+
 ### [OPTIONAL] BUILD/RUNNING ERRORs
 
 If unable to compile, run, or getting errors with regards to directories/pathing, it is recommended you delete the contents of the `build` folder and re-compile the code. Make sure you are in the BUILD directory of the assignment (command accounts for that but still be careful)!!!
