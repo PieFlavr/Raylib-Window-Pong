@@ -69,7 +69,7 @@ To run the code after compilation, simply run the `as4` executable from the `../
 ./as4   # Runs program executable
 ```
 
-Or on the Windows build, just run the .exe file.
+Currently, incompatible with windows due to compilation issues with the multi-window raylib release.
 
 ### [OPTIONAL] BUILD/RUNNING ERRORs
 
