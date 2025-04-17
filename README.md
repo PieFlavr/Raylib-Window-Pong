@@ -1,4 +1,6 @@
-# "MY HATRED FOR THIS CODE IS IMMEASURABLE, AND MY DAY IS RUINED (the game)"[as4] README
+# RAYLIB WINDOW PONG README
+
+This is a repository containing a personal fork of an assignment from a CS381 class. This uses an experimental fork of raylib which allows for management of multiple windows. As a challenge and for extra credit in the class, at base this is coded without ANY objects/structs/components or similar, with every coded "Ad Hoc". 
 
 ## PREFACE
 
@@ -33,7 +35,7 @@ sudo apt --fix-broken install # should fill any missing dependencies
 You can normally clone the repository, but doing so will incur some extra work to be done for fetching submodules. If you don't want to do that, use the following commands in your target directory...
 
 ```bash
-git clone --recurse-submodules https://github.com/PieFlavr/CS381/tree/AS4_EXPERIMENTAL
+git clone --recurse-submodules https://github.com/PieFlavr/Raylib-Window-Pong
 ```
 
 ### FETCHING SUBMODULEs
