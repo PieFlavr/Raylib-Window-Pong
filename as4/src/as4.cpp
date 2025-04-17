@@ -30,11 +30,11 @@
 #include "draw_macros.h"
 #include "utils.cpp"
 
-// AUDIO AAAAAAAAAAAGGGGGHHHHH
+// AUDIO INCLUDES
 #include "miniaudio.h"
 #include "input_audio.cpp"
 
-// Other innclude
+// Other include
 #include <chrono>
 
 // DEFAULT RENDER SETTINGs
@@ -72,55 +72,6 @@ template<typename T> //Cool type validation!
 concept Transformer = requires(T t, Matrix m) {
     { t(m) } -> std::convertible_to<Matrix>;
 };
-
-
-// ===========================================================
-// Transformation Lambdas
-// ===========================================================
-#pragma region Transformation Lambdas
-/**
- * @brief Arbitrary translation function that translates on each axis accordingly using a vector.
- * 
- */
-auto translate = [](Vector3 translation) { 
-    // Lambda Inception (￣▽￣)"
-    return [=](Matrix& transform) -> Matrix {
-        return MatrixTranslate(translation.x, translation.y, translation.z);
-    };
-};
-/**
- * @brief Arbitrary scaling function that scales each axis accordingly using a vector.Ok
- * 
- */
-auto scale = [](Vector3 scaling) { 
-    // Lambda Inception (￣▽￣)"
-    return [=](Matrix& transform) -> Matrix {
-        return MatrixMultiply(transform, MatrixScale(scaling.x, scaling.y, scaling.z));
-    };
-};
-/**
- * @brief Arbitrary rotation function that rotates (assumedly right hand rule) around the given axis vector.
- * 
- */
-auto rotate = [](Vector3 axis, float angle) {
-    // Lambda Inception (￣▽￣)"
-    return [=](Matrix& transform) -> Matrix {
-        return MatrixMultiply(transform, MatrixRotate(axis, angle)); 
-    };
-};
-/**
- * @brief Combines arbitrary number of transformation lambdas into one.
- */
-auto combine = [](auto... transformers) {
-    // Lambda uh... ㄟ( ▔, ▔ )ㄏ
-    return [=](Matrix& transform) -> Matrix {
-        Matrix median_transform; //Will in fact flip the hell out if I don't do this (╯°□°）╯︵ ┻━┻
-        median_transform = transform; //Not exactly sure why??? My guess is its some goofy addressing hallucinations
-        ((median_transform = transformers(median_transform)), ...); //Also this is super cool(￣▽￣)b
-        return median_transform;
-    };
-};
-#pragma endregion
 
 // ===========================================================
 // Draw Model Functions
