@@ -299,12 +299,12 @@ int main(){
 
         // Initialize the audio capture device
         if(ma_device_init(NULL, &device_config, &device) != MA_SUCCESS){
-            std::cout << "I hate audio" << std::endl; // Error message if initialization fails
+            std::cout << "Output audio device falied to initialized!" << std::endl; // Error message if initialization fails
             return -1;
         }
         // Start the audio capture device
         if (ma_device_start(&device) != MA_SUCCESS) {
-            std::cout << "I ASDDDDDDD" << std::endl; // Error message if starting the device fails
+            std::cout << "Capture audio device failed to initialize!" << std::endl; // Error message if starting the device fails
             return -1;
         }
 
