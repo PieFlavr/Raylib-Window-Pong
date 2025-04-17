@@ -2,7 +2,7 @@
 
 This is a repository containing a personal fork of an assignment from a CS381 class. This uses an experimental fork of raylib which allows for management of multiple windows. As a challenge and for extra credit in the class, at base this is coded without ANY objects/structs/components or similar, with every coded "Ad Hoc" withou any real architecture or structure. As an added challenge, I did my best to try and avoid functions (with some exception) and use primarily macros for what would have been delegated to "object-oriented" behavior.
 
-![alt text](custom_assets/pongpongpong.gif)
+<img src="custom_assets/pongpongpong.gif" alt="pong gif" width="800">
 
 ## PREFACE
 
@@ -96,7 +96,7 @@ After the game ends, if you get a high enough score, you can enter your name to 
 
 ### APPLICATION CONTROLs
 
-All of the controls are enumerated in the menus/scoreboards. The following is simply an explicit listing of them, all of these can be found in the game. 
+All of the controls are enumerated in the menus/scoreboards. The following is simply an explicit listing of them, all of these can be found in the game.
 
 IN THE START MENU ONLY...
 
@@ -130,8 +130,8 @@ IN THE GAME OVER SCREEN...
 
 The following music tracks were used to create this project...
 
-Lucky Star: https://youtu.be/1hbHgZDB95o?si=YvHRP71iqUQcIBFy 
+Lucky Star: <https://youtu.be/1hbHgZDB95o?si=YvHRP71iqUQcIBFy>
 
-Cats on Mars: https://youtu.be/97xfV6yXcrk?si=uDQGLkleoicX_xSb 
+Cats on Mars: <https://youtu.be/97xfV6yXcrk?si=uDQGLkleoicX_xSb>
 
-Determination: https://youtu.be/W1i4mTyidOc?si=mzxLFXQke-5vfmj2 
+Determination: <https://youtu.be/W1i4mTyidOc?si=mzxLFXQke-5vfmj2>
