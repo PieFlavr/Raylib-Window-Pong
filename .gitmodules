@@ -1,7 +1,7 @@
-[submodule "raylib_multi_window_experimental"]
-	path = raylib_multi_window_experimental
-	url = https://github.com/raylib-extras/raylib_multi_window_experimental
-	
 [submodule "miniaudio"]
 	path = miniaudio
 	url = https://github.com/mackron/miniaudio
+	
+[submodule "raylib_multi_window_experimental"]
+	path = raylib_multi_window_experimental
+	url = https://github.com/raylib-extras/raylib_multi_window_experimental
