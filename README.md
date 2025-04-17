@@ -110,13 +110,15 @@ IN THE GAME ONLY...
 
 `[UP]` and `[DOWN]` arrow keys move the right paddle up and down respectively.
 
+`[SHOUTING]` or `[BEING LOUD]` given that you have a microphone speeds the game up!
+
 IN THE START MENU AND GAME-OVER SCREEN...
 
 `[ENTER]` re/starts the main game.
 
 `[ESC]` at any point closes the game.
 
-IN THE AME OVER SCREEN...
+IN THE GAME OVER SCREEN...
 
 `[SHIFT]` to submit your typed name
 
@@ -128,5 +130,5 @@ The following have been implemented in the program...
 2) Audio Input (Yelling Accelerator using Miniaudio (the lib. under raudio) to do it)
 3) Terminal ASCII Art (Audio Input Visualizer)
 4) Funny Name (see README title)
-5) Manual Cleanup (literally using a random Raylib fork so have to, not the CPP wrapper ￣へ￣)
+5) Manual Cleanup (literally using a random Raylib fork so have to, not the CPP wrapper (￣へ￣))
 6) Leaderboard Implementation (persists + lets you type name)
